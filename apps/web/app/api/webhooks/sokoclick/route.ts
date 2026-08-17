@@ -24,17 +24,22 @@ export async function POST(req: NextRequest) {
 
   const d = payload.data ?? {};
   const supabase = createServiceClient();
+
+  // Args cast to `never`: types.gen.ts is a placeholder until the schema is applied
+  // and `pnpm db:types` regenerates the real Database types (which include this RPC's
+  // signature). Kept as a method call so supabase-js keeps its `this` binding.
+  const rpcArgs = {
+    p_sokoclick_invoice_id: d.id,
+    p_sokoclick_receipt_id: d.receipt_id,
+    p_business_id: d.metadata?.businessId,
+    p_invoice_type: d.metadata?.invoiceType,
+    p_amount_fcfa: d.amount,
+    p_pdf_url: d.receipt_url,
+    p_campaign_id: d.metadata?.campaignId ?? null,
+    p_retainer_id: d.metadata?.retainerId ?? null,
+  };
   try {
-    const { error } = await supabase.rpc('handle_sokoclick_invoice_paid', {
-      p_sokoclick_invoice_id: d.id,
-      p_sokoclick_receipt_id: d.receipt_id,
-      p_business_id: d.metadata?.businessId,
-      p_invoice_type: d.metadata?.invoiceType,
-      p_amount_fcfa: d.amount,
-      p_pdf_url: d.receipt_url,
-      p_campaign_id: d.metadata?.campaignId ?? null,
-      p_retainer_id: d.metadata?.retainerId ?? null,
-    });
+    const { error } = await supabase.rpc('handle_sokoclick_invoice_paid' as never, rpcArgs as never);
     if (error) throw error;
     return NextResponse.json({ processed: true });
   } catch (err) {
