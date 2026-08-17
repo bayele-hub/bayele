@@ -651,6 +651,39 @@ export type Database = {
         }
         Returns: undefined
       }
+      onboard_profile: {
+        Args: {
+          p_actor: string
+          p_audience_size?: number
+          p_avatar_url?: string
+          p_billing_email?: string
+          p_bio?: string
+          p_categories?: string[]
+          p_city: string
+          p_company_name?: string
+          p_country: Database["public"]["Enums"]["country_code"]
+          p_display_name: string
+          p_handle: string
+          p_industry?: string
+          p_platforms?: Json
+          p_role: Database["public"]["Enums"]["user_role"]
+          p_specialties?: string[]
+          p_years_experience?: number
+        }
+        Returns: {
+          avatar_url: string | null
+          bio: string | null
+          city: string
+          country: Database["public"]["Enums"]["country_code"]
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+          phone_e164: string | null
+          status: Database["public"]["Enums"]["account_status"]
+          updated_at: string
+        }
+      }
       submit_proof_of_post: {
         Args: {
           p_actor: string

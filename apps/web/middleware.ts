@@ -17,11 +17,10 @@ import { NextResponse, type NextRequest } from 'next/server';
  */
 export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const needsAuth =
-    path.startsWith('/creator') ||
-    path.startsWith('/consultant') ||
-    path.startsWith('/business') ||
-    path.startsWith('/admin');
+  // Precise prefixes: the trailing slash on /creator/ and /consultant/ is deliberate so the PUBLIC
+  // directory (/creators, /consultants — plural) is NOT gated, only the role areas (/creator/…).
+  const AUTH_PREFIXES = ['/dashboard', '/onboarding', '/admin', '/creator/', '/consultant/', '/business/'];
+  const needsAuth = AUTH_PREFIXES.some((p) => path === p || path.startsWith(p));
 
   if (!needsAuth) return NextResponse.next();
 

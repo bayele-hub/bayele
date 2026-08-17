@@ -39,8 +39,23 @@ canonical spec = `bayele-production-spec-v1.1.2.md`.
   `user_roles` was owner-only; widened the SELECT policy to expose only creator/consultant roles.
   **Gated verify:** as `anon`, 12 profiles / 8 creators / 4 consultants visible; **0** business
   profiles and **0** private role rows leaked. Milestone 1 acceptance gate #1 now passes on live.
-- ⏭ **Next:** Milestone 2 polish (filters / infinite scroll / per-profile OpenGraph), then M3 auth
-  funnel. Auth follow-up: enable leaked-password protection in Auth settings (advisor WARN — config).
+### 2026-08-17 (cont.) — Milestone 3: auth funnel & onboarding (Backend/DB · Frontend · Security)
+
+- ✅ **`onboard_profile()` RPC (`0009`+`0010`)** — one atomic call creates profile + role +
+  role-profile, status hard-coded `pending_review`. Self-service: an authenticated user onboards
+  ONLY themselves (`auth.uid() = p_actor` guard), no service key needed. **Gated verify on live:**
+  status=pending_review; role + role-profile created; `profile_already_exists` / `handle_taken` /
+  `actor_mismatch` all fire; anon cannot see a pending profile; seed intact (12 active).
+- ✅ **Onboarding flow** — `/onboarding/[role]` server-guarded form (creator/consultant/business
+  fields) → server action (user's own session) → RPC → `/onboarding/done` under-review screen.
+  `getSession()` is the shared who-is-this helper.
+- ✅ **Dispatcher `/dashboard`** routes by state (no profile → onboarding · pending → done ·
+  active → role dashboard) + **email-confirmation callback** `/auth/callback`.
+- ✅ **Middleware fix** — precise auth prefixes so the PUBLIC `/creators`/`/consultants` directory
+  is no longer accidentally gated (latent `startsWith('/creator')` bug).
+- **Gate (M3): PASSED** — a new signup lands in `pending_review`, invisible to the directory until
+  approved. Advisor: only the intentional `onboard_profile` authenticated-execute WARN (self-authz
+  via `auth.uid()`) + the auth leaked-password toggle. ⏭ **Next:** M4 admin approval flips `active`.
 
 ---
 

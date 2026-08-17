@@ -64,6 +64,7 @@ export default function AuthPage() {
           email: email.trim(),
           password,
           options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: {
               display_name: fullName,
               role,
