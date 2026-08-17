@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "title": "Bayele — Nano-influence & Mobile Money Escrow",
+    "description": "The escrow marketplace for WhatsApp creators, media consultants and brands in Cameroon, Côte d'Ivoire and Gabon."
+  },
+  "announce": "New — instant Wave withdrawals now available in Côte d'Ivoire",
+  "nav": {
+    "creators": "Creators",
+    "consultants": "Consultants",
+    "security": "Security",
+    "billing": "Billing",
+    "login": "Sign in",
+    "start": "Get started"
+  },
+  "hero": {
+    "badge": "Influencer marketplace · Francophone Africa",
+    "titleLine1": "Monetize your content.",
+    "titleLead": "Payments ",
+    "titleHighlight": "guaranteed",
+    "subtitle": "Bayele holds campaign budgets in escrow and releases them to Mobile Money the moment delivery is proven. No scams, no waiting — for creators and brands alike.",
+    "ctaBrand": "Launch a campaign",
+    "ctaCreator": "Become a paid creator",
+    "payoutsLabel": "Withdraw to:",
+    "socialProof": "Creators paid every week across Douala, Abidjan & Libreville."
+  },
+  "trust": {
+    "escrowTitle": "Locked escrow",
+    "escrowBody": "The budget is locked at launch. The creator is paid as soon as proof of delivery is validated.",
+    "momoTitle": "MoMo payouts",
+    "momoBody": "Withdraw to MTN, Orange Money or Wave, no hidden fees, from 1,000 FCFA.",
+    "ohadaTitle": "OHADA invoices",
+    "ohadaBody": "Tax-deductible invoices with NIU/NCC for SMEs and agencies, via SokoClick."
+  },
+  "escrow": {
+    "heading": "Escrow that protects both sides",
+    "steps": [
+      {
+        "title": "The budget is locked",
+        "body": "The brand funds the campaign. Funds move into escrow — untouchable on both sides."
+      },
+      {
+        "title": "The creator posts",
+        "body": "Content published (WhatsApp status, TikTok…), proof submitted. A Gemini score prioritizes human review."
+      },
+      {
+        "title": "Instant payout",
+        "body": "Once validated, funds are released to MTN, Orange Money or Wave."
+      }
+    ]
+  },
+  "categoriesHeading": "Explore by category",
+  "viewAll": "View all",
+  "categories": [
+    "Beauty",
+    "Fashion",
+    "Tech",
+    "Food",
+    "Music",
+    "Sports",
+    "Health & Wellness",
+    "Comedy",
+    "Education",
+    "Travel",
+    "Business"
+  ],
+  "directory": {
+    "creatorsTitle": "Creators",
+    "creatorsSubtitle": "Paid nano-creators · verified audience",
+    "consultantsTitle": "Consultants",
+    "consultantsSubtitle": "Media strategists to run your campaigns",
+    "live": "Live",
+    "emptyCreators": "No active creators yet.",
+    "emptyConsultants": "No active consultants yet.",
+    "roleConsultant": "Strategic consultant",
+    "view": "View profile",
+    "followers": "followers",
+    "audience": "Total following"
+  },
+  "split": {
+    "brandsTitle": "For brands",
+    "brandsDesc": "Launch, fund and track your influencer campaigns with full security.",
+    "brandsBullets": [
+      "Budget locked, released on proof",
+      "Creators verified by country",
+      "Deductible OHADA invoices"
+    ],
+    "brandsCta": "Launch a campaign",
+    "creatorsTitle": "For creators",
+    "creatorsDesc": "Get paid for your content — without chasing the money.",
+    "creatorsBullets": [
+      "Payment guaranteed by escrow",
+      "MoMo withdrawal from 1,000 FCFA",
+      "A public profile that attracts brands"
+    ],
+    "creatorsCta": "Create my profile"
+  },
+  "finalCta": {
+    "title": "Ready to launch your first campaign?",
+    "subtitle": "Join the creators and brands securing their payments with Bayele.",
+    "primary": "Get started free",
+    "secondary": "How escrow works"
+  },
+  "footer": {
+    "rights": "© {year} — CEMAC / UEMOA compliant",
+    "cgu": "Terms & Escrow",
+    "privacy": "Privacy",
+    "ohada": "OHADA billing"
+  },
+  "card": {
+    "title": "Campaign — Djino Launch",
+    "meta": "Douala · Beauty & Lifestyle",
+    "inProgress": "LIVE",
+    "escrow": "Escrow",
+    "progressNote": "8 of 12 creators · proofs validated",
+    "paid": "Paid",
+    "reviewing": "Reviewing proof"
+  },
+  "stats": [
+    {
+      "k": "100%",
+      "label": "of budgets held in escrow"
+    },
+    {
+      "k": "< 60s",
+      "label": "MoMo payout after validation"
+    },
+    {
+      "k": "3 countries",
+      "label": "Cameroon · Côte d'Ivoire · Gabon"
+    },
+    {
+      "k": "30M+",
+      "label": "Combined followers across platforms"
+    }
+  ],
+  "countries": {
+    "CM": "Cameroon",
+    "CI": "Côte d'Ivoire",
+    "GA": "Gabon"
+  },
+  "directoryPage": {
+    "creatorsTitle": "Creators",
+    "creatorsLede": "Browse verified nano-creators. Filter by country and category.",
+    "consultantsTitle": "Consultants",
+    "consultantsLede": "Media strategists to design and run your campaigns.",
+    "allCountries": "All countries",
+    "allCategories": "All categories",
+    "country": "Country",
+    "category": "Category",
+    "creatorsCount": "{n} creators",
+    "consultantsCount": "{n} consultants",
+    "noResults": "No results for these filters.",
+    "reset": "Reset"
+  },
+  "profile": {
+    "back": "Creators",
+    "verified": "Verified profile",
+    "invite": "Invite to a campaign",
+    "message": "Message",
+    "totalAudience": "Total following",
+    "rating": "Average rating",
+    "campaigns": "Campaigns completed",
+    "socialsHeading": "Social media",
+    "contentHeading": "Content preview",
+    "contentSoon": "Content coming soon",
+    "visit": "Open",
+    "backConsultants": "Consultants",
+    "hire": "Start a collaboration",
+    "experience": "Years of experience",
+    "managedCampaigns": "Campaigns managed",
+    "linksHeading": "Professional links",
+    "expertiseHeading": "Expertise",
+    "referencesHeading": "Client references",
+    "referencesSoon": "Soon",
+    "website": "Website",
+    "agencyAccess": "Creator database access"
+  }
+}

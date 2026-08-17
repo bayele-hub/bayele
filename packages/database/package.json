@@ -1,0 +1,22 @@
+{
+  "name": "@bayele/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./client": "./src/client.ts" },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.1",
+    "@supabase/supabase-js": "^2.45.4"},
+  "devDependencies": {
+    "@bayele/config": "workspace:*",
+    "typescript": "^5.6.2"
+  }
+}

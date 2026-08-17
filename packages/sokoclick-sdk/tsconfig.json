@@ -1,0 +1,5 @@
+{
+  "extends": "@bayele/config/tsconfig/base",
+  "compilerOptions": { "lib": ["DOM", "DOM.Iterable", "ES2022"], "jsx": "react-jsx" },
+  "include": ["src"]
+}

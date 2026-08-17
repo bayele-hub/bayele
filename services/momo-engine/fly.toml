@@ -1,0 +1,12 @@
+# Fly.io — Paris (cdg) region for Francophone-Africa peering (spec §7).
+app = "bayele-momo-engine"
+primary_region = "cdg"
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0

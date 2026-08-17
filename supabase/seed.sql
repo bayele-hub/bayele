@@ -1,0 +1,4 @@
+-- Local dev seed. Inserts a handful of active creators/consultants so the public
+-- directory renders during development. Auth users are created via the Supabase CLI
+-- seed flow; here we assume matching auth.users ids exist for local testing.
+-- Intentionally minimal — real data comes through onboarding + admin approval.

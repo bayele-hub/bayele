@@ -1,0 +1,1 @@
+{ "extends": "@bayele/config/tsconfig/base", "compilerOptions": { "outDir": "dist" }, "include": ["src"] }

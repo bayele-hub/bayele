@@ -1,0 +1,15 @@
+project_id = "bayele"
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enable_signup = true
+# Phone is the canonical identity + payout key (SKILL.md invariant #6).
+[auth.sms]
+enable_signup = true
+enable_confirmations = true
+
+[realtime]
+enabled = true

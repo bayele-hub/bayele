@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "title": "Bayele — Influence Nano & Séquestre Mobile Money",
+    "description": "La marketplace d'escrow pour Créateurs WhatsApp, Consultants Médias et Entreprises au Cameroun, en Côte d'Ivoire et au Gabon."
+  },
+  "announce": "Nouveau — retraits instantanés Wave désormais disponibles en Côte d'Ivoire",
+  "nav": {
+    "creators": "Créateurs",
+    "consultants": "Consultants",
+    "security": "Sécurité",
+    "billing": "Facturation",
+    "login": "Connexion",
+    "start": "Commencer"
+  },
+  "hero": {
+    "badge": "Marketplace d'influence · Afrique francophone",
+    "titleLine1": "Monétisez votre contenu.",
+    "titleLead": "Paiements ",
+    "titleHighlight": "garantis",
+    "subtitle": "Bayele met le budget des campagnes sous séquestre et le libère vers Mobile Money dès que la diffusion est prouvée. Zéro arnaque, zéro attente — pour les créateurs comme pour les marques.",
+    "ctaBrand": "Lancer une campagne",
+    "ctaCreator": "Devenir créateur rémunéré",
+    "payoutsLabel": "Retraits vers :",
+    "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville."
+  },
+  "trust": {
+    "escrowTitle": "Séquestre bloqué",
+    "escrowBody": "Le budget est bloqué au lancement. Le créateur est payé dès validation de la preuve de diffusion.",
+    "momoTitle": "Paiements MoMo",
+    "momoBody": "Retraits vers MTN, Orange Money ou Wave, sans frais cachés, dès 1 000 FCFA.",
+    "ohadaTitle": "Factures OHADA",
+    "ohadaBody": "Factures déductibles avec NIU/NCC pour les PME et agences, via SokoClick."
+  },
+  "escrow": {
+    "heading": "Le séquestre qui protège les deux parties",
+    "steps": [
+      {
+        "title": "Le budget est bloqué",
+        "body": "La marque finance la campagne. Les fonds passent en séquestre — intouchables des deux côtés."
+      },
+      {
+        "title": "Le créateur diffuse",
+        "body": "Contenu publié (statut WhatsApp, TikTok…), preuve déposée. Un score Gemini priorise la revue humaine."
+      },
+      {
+        "title": "Versement instantané",
+        "body": "Après validation, les fonds sont libérés vers MTN, Orange Money ou Wave."
+      }
+    ]
+  },
+  "categoriesHeading": "Explorez par catégorie",
+  "viewAll": "Tout voir",
+  "categories": [
+    "Beauté",
+    "Mode",
+    "Tech",
+    "Food",
+    "Musique",
+    "Sport",
+    "Santé & Bien-être",
+    "Humour",
+    "Éducation",
+    "Voyage",
+    "Business"
+  ],
+  "directory": {
+    "creatorsTitle": "Créateurs",
+    "creatorsSubtitle": "Nano-créateurs rémunérés · audience vérifiée",
+    "consultantsTitle": "Consultants",
+    "consultantsSubtitle": "Stratèges médias pour piloter vos campagnes",
+    "live": "En direct",
+    "emptyCreators": "Aucun créateur actif pour le moment.",
+    "emptyConsultants": "Aucun consultant actif pour le moment.",
+    "roleConsultant": "Consultant stratégique",
+    "view": "Voir le profil",
+    "followers": "abonnés",
+    "audience": "Audience totale"
+  },
+  "split": {
+    "brandsTitle": "Pour les marques",
+    "brandsDesc": "Lancez, financez et suivez vos campagnes d'influence en toute sécurité.",
+    "brandsBullets": [
+      "Budget bloqué, libéré à la preuve",
+      "Créateurs vérifiés par pays",
+      "Factures OHADA déductibles"
+    ],
+    "brandsCta": "Lancer une campagne",
+    "creatorsTitle": "Pour les créateurs",
+    "creatorsDesc": "Soyez payé pour votre contenu — sans courir après l'argent.",
+    "creatorsBullets": [
+      "Paiement garanti par séquestre",
+      "Retrait MoMo dès 1 000 FCFA",
+      "Profil public qui attire les marques"
+    ],
+    "creatorsCta": "Créer mon profil"
+  },
+  "finalCta": {
+    "title": "Prêt à lancer votre première campagne ?",
+    "subtitle": "Rejoignez les créateurs et marques qui sécurisent leurs paiements avec Bayele.",
+    "primary": "Commencer gratuitement",
+    "secondary": "Comment fonctionne le séquestre"
+  },
+  "footer": {
+    "rights": "© {year} — Conforme CEMAC / UEMOA",
+    "cgu": "CGU & Séquestre",
+    "privacy": "Confidentialité",
+    "ohada": "Facturation OHADA"
+  },
+  "card": {
+    "title": "Campagne — Lancement Djino",
+    "meta": "Douala · Beauté & Lifestyle",
+    "inProgress": "EN COURS",
+    "escrow": "Séquestre",
+    "progressNote": "8 créateurs sur 12 · preuves validées",
+    "paid": "Payé",
+    "reviewing": "Revue preuve"
+  },
+  "stats": [
+    {
+      "k": "100%",
+      "label": "des budgets séquestrés"
+    },
+    {
+      "k": "< 60s",
+      "label": "versement MoMo après validation"
+    },
+    {
+      "k": "3 pays",
+      "label": "Cameroun · Côte d'Ivoire · Gabon"
+    },
+    {
+      "k": "30M+",
+      "label": "Abonnés cumulés toutes plateformes"
+    }
+  ],
+  "countries": {
+    "CM": "Cameroun",
+    "CI": "Côte d'Ivoire",
+    "GA": "Gabon"
+  },
+  "directoryPage": {
+    "creatorsTitle": "Créateurs",
+    "creatorsLede": "Parcourez les nano-créateurs vérifiés. Filtrez par pays et par catégorie.",
+    "consultantsTitle": "Consultants",
+    "consultantsLede": "Des stratèges médias pour concevoir et piloter vos campagnes.",
+    "allCountries": "Tous les pays",
+    "allCategories": "Toutes catégories",
+    "country": "Pays",
+    "category": "Catégorie",
+    "creatorsCount": "{n} créateurs",
+    "consultantsCount": "{n} consultants",
+    "noResults": "Aucun résultat pour ces filtres.",
+    "reset": "Réinitialiser"
+  },
+  "profile": {
+    "back": "Créateurs",
+    "verified": "Profil vérifié",
+    "invite": "Inviter à une campagne",
+    "message": "Message",
+    "totalAudience": "Audience totale",
+    "rating": "Note moyenne",
+    "campaigns": "Campagnes réalisées",
+    "socialsHeading": "Réseaux sociaux",
+    "contentHeading": "Aperçu de contenu",
+    "contentSoon": "Contenu bientôt disponible",
+    "visit": "Ouvrir",
+    "backConsultants": "Consultants",
+    "hire": "Démarrer une collaboration",
+    "experience": "Années d'expérience",
+    "managedCampaigns": "Campagnes gérées",
+    "linksHeading": "Liens professionnels",
+    "expertiseHeading": "Expertise",
+    "referencesHeading": "Références clients",
+    "referencesSoon": "Bientôt",
+    "website": "Site web",
+    "agencyAccess": "Accès base créateurs"
+  }
+}
