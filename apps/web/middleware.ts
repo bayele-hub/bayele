@@ -1,40 +1,21 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-
-/**
- * Public Supabase config, inlined here (NOT imported from @bayele/database) so this
- * file compiles into a self-contained Edge Function. Vercel's Edge runtime cannot
- * reference workspace-package modules, so the middleware must not import them.
- * These are NEXT_PUBLIC values — safe in the edge bundle (the publishable key is
- * protected by Row Level Security). Real env vars still override the defaults.
- */
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://oxesplxlshsdrijzckpq.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'sb_publishable_53K_BGESyQ2Du51xHQrGvg_7niefTuI';
 
 /**
  * MUST live at the app root (sibling of app/), never inside a route group.
- * Middleware gates the UI; Postgres RLS is the real data boundary.
+ *
+ * This is a lightweight UI gate ONLY. It runs in Vercel's Edge runtime, so it must
+ * NOT import the Supabase client: `@supabase/ssr` pulls in Node-only code (it
+ * references `__dirname`), which does not exist on the Edge and crashes the function
+ * (MIDDLEWARE_INVOCATION_FAILED). Instead we cheaply check for the presence of a
+ * Supabase auth cookie and redirect logged-out visitors away from protected areas.
+ *
+ * Real authorization is enforced where it belongs: Postgres RLS is the data boundary,
+ * and the protected Server Components / Route Handlers (which run in Node) verify the
+ * session with `supabase.auth.getUser()`. A stale/expired cookie that slips past this
+ * gate is still rejected there — this check only decides whether to show the page shell
+ * or bounce to sign-in.
  */
-export async function middleware(req: NextRequest) {
-  let res = NextResponse.next({ request: req });
-
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: {
-      getAll: () => req.cookies.getAll(),
-      setAll: (toSet: { name: string; value: string; options: CookieOptions }[]) => {
-        toSet.forEach(({ name, value }) => req.cookies.set(name, value));
-        res = NextResponse.next({ request: req });
-        toSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
-      },
-    },
-  });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const needsAuth =
     path.startsWith('/creator') ||
@@ -42,14 +23,22 @@ export async function middleware(req: NextRequest) {
     path.startsWith('/business') ||
     path.startsWith('/admin');
 
-  if (needsAuth && !user) {
+  if (!needsAuth) return NextResponse.next();
+
+  // @supabase/ssr stores the session in cookies named `sb-<project-ref>-auth-token`
+  // (sometimes chunked with `.0`, `.1` suffixes). Presence is enough for a UI gate.
+  const hasSession = req.cookies
+    .getAll()
+    .some((c) => c.name.startsWith('sb-') && c.name.includes('auth-token'));
+
+  if (!hasSession) {
     const url = req.nextUrl.clone();
     url.pathname = '/auth';
     url.search = '?mode=signin';
     return NextResponse.redirect(url);
   }
 
-  return res;
+  return NextResponse.next();
 }
 
 export const config = {
