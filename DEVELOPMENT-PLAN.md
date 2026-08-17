@@ -11,6 +11,26 @@ canonical spec = `bayele-production-spec-v1.1.2.md`.
 
 ---
 
+## Progress log
+
+### 2026-08-17 — Database foundation applied to live Supabase (Backend/DB · Security/Compliance)
+
+- ✅ **Migration standard authored** — `docs/DATABASE-MIGRATIONS.md`: 12-tag headers, true-inverse
+  rollback per file, expand→contract, NOT VALID+VALIDATE, hash manifest, sign-off matrix, and a
+  vendor-neutral portability contract (aligned to the SokoClick migration bar). Written **before**
+  the migrations, then the migrations were rebuilt to satisfy it.
+- ✅ **7 migrations applied to project `oxesplxlshsdrijzckpq` (PG 17.6)** with headers + rollbacks:
+  `0001` core schema · `0002` RLS · `0003` escrow RPCs · `0004` security hardening · `0005` move
+  `is_admin` to a non-exposed `private` schema · `0006` FK covering indexes · `0007` RLS initplan
+  optimization. `MANIFEST.sha256` records all seven.
+- ✅ **Advisors: security = 0 findings.** Performance: no errors / no unindexed FKs / no initplan;
+  only `unused_index` (fresh-DB noise) and a documented `multiple_permissive_policies` tradeoff.
+- ✅ **`types.gen.ts` regenerated** from the live schema (placeholder removed).
+- ⏭ **Next:** remove the temporary RPC cast in the SokoClick webhook route (real types now exist);
+  Terraform infra scaffold (portability); seed demo talent; then Milestone 2.
+
+---
+
 ## Milestone 0 — Foundation ✅ (scaffolded)
 
 **[Systems Architect · Backend/DB · DevOps]**

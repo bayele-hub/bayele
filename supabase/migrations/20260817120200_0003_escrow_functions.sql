@@ -1,4 +1,30 @@
--- Escrow state machine + money-path RPCs — production spec v1.1.2 §3.3, §4.2, §5, §5.1.
+-- ============================================================================
+-- Migration:          Escrow state machine + money-path RPCs
+-- Version:            20260817120200_0003
+-- Date:               2026-08-17
+-- Author:             Principal Backend & Database Systems Engineer (money-path owner)
+-- Team:               Bayele Core Platform Engineering
+-- Target Database:    Supabase Postgres 17.x (managed) — portable to Cloud SQL / RDS Postgres 15+
+-- Infrastructure Ref: infra/terraform/ · supabase_project.bayele (ref oxesplxlshsdrijzckpq)
+-- Feature Ticket:     BAY-ESCROW-003  (spec: bayele-production-spec-v1.1.2 §3.3, §4.2, §5, §5.1)
+-- Dependencies:       20260817120000_0001 (tables), 20260817120100_0002 (is_admin)
+-- Rollback Script:    supabase/migrations/rollback/20260817120200_0003_escrow_functions.rollback.sql
+-- Estimated Duration: ~0.3s
+-- ============================================================================
+-- Description:        The four SECURITY DEFINER money-path functions. transition_escrow() is the
+--                     ONLY mutator of escrow_transactions.status and writes one audit row per hop.
+--                     handle_sokoclick_invoice_paid() is the single idempotent funding path called
+--                     by the webhook. submit_/verify_proof_of_post() drive the payout loop with
+--                     their own authorization guards. search_path pinning + REVOKEs land in 0004.
+-- Breaking Changes:   NONE (new functions). CREATE OR REPLACE so re-apply is idempotent.
+-- Performance Impact: transition_escrow takes a FOR UPDATE row lock on the single txn row it moves
+--                     (correct — serializes concurrent transitions). No table scans.
+-- Compliance Notes:   Enforces the trust model in code: illegal escrow transitions raise; funding is
+--                     idempotent on sokoclick_invoice_id (redelivered webhook = no-op, invariant §3.5);
+--                     verify_proof_of_post refuses any actor who is not the campaign owner/admin
+--                     (self-approval blocked, spec §0.1 #C); proof is scored by Gemini but released by
+--                     a human — no score auto-transitions escrow (invariant §3.4).
+-- ============================================================================
 
 -- §3.3 The only mutator of escrow_transactions.status. Validates + audits every hop.
 CREATE OR REPLACE FUNCTION public.transition_escrow(
@@ -13,12 +39,12 @@ BEGIN
   IF v_from = p_to_status THEN RETURN; END IF;
 
   v_allowed := CASE
-    WHEN v_from = 'pending'       AND p_to_status IN ('held', 'refunding')                    THEN TRUE
+    WHEN v_from = 'pending'       AND p_to_status IN ('held', 'refunding')                     THEN TRUE
     WHEN v_from = 'held'          AND p_to_status IN ('proof_pending', 'disputed', 'refunding') THEN TRUE
     WHEN v_from = 'proof_pending' AND p_to_status IN ('releasable', 'disputed', 'refunding')    THEN TRUE
-    WHEN v_from = 'releasable'    AND p_to_status IN ('paid_out', 'disputed')                 THEN TRUE
-    WHEN v_from = 'disputed'      AND p_to_status IN ('releasable', 'refunding')              THEN TRUE
-    WHEN v_from = 'refunding'     AND p_to_status = 'refunded'                                THEN TRUE
+    WHEN v_from = 'releasable'    AND p_to_status IN ('paid_out', 'disputed')                   THEN TRUE
+    WHEN v_from = 'disputed'      AND p_to_status IN ('releasable', 'refunding')                THEN TRUE
+    WHEN v_from = 'refunding'     AND p_to_status = 'refunded'                                  THEN TRUE
     ELSE FALSE
   END;
   IF NOT v_allowed THEN RAISE EXCEPTION 'illegal escrow transition: % -> %', v_from, p_to_status; END IF;
@@ -28,9 +54,8 @@ BEGIN
   VALUES (p_txn_id, v_from, p_to_status, p_actor, p_metadata);
 END;
 $$;
-REVOKE ALL ON FUNCTION public.transition_escrow(UUID, public.escrow_status, UUID, JSONB) FROM anon, authenticated;
 
--- §4.2 One atomic, idempotent funding path called by the webhook.
+-- §4.2 One atomic, idempotent funding path called by the SokoClick webhook.
 CREATE OR REPLACE FUNCTION public.handle_sokoclick_invoice_paid(
   p_sokoclick_invoice_id TEXT, p_sokoclick_receipt_id TEXT, p_business_id UUID,
   p_invoice_type public.invoice_type, p_amount_fcfa BIGINT, p_pdf_url TEXT,
@@ -124,4 +149,13 @@ BEGIN
   END IF;
 END;
 $$;
-REVOKE ALL ON FUNCTION public.verify_proof_of_post(UUID, BOOLEAN, UUID, TEXT) FROM anon;
+
+-- ============================================================================
+-- POST-APPLY VERIFICATION (Part 6) — expect 4 SECURITY DEFINER functions:
+--   SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+--   WHERE n.nspname='public' AND p.prosecdef
+--     AND p.proname IN ('transition_escrow','handle_sokoclick_invoice_paid',
+--                       'submit_proof_of_post','verify_proof_of_post');
+-- Negative test (pgTAP, Part 7): a creator JWT calling verify_proof_of_post on their own proof
+-- must raise 'not authorized' BEFORE any owner happy-path test.
+-- ============================================================================
