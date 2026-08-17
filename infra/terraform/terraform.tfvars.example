@@ -1,0 +1,16 @@
+# Copy to terraform.tfvars (gitignored) and fill in, OR export as TF_VAR_* env vars.
+# SECRETS (access tokens, service-role key) should be env vars, NOT written to a tfvars file.
+
+# --- secrets: prefer env vars ---
+# PowerShell:  $env:TF_VAR_supabase_access_token = "sbp_..."
+#              $env:TF_VAR_vercel_api_token       = "..."
+#              $env:TF_VAR_supabase_service_role_key = "sb_secret_..."   # only when managing it in Vercel
+# supabase_access_token = "sbp_xxxxxxxxxxxxxxxxxxxx"
+# vercel_api_token      = "xxxxxxxxxxxxxxxxxxxx"
+
+# --- non-secret overrides (defaults already point at the live project) ---
+# supabase_project_ref     = "oxesplxlshsdrijzckpq"
+# vercel_team_slug         = "bayele-hub"
+# vercel_project_name      = "bayele"
+# github_repo              = "bayele-hub/bayele"
+# production_url           = "https://bayele.vercel.app"

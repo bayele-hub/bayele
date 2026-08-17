@@ -26,8 +26,21 @@ canonical spec = `bayele-production-spec-v1.1.2.md`.
 - ✅ **Advisors: security = 0 findings.** Performance: no errors / no unindexed FKs / no initplan;
   only `unused_index` (fresh-DB noise) and a documented `multiple_permissive_policies` tradeoff.
 - ✅ **`types.gen.ts` regenerated** from the live schema (placeholder removed).
-- ⏭ **Next:** remove the temporary RPC cast in the SokoClick webhook route (real types now exist);
-  Terraform infra scaffold (portability); seed demo talent; then Milestone 2.
+### 2026-08-17 (cont.) — Infra as code, demo seed, directory live (DevOps · Backend/DB · Growth)
+
+- ✅ **Terraform scaffold** `infra/terraform/` — Supabase (data/logic) + Vercel (presentation) as
+  declarative config with import steps, secret-safe vars, and a "migrating away" runbook
+  (Cloud SQL / RDS). The portable Postgres schema stays owned by the migration pipeline, not TF.
+- ✅ **Webhook RPC cast removed** — `handle_sokoclick_invoice_paid` is now typed against the
+  generated schema; the money-path RPC name + args are compile-time checked.
+- ✅ **Demo talent seeded** to live (12 active profiles: 8 creators, 4 consultants) via
+  `supabase/seed.sql` (idempotent, fixed demo UUIDs).
+- ✅ **Directory RLS bug found & fixed (`0008`)** — the anonymous directory rendered empty because
+  `user_roles` was owner-only; widened the SELECT policy to expose only creator/consultant roles.
+  **Gated verify:** as `anon`, 12 profiles / 8 creators / 4 consultants visible; **0** business
+  profiles and **0** private role rows leaked. Milestone 1 acceptance gate #1 now passes on live.
+- ⏭ **Next:** Milestone 2 polish (filters / infinite scroll / per-profile OpenGraph), then M3 auth
+  funnel. Auth follow-up: enable leaked-password protection in Auth settings (advisor WARN — config).
 
 ---
 

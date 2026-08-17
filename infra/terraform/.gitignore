@@ -1,0 +1,19 @@
+# Terraform state — NEVER commit (contains secrets in plaintext). Use a remote backend.
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Local vars — may contain secrets. The .example is committed; real tfvars are not.
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Provider plugins / working dir
+.terraform/
+.terraform.tfstate.lock.info
+
+# Backend config (may contain bucket creds)
+backend.hcl
+
+# Keep the dependency lock file COMMITTED (do not ignore .terraform.lock.hcl).
