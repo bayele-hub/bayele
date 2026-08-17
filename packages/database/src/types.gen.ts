@@ -638,6 +638,53 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_confirm_campaign_funding: {
+        Args: {
+          p_campaign_id: string
+          p_provider?: Database["public"]["Enums"]["payment_provider"]
+          p_sokoclick_invoice_id: string
+          p_sokoclick_receipt_id?: string
+        }
+        Returns: string
+      }
+      admin_confirm_creator_payout: {
+        Args: {
+          p_campaign_creator_id: string
+          p_disbursement_ref?: string
+          p_provider?: Database["public"]["Enums"]["payment_provider"]
+        }
+        Returns: string
+      }
+      apply_to_campaign: {
+        Args: {
+          p_campaign_id: string
+        }
+        Returns: string
+      }
+      creator_submit_proof: {
+        Args: {
+          p_campaign_creator_id: string
+          p_media_sha256: string
+          p_media_type?: string
+          p_post_url: string
+        }
+        Returns: string
+      }
+      decide_application: {
+        Args: {
+          p_approve: boolean
+          p_campaign_creator_id: string
+        }
+        Returns: undefined
+      }
+      review_proof: {
+        Args: {
+          p_approve: boolean
+          p_proof_id: string
+          p_reason?: string
+        }
+        Returns: undefined
+      }
       handle_sokoclick_invoice_paid: {
         Args: {
           p_amount_fcfa: number
@@ -648,6 +695,13 @@ export type Database = {
           p_retainer_id?: string
           p_sokoclick_invoice_id: string
           p_sokoclick_receipt_id: string
+        }
+        Returns: undefined
+      }
+      moderate_profile: {
+        Args: {
+          p_status: Database["public"]["Enums"]["account_status"]
+          p_target: string
         }
         Returns: undefined
       }

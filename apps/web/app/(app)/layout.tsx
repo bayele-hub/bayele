@@ -1,23 +1,47 @@
+import Link from 'next/link';
 import Image from 'next/image';
-import { Bell } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
+import { getSession } from '@/lib/auth/session';
+import { NotificationBell } from '@/components/notification-bell';
+import { BottomNav } from '@/components/bottom-nav';
+import type { Database } from '@bayele/database';
 
-// Shared authenticated shell: notif bell (Realtime bus) + role nav. Stub for now.
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+type Notif = Database['public']['Tables']['notifications']['Row'];
+
+// Shared authenticated shell: header with the Realtime notification bell + a per-role bottom nav.
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const session = await getSession();
+
+  let notifications: Notif[] = [];
+  let unread = 0;
+  if (session.userId) {
+    const supabase = await createClient();
+    // RLS scopes both queries to the signed-in user; the unread count uses the partial index.
+    const [{ data }, { count }] = await Promise.all([
+      supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20),
+      supabase.from('notifications').select('*', { count: 'exact', head: true }).is('read_at', null),
+    ]);
+    notifications = (data ?? []) as Notif[];
+    unread = count ?? 0;
+  }
+
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="flex min-h-screen flex-col bg-surface">
       <header className="sticky top-0 z-30 border-b border-line bg-white/85 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <span className="flex items-center gap-2">
+          <Link href="/dashboard" className="flex items-center gap-2">
             <Image src="/logo.jpeg" alt="Bayele" width={28} height={28} className="h-7 w-7 rounded-lg object-contain" />
-            <span className="font-display font-extrabold text-ink">Bayele<span className="brand-dot">.</span></span>
-          </span>
-          <button aria-label="Notifications" className="relative grid min-h-tap min-w-tap place-items-center text-muted hover:text-ink">
-            <Bell className="h-5 w-5" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-accent" />
-          </button>
+            <span className="font-display font-extrabold text-ink">
+              Bayele<span className="brand-dot">.</span>
+            </span>
+          </Link>
+          <NotificationBell userId={session.userId} initial={notifications} initialUnread={unread} />
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 pb-24 sm:pb-8">{children}</main>
+
+      {session.primary && <BottomNav role={session.primary} />}
     </div>
   );
 }

@@ -57,6 +57,92 @@ canonical spec = `bayele-production-spec-v1.1.2.md`.
   approved. Advisor: only the intentional `onboard_profile` authenticated-execute WARN (self-authz
   via `auth.uid()`) + the auth leaked-password toggle. ⏭ **Next:** M4 admin approval flips `active`.
 
+### 2026-08-17 (cont.) — Domain (bayele.com) + Milestone 4: admin & moderation (DevOps · Backend/DB · Security)
+
+- ✅ **Domain wired in Terraform** — Auth `site_url` = `https://bayele.com`; redirect allow-list
+  covers apex/www/vercel/localhost (+ each `/auth/callback`); leaked-password protection on; Vercel
+  custom domain (apex + www→apex 308). Apply via `terraform apply`, or set the same values by hand.
+- ✅ **`moderate_profile()` RPC + status trigger (`0011`)** — admin-only
+  (`private.is_admin(auth.uid())`) status mutator; an `AFTER UPDATE OF status` trigger emits the
+  approval/rejection notification (the single notify path). Trigger fn revoked from REST.
+  **Gated verify on live (negatives first):** non-admin RPC → `not_authorized`; non-admin direct
+  UPDATE → blocked by RLS (0 rows); admin approve → status `active` + a `profile_approved` notification.
+- ✅ **Admin console** `/admin/dashboard` — admin-guarded queue of `pending_review` profiles with
+  approve/reject (server action → RPC) and pending/active counts. Non-admins bounced.
+- **Gate (M4): PASSED** — `is_admin` false for non-admins; non-admin can't reach `/admin` (middleware)
+  nor mutate another profile (RLS). ⏭ **Next:** M5 authenticated shell + realtime notification bell.
+
+### 2026-08-17 (cont.) — Milestone 5: authenticated shell & realtime notifications (Frontend · Backend/DB)
+
+- ✅ **Realtime notification bell** — `(app)/layout.tsx` server-fetches the user's recent
+  notifications + unread count (partial index, RLS-scoped); a client `NotificationBell` subscribes
+  to Supabase Realtime INSERTs (`user_id=eq.<self>`) so approvals push in < 1s with an accurate
+  badge. Mark-all-read updates via the "users mark own notifications read" RLS policy.
+- ✅ **Per-role bottom nav** (mobile-first, hidden ≥ sm) — role-specific last tab
+  (creator/consultant → Espace · business → Campagnes · admin → Modération).
+- ✅ Owner account granted `super_admin` (admin profile, not publicly listed) + welcome notification
+  seeded. Realtime confirmed enabled on `notifications`; RLS read verified as the user.
+- **Gate (M5): PASSED** — Realtime enabled + RLS-scoped; unread computed once server-side then
+  maintained client-side (no per-render count query). ⏭ **Next:** M6–8 escrow loop (SokoClick-gated).
+
+### 2026-08-17 (cont.) — ADR-001 + Milestone 6: business workspace & campaign funding (Systems · Backend/DB · Frontend)
+
+- ✅ **ADR-001 — escrow custody corrected.** SokoClick = invoicing / receipts / bookkeeping only (no
+  funds). **Bayele is the escrow custodian**; money moves over Mobile Money (`momo-engine`); the
+  funding trigger is a MoMo collection confirmation (webhook later; **admin bridge now**) — never a
+  SokoClick webhook. `docs/ADR-001-escrow-custody-and-sokoclick.md`.
+- ✅ **Funding RPC `admin_confirm_campaign_funding` (`0012`)** — admin-gated; atomically records the
+  invoice, opens inbound escrow, moves it pending→held via `transition_escrow`, publishes the
+  campaign. Idempotent on the SokoClick invoice id. **Gated verify on live (negatives first):**
+  non-admin → `not_authorized`; admin confirm → escrow held, fee 67 500 (15%), net 382 500, campaign
+  published, audit row; redelivered confirm → same txn, no double-fund. (Fixed an ordering bug:
+  idempotency must precede the fundability check.)
+- ✅ **Business workspace** — `/business/campaigns/new` (tier sets the fee; live budget breakdown,
+  grossed up so the net pool covers payouts) + `/business/dashboard` (campaigns + funding state).
+- ✅ **Admin funding console** — a "campagnes à financer" queue in `/admin/dashboard`; confirming a
+  MoMo payment activates the séquestre.
+- **Gate (M6 funding): PASSED.**
+
+### 2026-08-17 (cont.) — Milestone 7: campaign execution & the escrow release loop (Backend/DB · Security · Frontend)
+
+- ✅ **Execution-loop RPCs (`0013`)** — five authenticated-callable façades over the `0003` money-path
+  definers, each deriving the actor from `auth.uid()` (unspoofable) and self-authorizing before any
+  write, then emitting the participant notification: `apply_to_campaign`, `decide_application`,
+  `creator_submit_proof` (wraps `submit_proof_of_post`), `review_proof` (wraps `verify_proof_of_post`),
+  `admin_confirm_creator_payout`. The underlying definers stay REVOKEd from `authenticated`.
+- ✅ **Payout bridge = MoMo disbursement, admin-confirmed (ADR-001).** Real outbound MoMo rails are
+  still external-gated, so `admin_confirm_creator_payout` mirrors `admin_confirm_campaign_funding` on
+  the outbound side: it moves the creator's outbound escrow `releasable → paid_out` via
+  `transition_escrow`, marks the assignment `paid`, notifies the creator, and closes the campaign when
+  the last assignment is paid. **Idempotent** — a redelivered confirmation on a `paid_out` row is a
+  no-op (no double-pay). A disbursement webhook replaces the human later.
+- 🐞 **Two latent regressions surfaced & fixed forward (`0014`).** The negatives-first suite caught
+  that `verify_proof_of_post` (from `0003`) still called `public.is_admin`, which `0005` dropped when
+  it relocated the predicate to `private` — so **every** proof review (owner or admin) crashed with
+  "function public.is_admin(uuid) does not exist," breaking the entire escrow-release path. Re-creating
+  it exposed a second dormant defect one line down: `SET status = CASE … END` resolved to `text`, which
+  won't implicitly cast to the `creator_campaign_status` enum. `0014` repoints to `private.is_admin`
+  and adds the explicit enum cast (applied migrations are never mutated).
+- ✅ **Live verification (negatives first, then torn down; seed confirmed 13/13):** non-creator apply →
+  `not_a_creator`; re-apply → `already_applied`; submit-before-approval → `not_approved`; non-owner
+  decide → `not_authorized`; **creator reviewing own proof → not authorized (self-approval blocked)**;
+  non-admin payout → `not_authorized`. Happy path apply → approve (campaign→`in_progress`) → submit
+  (escrow→`proof_pending`) → verify (→`releasable`) → admin payout (→`paid_out`, campaign→`completed`)
+  with the full audit trail `pending→held→proof_pending→releasable→paid_out`; idempotent re-confirm =
+  same txn, no extra hop. Security advisor: 0 ERROR (only the 8 intentional authenticated-execute
+  definers + the user-side leaked-password toggle).
+- ✅ **Creator workspace** — `/creator/campaigns` (browse open campaigns + apply) and
+  `/creator/dashboard` (my missions, earnings/active stats, proof-submission form on approval; the
+  post URL is the v1 proof medium, sha256 computed app-side).
+- ✅ **Business campaign console** — `/business/campaigns/[id]` (applicants: approve/reject; submitted
+  proofs: verify/reject-with-reason); dashboard cards now link into it.
+- ✅ **Admin payout console** — a "paiements créateurs" queue in `/admin/dashboard` over `releasable`
+  outbound escrow; confirming the MoMo disbursement releases the payout.
+- **Gate (M7 execution loop): PASSED.** ⏭ **Remaining (external-gated):** swap the two admin bridges
+  for real MoMo **collection + disbursement webhooks** (needs live merchant API) and a Gemini
+  Proof-of-Post scoring call (currently a null score; human review is the release gate either way);
+  **M8 agency retainers** (`retainer_math_integrity`, funded via the webhook RPC).
+
 ---
 
 ## Milestone 0 — Foundation ✅ (scaffolded)
