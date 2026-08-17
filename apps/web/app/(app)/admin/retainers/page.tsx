@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, Handshake } from 'lucide-react';
+import { Handshake } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { RetainerAdminRow, type AdminRetainer } from './retainer-admin-row';
@@ -39,13 +38,10 @@ export default async function AdminRetainers() {
   const toFund = rows.filter((r) => r.status === 'invoiced').length;
 
   return (
-    <section className="space-y-6">
-      <Link href="/admin/dashboard" className="inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-brand">
-        <ArrowLeft className="h-3.5 w-3.5" /> Modération
-      </Link>
+    <section className="space-y-4">
       <div className="flex items-center gap-2">
         <Handshake className="h-5 w-5 text-brand" />
-        <h1 className="font-display text-2xl font-extrabold text-ink">Rétainers agence</h1>
+        <h2 className="text-sm font-bold text-ink">Rétainers agence</h2>
         {toFund > 0 && <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-white">{toFund} à financer</span>}
       </div>
 

@@ -31,5 +31,7 @@ export async function moderateAction(_prev: ModerateState, formData: FormData): 
   }
 
   revalidatePath('/admin/dashboard');
+  revalidatePath('/admin/moderation');
+  revalidatePath('/admin/users');
   return { error: null, ok: status === 'active' ? 'approved' : status };
 }
