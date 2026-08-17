@@ -655,6 +655,39 @@ export type Database = {
         }
         Returns: string
       }
+      admin_confirm_retainer_funding: {
+        Args: {
+          p_pdf_url?: string
+          p_retainer_id: string
+          p_sokoclick_receipt_id?: string
+        }
+        Returns: undefined
+      }
+      attach_retainer_invoice: {
+        Args: {
+          p_retainer_id: string
+          p_sokoclick_invoice_id: string
+        }
+        Returns: undefined
+      }
+      propose_retainer: {
+        Args: {
+          p_bayele_cut: number
+          p_consultant_fee: number
+          p_consultant_id: string
+          p_contract_value: number
+          p_kpi_bonus?: number
+          p_media_budget: number
+        }
+        Returns: string
+      }
+      transition_retainer: {
+        Args: {
+          p_retainer_id: string
+          p_to_status: Database["public"]["Enums"]["retainer_status"]
+        }
+        Returns: undefined
+      }
       apply_to_campaign: {
         Args: {
           p_campaign_id: string

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, Lock, Clock } from 'lucide-react';
+import { Plus, Lock, Clock, Handshake } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, CAMPAIGN_STATUS_FR } from '@/lib/data/campaigns';
@@ -24,12 +24,20 @@ export default async function BusinessDashboard() {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-extrabold text-ink">Mes campagnes</h1>
-        <Link
-          href="/business/campaigns/new"
-          className="inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"
-        >
-          <Plus className="h-4 w-4" /> Nouvelle
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/business/retainers"
+            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl border border-line bg-white px-3 text-xs font-bold text-ink transition hover:border-brand hover:text-brand"
+          >
+            <Handshake className="h-4 w-4" /> Rétainers
+          </Link>
+          <Link
+            href="/business/campaigns/new"
+            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"
+          >
+            <Plus className="h-4 w-4" /> Nouvelle
+          </Link>
+        </div>
       </div>
 
       {list.length === 0 ? (

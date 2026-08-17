@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { ShieldCheck, Clock, Users, Wallet, Send } from 'lucide-react';
+import Link from 'next/link';
+import { ShieldCheck, Clock, Users, Wallet, Send, Handshake } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { ModerationQueue, type PendingRow } from '../moderation-queue';
@@ -70,9 +71,17 @@ export default async function AdminDashboard() {
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center gap-2">
-        <ShieldCheck className="h-5 w-5 text-brand" />
-        <h1 className="font-display text-2xl font-extrabold text-ink">Modération</h1>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-5 w-5 text-brand" />
+          <h1 className="font-display text-2xl font-extrabold text-ink">Modération</h1>
+        </div>
+        <Link
+          href="/admin/retainers"
+          className="inline-flex min-h-tap items-center gap-1.5 rounded-xl border border-line bg-white px-3 text-xs font-bold text-ink transition hover:border-brand hover:text-brand"
+        >
+          <Handshake className="h-4 w-4" /> Rétainers
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

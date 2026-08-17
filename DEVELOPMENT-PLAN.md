@@ -138,10 +138,37 @@ canonical spec = `bayele-production-spec-v1.1.2.md`.
   proofs: verify/reject-with-reason); dashboard cards now link into it.
 - ✅ **Admin payout console** — a "paiements créateurs" queue in `/admin/dashboard` over `releasable`
   outbound escrow; confirming the MoMo disbursement releases the payout.
-- **Gate (M7 execution loop): PASSED.** ⏭ **Remaining (external-gated):** swap the two admin bridges
-  for real MoMo **collection + disbursement webhooks** (needs live merchant API) and a Gemini
-  Proof-of-Post scoring call (currently a null score; human review is the release gate either way);
-  **M8 agency retainers** (`retainer_math_integrity`, funded via the webhook RPC).
+- **Gate (M7 execution loop): PASSED.**
+
+### 2026-08-17 (cont.) — Milestone 8: agency retainers + SokoClick invoicing (Backend/DB · Security · Full-Stack)
+
+- ✅ **Retainer lifecycle RPCs (`0015`)** — four authenticated-callable façades, each self-authorizing
+  via `auth.uid()` / `private.is_admin`: `propose_retainer` (a BUSINESS commissions a CONSULTANT from
+  the public directory; validates the split in code *and* the `retainer_math_integrity` CHECK),
+  `attach_retainer_invoice` (record the SokoClick invoice id → `invoiced`), `admin_confirm_retainer_funding`
+  (admin/MoMo bridge → `funded`), `transition_retainer` (funded→active→completed, terminate; admin-driven
+  lifecycle, party-or-admin terminate).
+- ✅ **SokoClick API integration (ADR-001 — their infra does the invoicing).** On retainer creation the
+  server action calls `SokoClickEngine.createInvoice` to generate the OHADA invoice (XAF/XOF by union),
+  stores the returned invoice id, and surfaces SokoClick's `payment_url` to the business. **Funding
+  reuses the single money path** `handle_sokoclick_invoice_paid` (idempotent on the invoice id) — the
+  admin bridge and the `invoice.paid` webhook both flip the retainer to `funded`, never a second path.
+  If `SOKOCLICK_API_KEY` is unset or the call fails, it falls back to a `MANUAL-<id>` reference so
+  dev/staging still complete — the launch-bridge pattern used across M6–M8.
+- ✅ **Live verification (negatives first, torn down; seed 13/13, advisor 0 ERROR):** non-business
+  propose → `not_a_business`; **mis-split → `invalid_split` AND a raw INSERT → `check_violation`** (the
+  gate); non-admin funding → `not_authorized`; illegal `draft→active` → `illegal_retainer_transition`;
+  consultant attempting `completed` (admin-only) → `not_authorized`. Happy path propose(`draft`) →
+  attach(`invoiced`) → admin fund(`funded`, exactly one paid invoice row) → active → completed, split
+  integrity intact; second funding on a funded row = no-op, no duplicate invoice.
+- ✅ **UI** — business: `/business/retainers` (list) + `/business/retainers/new` (split form with live
+  balance validation, generates the SokoClick invoice); consultant: `/consultant/dashboard` (their
+  contracts + decline); admin: `/admin/retainers` (confirm payment → activate → close, or terminate).
+- **Gate (M8 retainers): PASSED.** The escrow money-loop (M6→M8) is now complete end-to-end on the
+  admin-bridge launch path. ⏭ **Remaining, all external-gated:** real MoMo **collection + disbursement
+  webhooks** (live merchant API) to retire the two admin bridges; the Gemini Proof-of-Post scoring
+  call (human review stays the release gate); and provisioning live **SokoClick API credentials**
+  (`SOKOCLICK_API_KEY` / `_WEBHOOK_SECRET`) so retainer invoices generate on their infra in production.
 
 ---
 

@@ -63,6 +63,16 @@ export const ESCROW_STATUS_FR: Record<string, string> = {
   refunded: 'Remboursé',
 };
 
+// Agency retainer lifecycle (agency_retainers.status), party-facing wording.
+export const RETAINER_STATUS_FR: Record<string, string> = {
+  draft: 'Brouillon',
+  invoiced: 'Facturé — à régler',
+  funded: 'Financé',
+  active: 'En cours',
+  completed: 'Terminé ✅',
+  terminated: 'Annulé',
+};
+
 // Mobile Money / disbursement rails (matches the payment_provider enum).
 export const PROVIDERS = [
   { id: 'mtn_momo', label: 'MTN MoMo' },
