@@ -4,6 +4,14 @@ import { useActionState } from 'react';
 import { Loader2, Check, AlertCircle, Save } from 'lucide-react';
 import { updateProfileAction, type ProfileState } from './actions';
 import { PROVIDERS } from '@/lib/data/campaigns';
+import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
+
+// Display order for the social editor (WhatsApp first — the dominant channel in-market).
+export const SOCIAL_PLATFORMS: Platform[] = [
+  'whatsapp', 'instagram', 'tiktok', 'youtube', 'facebook', 'x', 'snapchat', 'telegram', 'linkedin',
+];
+
+export type SocialsMap = Partial<Record<Platform, { url: string; followers: number }>>;
 
 export interface ProfileInitial {
   displayName: string;
@@ -16,6 +24,7 @@ export interface ProfileInitial {
   audienceSize: number;
   momoPhone: string;
   momoProvider: string;
+  socials: SocialsMap;
   specialties: string;
   yearsExperience: number;
   companyName: string;
@@ -77,6 +86,22 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
         </Card>
       )}
 
+      {initial.isCreator && (
+        <div className="space-y-3 rounded-2xl border border-line bg-white p-4 shadow-card">
+          <div>
+            <h2 className="text-sm font-bold text-ink">Réseaux sociaux</h2>
+            <p className="mt-0.5 text-[11px] text-muted">
+              Ajoutez le lien et le nombre d'abonnés de chaque réseau. Ils s'affichent sur votre profil public.
+            </p>
+          </div>
+          <div className="grid gap-2.5">
+            {SOCIAL_PLATFORMS.map((p) => (
+              <SocialRow key={p} platform={p} url={initial.socials[p]?.url ?? ''} followers={initial.socials[p]?.followers} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {initial.isConsultant && (
         <Card title="Profil consultant">
           <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
@@ -103,6 +128,37 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
         {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : (<><Save className="h-4 w-4" /> Enregistrer</>)}
       </button>
     </form>
+  );
+}
+
+function SocialRow({ platform, url, followers }: { platform: Platform; url: string; followers?: number }) {
+  const meta = SOCIAL_META[platform];
+  return (
+    <div className="rounded-xl border border-line p-2.5">
+      <div className="mb-2 flex items-center gap-2">
+        <span className="grid h-7 w-7 place-items-center rounded-lg text-white" style={{ backgroundColor: meta.brand }}>
+          <SocialIcon platform={platform} className="h-3.5 w-3.5" />
+        </span>
+        <span className="text-xs font-bold text-ink">{meta.label}</span>
+      </div>
+      <div className="flex gap-2">
+        <input
+          name={`soc_${platform}_url`}
+          defaultValue={url}
+          inputMode="url"
+          placeholder="https://…"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
+        />
+        <input
+          name={`soc_${platform}_followers`}
+          type="number"
+          min={0}
+          defaultValue={followers ? String(followers) : ''}
+          placeholder="abonnés"
+          className="w-24 shrink-0 rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
+        />
+      </div>
+    </div>
   );
 }
 

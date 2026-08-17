@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { ArrowLeft, UserCircle, BadgeCheck, Phone } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
-import { ProfileForm, type ProfileInitial } from './profile-form';
+import type { Platform } from '@/components/social-icons';
+import { ProfileForm, type ProfileInitial, type SocialsMap } from './profile-form';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,7 @@ export default async function ProfilePage() {
   const supabase = await createClient();
   const [creatorRes, consultantRes, businessRes] = await Promise.all([
     isCreator
-      ? supabase.from('creator_profiles').select('categories, audience_size, momo_payout_phone_e164, momo_provider').eq('user_id', session.userId).maybeSingle()
+      ? supabase.from('creator_profiles').select('categories, audience_size, momo_payout_phone_e164, momo_provider, platforms').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
     isConsultant
       ? supabase.from('consultant_profiles').select('specialties, years_experience').eq('user_id', session.userId).maybeSingle()
@@ -37,7 +38,18 @@ export default async function ProfilePage() {
       : Promise.resolve({ data: null }),
   ]);
 
-  const cp = creatorRes.data as { categories: string[]; audience_size: number; momo_payout_phone_e164: string | null; momo_provider: string | null } | null;
+  const cp = creatorRes.data as
+    | { categories: string[]; audience_size: number; momo_payout_phone_e164: string | null; momo_provider: string | null; platforms: unknown }
+    | null;
+
+  // Normalize the platforms JSON ({ instagram: { url, followers }, … }) into the editor's shape.
+  const socials: SocialsMap = {};
+  const rawPlatforms = (cp?.platforms ?? {}) as Record<string, { url?: string; followers?: number } | null>;
+  for (const [k, v] of Object.entries(rawPlatforms)) {
+    if (v && typeof v === 'object' && v.url) {
+      socials[k as Platform] = { url: String(v.url), followers: Number(v.followers ?? 0) };
+    }
+  }
   const kp = consultantRes.data as { specialties: string[]; years_experience: number } | null;
   const bp = businessRes.data as { company_name: string; industry: string; billing_email: string | null; website: string | null } | null;
 
@@ -54,6 +66,7 @@ export default async function ProfilePage() {
     audienceSize: cp?.audience_size ?? 0,
     momoPhone: cp?.momo_payout_phone_e164 ?? '',
     momoProvider: cp?.momo_provider ?? 'mtn_momo',
+    socials,
     specialties: (kp?.specialties ?? []).join(', '),
     yearsExperience: kp?.years_experience ?? 0,
     companyName: bp?.company_name ?? '',

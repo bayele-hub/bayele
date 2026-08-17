@@ -7,10 +7,12 @@ import { getSession } from '@/lib/auth/session';
 import type { Database } from '@bayele/database';
 
 type Provider = Database['public']['Enums']['payment_provider'];
+type CreatorPlatforms = Database['public']['Tables']['creator_profiles']['Update']['platforms'];
 
 export type ProfileState = { error: string | null; ok?: boolean };
 
 const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money', 'bank_wire'];
+const SOCIAL_PLATFORMS = ['whatsapp', 'instagram', 'tiktok', 'youtube', 'facebook', 'x', 'snapchat', 'telegram', 'linkedin'] as const;
 
 function parseList(v: FormDataEntryValue | null): string[] {
   return String(v ?? '')
@@ -47,6 +49,15 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   if (session.roles.includes('creator')) {
     const providerRaw = String(formData.get('momo_provider') ?? 'mtn_momo') as Provider;
     const momoProvider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+
+    // Build the platforms JSON from the per-network URL + followers fields (empty URLs are dropped).
+    const platforms: Record<string, { url: string; followers: number }> = {};
+    for (const p of SOCIAL_PLATFORMS) {
+      const url = String(formData.get(`soc_${p}_url`) ?? '').trim();
+      if (!url) continue;
+      platforms[p] = { url, followers: Math.max(0, Math.round(Number(formData.get(`soc_${p}_followers`) ?? 0))) };
+    }
+
     const { error } = await supabase
       .from('creator_profiles')
       .update({
@@ -54,6 +65,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
         audience_size: Math.max(0, Math.round(Number(formData.get('audience_size') ?? 0))),
         momo_payout_phone_e164: String(formData.get('momo_phone') ?? '').trim() || null,
         momo_provider: momoProvider,
+        platforms: platforms as unknown as CreatorPlatforms,
       })
       .eq('user_id', session.userId);
     if (error) return { error: 'Profil créateur : mise à jour impossible.' };
