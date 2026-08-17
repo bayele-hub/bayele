@@ -16,8 +16,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.5.1",
-    "@supabase/supabase-js": "^2.45.4"
+    "@supabase/ssr": "0.5.2",
+    "@supabase/supabase-js": "2.45.4"
   },
   "devDependencies": {
     "@bayele/config": "workspace:*",

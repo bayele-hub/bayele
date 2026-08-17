@@ -1,6 +1,14 @@
 // Generated from the live Supabase schema (project oxesplxlshsdrijzckpq) via
 //   supabase gen types typescript  /  Supabase MCP generate_typescript_types
-// Do NOT hand-edit. Regenerate after every migration (DATABASE-MIGRATIONS.md Part 11 §3).
+// Regenerate after every migration (DATABASE-MIGRATIONS.md Part 11 §3).
+//
+// SDK PIN: the Supabase client is pinned to @supabase/supabase-js 2.45.4 + @supabase/ssr 0.5.2
+// (see root package.json "pnpm.overrides"). That generation predates the `__InternalSupabase`
+// / `PostgrestVersion` header the newer type generator emits — and leaving that header in makes
+// .rpc(...) collapse to an untyped `undefined` args signature (build error). So after any
+// regeneration, DELETE the top-level `__InternalSupabase: { PostgrestVersion: "..." }` block
+// from `export type Database` before committing. The `DatabaseWithoutInternals` Omit below then
+// becomes a harmless no-op.
 export type Json =
   | string
   | number
@@ -10,9 +18,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  __InternalSupabase: {
-    PostgrestVersion: "14.15"
-  }
   public: {
     Tables: {
       agency_retainers: {
