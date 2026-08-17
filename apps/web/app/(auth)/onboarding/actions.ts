@@ -6,9 +6,11 @@ import type { Database } from '@bayele/database';
 
 type Role = Database['public']['Enums']['user_role'];
 type Country = Database['public']['Enums']['country_code'];
+type OnboardPlatforms = Database['public']['Functions']['onboard_profile']['Args']['p_platforms'];
 
 const ROLES: Role[] = ['creator', 'consultant', 'business'];
 const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
+const ONBOARD_SOCIALS = ['whatsapp', 'instagram', 'tiktok', 'youtube'] as const;
 
 // Map the RPC's stable error codes to French, user-facing copy.
 const ERR_FR: Record<string, string> = {
@@ -47,6 +49,17 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     return v.length ? v : undefined;
   };
 
+  // Build the creator's social platforms JSON ({ instagram: { url, followers }, … }) from the optional
+  // onboarding fields; empty URLs are dropped. Non-creator roles submit none.
+  const platforms: Record<string, { url: string; followers: number }> = {};
+  if (role === 'creator') {
+    for (const p of ONBOARD_SOCIALS) {
+      const url = String(formData.get(`soc_${p}_url`) ?? '').trim();
+      if (!url) continue;
+      platforms[p] = { url, followers: Math.max(0, Math.round(Number(formData.get(`soc_${p}_followers`) ?? 0))) };
+    }
+  }
+
   // Called with the USER's own session → onboard_profile enforces auth.uid() = p_actor.
   const { error } = await supabase.rpc('onboard_profile', {
     p_actor: user.id,
@@ -58,6 +71,7 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     p_bio: opt('bio'),
     p_categories: csv('categories'),
     p_audience_size: Number(formData.get('audience_size') ?? 0) || 0,
+    p_platforms: platforms as unknown as OnboardPlatforms,
     p_specialties: csv('specialties'),
     p_years_experience: Number(formData.get('years_experience') ?? 0) || 0,
     p_company_name: opt('company_name'),

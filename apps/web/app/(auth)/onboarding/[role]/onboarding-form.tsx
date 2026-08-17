@@ -3,9 +3,13 @@
 import { useActionState, useState } from 'react';
 import { Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 import { onboardAction, type OnboardState } from '../actions';
+import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
 
 type Role = 'creator' | 'consultant' | 'business';
 type CC = 'CM' | 'CI' | 'GA';
+
+// Curated primary networks for onboarding (the rest are addable later in Profil) — keeps signup fast.
+const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'tiktok', 'youtube'];
 
 const COUNTRIES: { code: CC; label: string }[] = [
   { code: 'CM', label: '🇨🇲 Cameroun' },
@@ -91,6 +95,32 @@ export function OnboardingForm({
                 <input type="hidden" name="categories" value={cats.join(',')} />
               </div>
               <Text name="audience_size" label="Audience cumulée (abonnés)" type="number" placeholder="45000" />
+              <div>
+                <label className="text-xs font-semibold text-ink">Réseaux sociaux (optionnel)</label>
+                <p className="mt-0.5 text-[11px] text-muted">Ajoutez vos liens principaux — vous pourrez compléter plus tard.</p>
+                <div className="mt-2 grid gap-2">
+                  {ONBOARD_SOCIALS.map((p) => (
+                    <div key={p} className="flex items-center gap-2">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white" style={{ backgroundColor: SOCIAL_META[p].brand }}>
+                        <SocialIcon platform={p} className="h-4 w-4" />
+                      </span>
+                      <input
+                        name={`soc_${p}_url`}
+                        inputMode="url"
+                        placeholder={`Lien ${SOCIAL_META[p].label}`}
+                        className="min-w-0 flex-1 rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
+                      />
+                      <input
+                        name={`soc_${p}_followers`}
+                        type="number"
+                        min={0}
+                        placeholder="abonnés"
+                        className="w-20 shrink-0 rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           ) : (
             <>

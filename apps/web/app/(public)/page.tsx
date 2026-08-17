@@ -126,7 +126,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 pt-12">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-lg font-bold text-ink">{t.categoriesHeading}</h2>
-          <Link href="/creators" className="hidden text-sm font-semibold text-brand hover:text-brand-600 sm:block">{t.viewAll}</Link>
+          <Link href="/creators" className="shrink-0 text-sm font-semibold text-brand hover:text-brand-600">{t.viewAll}</Link>
         </div>
         <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto pb-1">
           {t.categories.map((c) => (
@@ -235,7 +235,7 @@ function DirectorySection({
           </div>
           <p className="text-sm text-muted">{subtitle}</p>
         </div>
-        <Link href={href} className="hidden text-sm font-semibold text-brand hover:text-brand-600 sm:block">{viewAll}</Link>
+        <Link href={href} className="shrink-0 text-sm font-semibold text-brand hover:text-brand-600">{viewAll}</Link>
       </div>
       {people.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line bg-surface px-4 py-14 text-center text-sm text-muted">{empty}</div>
