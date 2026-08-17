@@ -70,9 +70,27 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
     if (error) return { error: 'Profil consultant : mise à jour impossible.' };
   }
 
+  if (session.roles.includes('business')) {
+    const company = String(formData.get('company_name') ?? '').trim();
+    const industry = String(formData.get('industry') ?? '').trim();
+    if (!company) return { error: "Le nom de l'entreprise est requis." };
+    if (!industry) return { error: "Le secteur d'activité est requis." };
+    const { error } = await supabase
+      .from('business_profiles')
+      .update({
+        company_name: company,
+        industry,
+        billing_email: String(formData.get('billing_email') ?? '').trim() || null,
+        website: String(formData.get('website') ?? '').trim() || null,
+      })
+      .eq('user_id', session.userId);
+    if (error) return { error: 'Profil entreprise : mise à jour impossible.' };
+  }
+
   revalidatePath('/profile');
   revalidatePath('/creator/dashboard');
   revalidatePath('/creator/wallet');
   revalidatePath('/consultant/dashboard');
+  revalidatePath('/business/dashboard');
   return { error: null, ok: true };
 }

@@ -22,21 +22,26 @@ export default async function ProfilePage() {
 
   const isCreator = session.roles.includes('creator');
   const isConsultant = session.roles.includes('consultant');
+  const isBusiness = session.roles.includes('business');
 
   const supabase = await createClient();
-  const [creatorRes, consultantRes] = await Promise.all([
+  const [creatorRes, consultantRes, businessRes] = await Promise.all([
     isCreator
       ? supabase.from('creator_profiles').select('categories, audience_size, momo_payout_phone_e164, momo_provider').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
     isConsultant
       ? supabase.from('consultant_profiles').select('specialties, years_experience').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
+    isBusiness
+      ? supabase.from('business_profiles').select('company_name, industry, billing_email, website').eq('user_id', session.userId).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const cp = creatorRes.data as { categories: string[]; audience_size: number; momo_payout_phone_e164: string | null; momo_provider: string | null } | null;
   const kp = consultantRes.data as { specialties: string[]; years_experience: number } | null;
+  const bp = businessRes.data as { company_name: string; industry: string; billing_email: string | null; website: string | null } | null;
 
-  const backHref = isCreator ? '/creator/dashboard' : isConsultant ? '/consultant/dashboard' : '/dashboard';
+  const backHref = isBusiness ? '/business/dashboard' : isCreator ? '/creator/dashboard' : isConsultant ? '/consultant/dashboard' : '/dashboard';
 
   const initial: ProfileInitial = {
     displayName: profile.display_name,
@@ -44,12 +49,17 @@ export default async function ProfilePage() {
     bio: profile.bio ?? '',
     isCreator,
     isConsultant,
+    isBusiness,
     categories: (cp?.categories ?? []).join(', '),
     audienceSize: cp?.audience_size ?? 0,
     momoPhone: cp?.momo_payout_phone_e164 ?? '',
     momoProvider: cp?.momo_provider ?? 'mtn_momo',
     specialties: (kp?.specialties ?? []).join(', '),
     yearsExperience: kp?.years_experience ?? 0,
+    companyName: bp?.company_name ?? '',
+    industry: bp?.industry ?? '',
+    billingEmail: bp?.billing_email ?? '',
+    website: bp?.website ?? '',
   };
 
   return (

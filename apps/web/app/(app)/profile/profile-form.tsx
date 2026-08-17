@@ -11,12 +11,17 @@ export interface ProfileInitial {
   bio: string;
   isCreator: boolean;
   isConsultant: boolean;
+  isBusiness: boolean;
   categories: string;
   audienceSize: number;
   momoPhone: string;
   momoProvider: string;
   specialties: string;
   yearsExperience: number;
+  companyName: string;
+  industry: string;
+  billingEmail: string;
+  website: string;
 }
 
 export function ProfileForm({ initial }: { initial: ProfileInitial }) {
@@ -76,6 +81,17 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
         <Card title="Profil consultant">
           <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
           <NumberField label="Années d'expérience" name="years_experience" defaultValue={initial.yearsExperience} />
+        </Card>
+      )}
+
+      {initial.isBusiness && (
+        <Card title="Profil entreprise">
+          <Field label="Nom de l'entreprise" name="company_name" defaultValue={initial.companyName} required />
+          <Field label="Secteur d'activité" name="industry" defaultValue={initial.industry} placeholder="Beauté, FMCG, Télécom…" required />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Email de facturation" name="billing_email" defaultValue={initial.billingEmail} placeholder="factures@entreprise.com" />
+            <Field label="Site web" name="website" defaultValue={initial.website} placeholder="https://…" />
+          </div>
         </Card>
       )}
 
