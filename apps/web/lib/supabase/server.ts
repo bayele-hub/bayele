@@ -1,6 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { createServerClient } from '@bayele/database/server';
+import { createServerClient, type ServerClient } from '@bayele/database/server';
 
 /**
  * Cookie-aware Supabase client for Server Components, Route Handlers, and Server Actions.
@@ -8,7 +8,7 @@ import { createServerClient } from '@bayele/database/server';
  * cookie store the @bayele/database package expects, so the shared package stays free of any
  * Next dependency.
  */
-export async function createClient() {
+export async function createClient(): Promise<ServerClient> {
   const cookieStore = await cookies();
   return createServerClient({
     getAll: () => cookieStore.getAll(),

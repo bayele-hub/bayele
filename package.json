@@ -4,11 +4,14 @@
   "packageManager": "pnpm@9.12.0",
   "engines": { "node": ">=20.11" },
   "scripts": {
+    "prepare": "husky && node scripts/setup-husky-hooks.mjs",
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "check": "turbo run typecheck build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "secrets:scan": "gitleaks detect --config .gitleaks.toml --redact --verbose",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "db:reset": "supabase db reset",
@@ -16,6 +19,7 @@
     "db:types": "supabase gen types typescript --local > packages/database/src/types.gen.ts"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "turbo": "^2.1.3",

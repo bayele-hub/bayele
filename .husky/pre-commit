@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+#
+# Bayele pre-commit gate — secret scanning with gitleaks.
+# Blocks a commit if a secret (API key, token, Supabase secret key, private key…)
+# is found in the staged changes, so credentials never enter git history.
+#
+# Requires the gitleaks binary on PATH:
+#   Windows:  winget install Gitleaks.Gitleaks      (or: scoop install gitleaks)
+#   macOS:    brew install gitleaks
+#   Linux:    see https://github.com/gitleaks/gitleaks#installing
+#
+# Emergency bypass (use sparingly): git commit --no-verify
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo ""
+  echo "✖ gitleaks is not installed — cannot scan staged changes for secrets."
+  echo "  Install it:  winget install Gitleaks.Gitleaks   (Windows)"
+  echo "               brew install gitleaks              (macOS)"
+  echo "  Then commit again. Emergency bypass: git commit --no-verify"
+  echo ""
+  exit 1
+fi
+
+echo "▶ gitleaks: scanning staged changes for secrets…"
+
+# `protect --staged` scans only what's staged. On gitleaks >= 8.19 the equivalent
+# is `gitleaks git --staged`; protect still works (with a deprecation notice).
+if gitleaks protect --staged --redact --config .gitleaks.toml; then
+  echo "✓ gitleaks: no secrets found in staged changes."
+  exit 0
+else
+  echo ""
+  echo "✖ gitleaks found a potential secret in your staged changes — commit blocked."
+  echo "  Remove the secret (move it to an env var), then re-stage and commit."
+  echo "  If this is a confirmed false positive, add an allowlist entry to .gitleaks.toml."
+  echo "  Emergency bypass (not recommended): git commit --no-verify"
+  echo ""
+  exit 1
+fi

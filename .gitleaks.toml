@@ -1,0 +1,45 @@
+# Bayele gitleaks configuration.
+# Extends the built-in ruleset (covers AWS, GCP, private keys, generic API keys,
+# JWTs, etc.) and adds Supabase-specific rules plus an allowlist for values that
+# are safe to commit.
+
+title = "Bayele gitleaks config"
+
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Custom rules — catch Supabase secrets explicitly.
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "supabase-secret-key"
+description = "Supabase secret key (sb_secret_...)"
+regex = '''sb_secret_[A-Za-z0-9_\-]{16,}'''
+keywords = ["sb_secret_"]
+
+[[rules]]
+id = "supabase-service-role-jwt"
+description = "Supabase service_role / anon JWT"
+regex = '''eyJ[A-Za-z0-9_\-]{15,}\.eyJ[A-Za-z0-9_\-]{15,}\.[A-Za-z0-9_\-]{10,}'''
+keywords = ["eyJ"]
+
+# ---------------------------------------------------------------------------
+# Allowlist — values that are safe in the repo and must not trigger findings.
+# ---------------------------------------------------------------------------
+
+[allowlist]
+description = "Safe public values and generated files"
+
+regexes = [
+  # The Supabase PUBLISHABLE key is public by design (protected by RLS) and is
+  # intentionally baked into packages/database/src/env.ts as a build-time default.
+  '''sb_publishable_[A-Za-z0-9_\-]+''',
+]
+
+paths = [
+  '''pnpm-lock\.yaml''',
+  '''(^|/)node_modules/''',
+  '''\.turbo/''',
+  '''\.next/''',
+]
