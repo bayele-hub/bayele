@@ -21,16 +21,28 @@ resource "supabase_settings" "bayele" {
   })
 
   # Auth. Email/password is the primary identity (phone auth is deferred to v2 → external_phone off).
-  # site_url + uri_allow_list must include production and localhost or the email redirect breaks.
+  # site_url is the canonical custom domain (bayele.com). The allow-list MUST include every origin an
+  # email-confirmation link may return to — apex, www, the Vercel URL, and localhost — plus the
+  # /auth/callback path, or confirmation bounces. hibp = leaked-password protection (advisor 0015).
   auth = jsonencode({
-    site_url               = var.production_url
-    uri_allow_list         = "${var.production_url},${var.local_dev_url}"
-    jwt_expiry             = 3600
+    site_url = var.production_url
+    uri_allow_list = join(",", [
+      var.production_url,
+      "https://www.bayele.com",
+      "${var.production_url}/auth/callback",
+      "https://www.bayele.com/auth/callback",
+      var.vercel_url,
+      "${var.vercel_url}/auth/callback",
+      var.local_dev_url,
+      "${var.local_dev_url}/auth/callback",
+    ])
+    jwt_expiry                     = 3600
     refresh_token_rotation_enabled = true
-    enable_signup          = true
-    mailer_autoconfirm     = false
-    external_email_enabled = true
-    external_phone_enabled = false
+    enable_signup                  = true
+    mailer_autoconfirm             = false
+    external_email_enabled         = true
+    external_phone_enabled         = false
+    password_hibp_enabled          = true
   })
 }
 

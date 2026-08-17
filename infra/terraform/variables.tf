@@ -64,8 +64,14 @@ variable "github_repo" {
 
 variable "production_url" {
   type        = string
+  default     = "https://bayele.com"
+  description = "Canonical production URL (custom domain) — drives the Supabase Auth site_url."
+}
+
+variable "vercel_url" {
+  type        = string
   default     = "https://bayele.vercel.app"
-  description = "Canonical production URL — drives the Supabase Auth site_url / allow-list."
+  description = "Vercel-assigned URL — kept in the Auth allow-list so preview/fallback still works."
 }
 
 variable "local_dev_url" {

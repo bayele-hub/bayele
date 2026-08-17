@@ -52,3 +52,18 @@ resource "vercel_project_environment_variable" "supabase_service_role" {
   target     = ["production"]
   sensitive  = true
 }
+
+# --- Custom domain ----------------------------------------------------------
+# Apex bayele.com is production; www redirects to it. After apply, Vercel prints the DNS records to
+# add at your registrar (an A record for the apex + a CNAME for www). Keep bayele.vercel.app too.
+resource "vercel_project_domain" "apex" {
+  project_id = vercel_project.bayele.id
+  domain     = "bayele.com"
+}
+
+resource "vercel_project_domain" "www" {
+  project_id           = vercel_project.bayele.id
+  domain               = "www.bayele.com"
+  redirect             = "bayele.com"
+  redirect_status_code = 308
+}
