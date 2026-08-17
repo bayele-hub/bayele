@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, Megaphone, Clock, CheckCircle2, Coins } from 'lucide-react';
+import { Sparkles, Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
@@ -13,51 +13,65 @@ const COUNTRY_FR: Record<string, string> = { CM: '🇨🇲', CI: '🇨🇮', GA:
 export default async function CreatorDashboard() {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
-  if (!session.roles.includes('creator') && session.primary !== 'super_admin') redirect('/dashboard');
 
   const supabase = await createClient();
-  const { data: assignments } = await supabase
-    .from('campaign_creators')
-    .select('id, status, agreed_payout_fcfa, created_at, campaign:campaigns(id, title, category, target_country, status)')
-    .eq('creator_id', session.userId)
-    .order('created_at', { ascending: false });
+  const [{ data: assignments }, { data: creatorProfile }] = await Promise.all([
+    supabase
+      .from('campaign_creators')
+      .select('id, status, agreed_payout_fcfa, created_at, campaign:campaigns(id, title, category, target_country, status)')
+      .eq('creator_id', session.userId)
+      .order('created_at', { ascending: false }),
+    supabase.from('creator_profiles').select('is_pro, momo_payout_phone_e164').eq('user_id', session.userId).maybeSingle(),
+  ]);
 
   const list = assignments ?? [];
-  const earned = list
-    .filter((a) => a.status === 'paid')
-    .reduce((sum, a) => sum + (a.agreed_payout_fcfa ?? 0), 0);
-  const active = list.filter((a) => ['applied', 'approved', 'content_submitted', 'verified'].includes(a.status)).length;
+  const earned = list.filter((a) => a.status === 'paid').reduce((s, a) => s + (a.agreed_payout_fcfa ?? 0), 0);
+  const pendingPay = list.filter((a) => a.status === 'verified').reduce((s, a) => s + (a.agreed_payout_fcfa ?? 0), 0);
+  const activeCount = list.filter((a) => ['applied', 'approved', 'content_submitted', 'verified'].includes(a.status)).length;
+  const toDo = list.filter((a) => a.status === 'approved').length;
+  const firstName = (session.profile?.display_name ?? '').split(' ')[0] || 'créateur';
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Hero */}
+      <div className="rounded-2xl border border-line bg-gradient-to-br from-brand-50 via-white to-accent-soft p-4 shadow-card">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-brand" />
-          <h1 className="font-display text-2xl font-extrabold text-ink">Mon espace créateur</h1>
+          <h1 className="font-display text-xl font-extrabold text-ink">Bonjour, {firstName} 👋</h1>
+          {creatorProfile?.is_pro && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">
+              <BadgeCheck className="h-3 w-3" /> PRO
+            </span>
+          )}
         </div>
+        <p className="mt-1 text-xs text-muted">
+          {toDo > 0
+            ? `Vous avez ${toDo} mission${toDo > 1 ? 's' : ''} à publier — soumettez votre preuve pour être payé.`
+            : 'Découvrez de nouvelles campagnes et postulez en un tap.'}
+        </p>
         <Link
-          href="/creator/campaigns"
-          className="inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"
+          href={toDo > 0 ? '#missions' : '/creator/campaigns'}
+          className="mt-3 inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"
         >
-          <Megaphone className="h-4 w-4" /> Campagnes
+          {toDo > 0 ? 'Mes missions' : (<>Voir les campagnes <ArrowRight className="h-3.5 w-3.5" /></>)}
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-line bg-white p-4 shadow-card">
-          <Coins className="h-4 w-4 text-accent" />
-          <div className="mt-2 font-display text-2xl font-extrabold text-ink">{fmtFcfa(earned)}</div>
-          <div className="text-xs text-muted">Gains encaissés</div>
-        </div>
-        <div className="rounded-2xl border border-line bg-white p-4 shadow-card">
-          <Clock className="h-4 w-4 text-brand" />
-          <div className="mt-2 font-display text-2xl font-extrabold text-ink">{active}</div>
-          <div className="text-xs text-muted">Missions en cours</div>
-        </div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        <Stat icon={Coins} label="Gains encaissés" value={fmtFcfa(earned)} tone="accent" />
+        <Stat icon={Wallet} label="En attente" value={fmtFcfa(pendingPay)} tone="brand" />
+        <Stat icon={Clock} label="Missions actives" value={String(activeCount)} tone="brand" />
       </div>
 
-      <div>
-        <h2 className="mb-3 text-sm font-bold text-ink">Mes missions</h2>
+      {/* Missions */}
+      <div id="missions" className="scroll-mt-24">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-ink">Mes missions</h2>
+          <Link href="/creator/campaigns" className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline">
+            <Megaphone className="h-3.5 w-3.5" /> Postuler
+          </Link>
+        </div>
         {list.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
             <p className="text-sm text-muted">Vous n'avez pas encore de mission.</p>
@@ -107,7 +121,7 @@ export default async function CreatorDashboard() {
                   )}
                   {verified && (
                     <p className="mt-3 rounded-lg bg-brand-50 px-3 py-2 text-[11px] text-brand-700">
-                      Preuve validée 🎉 Votre paiement Mobile Money est en préparation.
+                      Preuve validée 🎉 Paiement Mobile Money en préparation.
                     </p>
                   )}
                 </li>
@@ -117,5 +131,15 @@ export default async function CreatorDashboard() {
         )}
       </div>
     </section>
+  );
+}
+
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof Coins; label: string; value: string; tone: 'brand' | 'accent' }) {
+  return (
+    <div className="rounded-2xl border border-line bg-white p-3 shadow-card">
+      <Icon className={`h-4 w-4 ${tone === 'accent' ? 'text-accent' : 'text-brand'}`} />
+      <div className="mt-2 font-display text-base font-extrabold leading-tight text-ink">{value}</div>
+      <div className="text-[11px] text-muted">{label}</div>
+    </div>
   );
 }

@@ -1,0 +1,130 @@
+'use client';
+
+import { useActionState } from 'react';
+import { Loader2, Check, AlertCircle, Save } from 'lucide-react';
+import { updateProfileAction, type ProfileState } from './actions';
+import { PROVIDERS } from '@/lib/data/campaigns';
+
+export interface ProfileInitial {
+  displayName: string;
+  city: string;
+  bio: string;
+  isCreator: boolean;
+  isConsultant: boolean;
+  categories: string;
+  audienceSize: number;
+  momoPhone: string;
+  momoProvider: string;
+  specialties: string;
+  yearsExperience: number;
+}
+
+export function ProfileForm({ initial }: { initial: ProfileInitial }) {
+  const [state, action, pending] = useActionState<ProfileState, FormData>(updateProfileAction, { error: null });
+
+  return (
+    <form action={action} className="space-y-5">
+      {state.ok && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-700">
+          <Check className="h-4 w-4 shrink-0" /> Profil mis à jour.
+        </div>
+      )}
+      {state.error && (
+        <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+          <AlertCircle className="h-4 w-4 shrink-0" /> {state.error}
+        </div>
+      )}
+
+      <Card title="Informations">
+        <Field label="Nom affiché" name="display_name" defaultValue={initial.displayName} required />
+        <Field label="Ville" name="city" defaultValue={initial.city} required />
+        <div>
+          <label className="text-xs font-semibold text-ink">Bio</label>
+          <textarea
+            name="bio"
+            rows={3}
+            defaultValue={initial.bio}
+            placeholder="Présentez-vous en quelques mots…"
+            className="mt-1 w-full resize-none rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
+          />
+        </div>
+      </Card>
+
+      {initial.isCreator && (
+        <Card title="Profil créateur">
+          <Field label="Catégories (séparées par des virgules)" name="categories" defaultValue={initial.categories} placeholder="Mode, Beauté, Lifestyle" />
+          <NumberField label="Taille d'audience" name="audience_size" defaultValue={initial.audienceSize} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Numéro Mobile Money" name="momo_phone" defaultValue={initial.momoPhone} placeholder="+237 6XX XXX XXX" />
+            <div>
+              <label className="text-xs font-semibold text-ink">Opérateur</label>
+              <select
+                name="momo_provider"
+                defaultValue={initial.momoProvider || 'mtn_momo'}
+                className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
+              >
+                {PROVIDERS.map((p) => (
+                  <option key={p.id} value={p.id}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {initial.isConsultant && (
+        <Card title="Profil consultant">
+          <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
+          <NumberField label="Années d'expérience" name="years_experience" defaultValue={initial.yearsExperience} />
+        </Card>
+      )}
+
+      <button
+        type="submit"
+        disabled={pending}
+        className="flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 disabled:opacity-50"
+      >
+        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : (<><Save className="h-4 w-4" /> Enregistrer</>)}
+      </button>
+    </form>
+  );
+}
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-3 rounded-2xl border border-line bg-white p-4 shadow-card">
+      <h2 className="text-sm font-bold text-ink">{title}</h2>
+      {children}
+    </div>
+  );
+}
+
+function Field(props: { label: string; name: string; defaultValue?: string; placeholder?: string; required?: boolean }) {
+  return (
+    <div>
+      <label className="text-xs font-semibold text-ink">{props.label}</label>
+      <input
+        name={props.name}
+        defaultValue={props.defaultValue}
+        required={props.required}
+        placeholder={props.placeholder}
+        className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
+      />
+    </div>
+  );
+}
+
+function NumberField(props: { label: string; name: string; defaultValue: number }) {
+  return (
+    <div>
+      <label className="text-xs font-semibold text-ink">{props.label}</label>
+      <input
+        name={props.name}
+        type="number"
+        min={0}
+        defaultValue={props.defaultValue}
+        className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
+      />
+    </div>
+  );
+}
