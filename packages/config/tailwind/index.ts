@@ -1,5 +1,3 @@
-import type { Config } from 'tailwindcss';
-
 /**
  * Bayele design tokens — derived from the brand logo: a bold blue "b" with an
  * orange dot on white. Light, trustworthy, fintech-marketplace. The orange dot is
@@ -40,6 +38,6 @@ const preset = {
     },
   },
   plugins: [],
-} satisfies Partial<Config>;
+};
 
 export default preset;
