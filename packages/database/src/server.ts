@@ -1,16 +1,27 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient as createSsrClient, type CookieOptions } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import type { Database } from './types.gen';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env';
 
-/** Supabase client for Server Components, Route Handlers, and Server Actions. */
-export async function createClient() {
-  const cookieStore = await cookies();
-  return createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+export type CookieToSet = { name: string; value: string; options: CookieOptions };
+
+/**
+ * Framework-agnostic cookie store. The Next glue in apps/web adapts `next/headers`
+ * cookies() to this shape — keeping this package free of any framework dependency
+ * so it can be reused by edge functions, workers, and services alike.
+ */
+export interface CookieStore {
+  getAll: () => { name: string; value: string }[];
+  set: (name: string, value: string, options: CookieOptions) => void;
+}
+
+/** Cookie-aware Supabase client for Server Components, Route Handlers, and Server Actions. */
+export function createServerClient(cookieStore: CookieStore) {
+  return createSsrClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       getAll: () => cookieStore.getAll(),
-      setAll: (toSet: { name: string; value: string; options: CookieOptions }[]) => {
+      setAll: (toSet: CookieToSet[]) => {
         try {
           toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
@@ -21,13 +32,14 @@ export async function createClient() {
   });
 }
 
+export type ServerClient = ReturnType<typeof createServerClient>;
+
 /**
  * Service-role client. SERVER ONLY. Bypasses RLS — the SECRET key is read from env
  * only and never committed. Use exclusively for trusted paths (webhook RPCs).
  */
 export function createServiceClient() {
-  const { createClient } = require('@supabase/supabase-js');
-  return createClient<Database>(
+  return createSupabaseClient<Database>(
     process.env.SUPABASE_URL ?? SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false } },

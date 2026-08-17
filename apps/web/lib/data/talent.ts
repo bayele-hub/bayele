@@ -1,4 +1,4 @@
-import { createClient } from '@bayele/database/server';
+import { createClient } from '@/lib/supabase/server';
 import type { Platform } from '@/components/social-icons';
 
 export type CountryCode = 'CM' | 'CI' | 'GA';
