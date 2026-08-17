@@ -1,6 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@bayele/database/env';
+
+/**
+ * Public Supabase config, inlined here (NOT imported from @bayele/database) so this
+ * file compiles into a self-contained Edge Function. Vercel's Edge runtime cannot
+ * reference workspace-package modules, so the middleware must not import them.
+ * These are NEXT_PUBLIC values — safe in the edge bundle (the publishable key is
+ * protected by Row Level Security). Real env vars still override the defaults.
+ */
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://oxesplxlshsdrijzckpq.supabase.co';
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'sb_publishable_53K_BGESyQ2Du51xHQrGvg_7niefTuI';
 
 /**
  * MUST live at the app root (sibling of app/), never inside a route group.
