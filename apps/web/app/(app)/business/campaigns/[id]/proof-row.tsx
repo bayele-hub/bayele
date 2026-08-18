@@ -42,10 +42,10 @@ export function ProofRow({ p }: { p: ProofItem }) {
               name="reason"
               required
               placeholder="Motif du refus (visible par le créateur)"
-              className="w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
+              className="min-h-tap w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
             />
             <div className="flex gap-2">
-              <button type="button" onClick={() => setRejecting(false)} className="rounded-lg border border-line px-3 py-2 text-xs font-bold text-muted">
+              <button type="button" onClick={() => setRejecting(false)} className="inline-flex min-h-tap items-center rounded-lg border border-line px-3 py-2 text-xs font-bold text-muted">
                 Annuler
               </button>
               <button type="submit" disabled={pending} className="inline-flex min-h-tap items-center gap-1.5 rounded-lg bg-rose-600 px-3 text-xs font-bold text-white transition hover:bg-rose-700 disabled:opacity-50">

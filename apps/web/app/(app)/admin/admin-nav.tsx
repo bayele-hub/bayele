@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShieldCheck, Users, Wallet, Send, Handshake, Receipt } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, Users, Wallet, Send, Handshake, Receipt, ShieldAlert } from 'lucide-react';
 
 const TABS = [
   { href: '/admin/dashboard', label: "Vue d'ensemble", short: 'Vue', Icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const TABS = [
   { href: '/admin/funding', label: 'Campagnes', short: 'Campagnes', Icon: Wallet },
   { href: '/admin/payouts', label: 'Paiements', short: 'Paiements', Icon: Send },
   { href: '/admin/retainers', label: 'Rétainers', short: 'Rétainers', Icon: Handshake },
+  { href: '/admin/disputes', label: 'Litiges', short: 'Litiges', Icon: ShieldAlert },
   { href: '/admin/ledger', label: 'Séquestre', short: 'Séquestre', Icon: Receipt },
 ] as const;
 

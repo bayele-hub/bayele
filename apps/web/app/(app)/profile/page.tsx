@@ -26,10 +26,12 @@ export default async function ProfilePage() {
   const isBusiness = session.roles.includes('business');
 
   const supabase = await createClient();
-  const [creatorRes, consultantRes, businessRes] = await Promise.all([
+  const [creatorRes, payoutRes, consultantRes, businessRes] = await Promise.all([
     isCreator
-      ? supabase.from('creator_profiles').select('categories, audience_size, momo_payout_phone_e164, momo_provider, platforms').eq('user_id', session.userId).maybeSingle()
+      ? supabase.from('creator_profiles').select('categories, audience_size, platforms').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
+    // momo payout columns are not directly selectable (PII lockdown, migration 0018) — own read via definer RPC.
+    isCreator ? supabase.rpc('get_my_payout_settings').maybeSingle() : Promise.resolve({ data: null }),
     isConsultant
       ? supabase.from('consultant_profiles').select('specialties, years_experience').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -39,8 +41,9 @@ export default async function ProfilePage() {
   ]);
 
   const cp = creatorRes.data as
-    | { categories: string[]; audience_size: number; momo_payout_phone_e164: string | null; momo_provider: string | null; platforms: unknown }
+    | { categories: string[]; audience_size: number; platforms: unknown }
     | null;
+  const payout = payoutRes.data as { momo_payout_phone_e164: string | null; momo_provider: string | null } | null;
 
   // Normalize the platforms JSON ({ instagram: { url, followers }, … }) into the editor's shape.
   const socials: SocialsMap = {};
@@ -58,14 +61,15 @@ export default async function ProfilePage() {
   const initial: ProfileInitial = {
     displayName: profile.display_name,
     city: profile.city,
+    country: profile.country,
     bio: profile.bio ?? '',
     isCreator,
     isConsultant,
     isBusiness,
     categories: (cp?.categories ?? []).join(', '),
     audienceSize: cp?.audience_size ?? 0,
-    momoPhone: cp?.momo_payout_phone_e164 ?? '',
-    momoProvider: cp?.momo_provider ?? 'mtn_momo',
+    momoPhone: payout?.momo_payout_phone_e164 ?? '',
+    momoProvider: payout?.momo_provider ?? 'mtn_momo',
     socials,
     specialties: (kp?.specialties ?? []).join(', '),
     yearsExperience: kp?.years_experience ?? 0,

@@ -26,3 +26,20 @@ body { text-rendering: optimizeLegibility; }
 /* Hide scrollbar on the category chip rail while keeping it scrollable. */
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Mobile input floor (SKILL.md §3 #10). iOS Safari zooms the viewport when a focused
+   form control has a font < 16px — which reflows the whole page. Pin every control to 16px
+   on phones (below the `sm` breakpoint); desktop keeps the designed sizes. Also improves
+   readability for mid-range Android users. */
+@media (max-width: 639px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe-area helpers for fixed/sticky bars on notched / gesture-nav devices. Requires
+   viewport-fit=cover (set in the root viewport export). */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }

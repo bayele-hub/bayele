@@ -35,7 +35,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const viewport: Viewport = { themeColor: '#1268B8', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = {
+  themeColor: '#1268B8',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover', // makes env(safe-area-inset-*) non-zero on notched / gesture-nav devices
+};
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale(); // drives <html lang> (fixes audit F3)

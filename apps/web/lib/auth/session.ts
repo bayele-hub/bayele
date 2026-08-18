@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@bayele/database';
 
@@ -23,7 +24,7 @@ const ROLE_ORDER: Role[] = ['super_admin', 'business', 'consultant', 'creator'];
  * and roles under RLS (a user can always read their own). Used by the dashboard dispatcher, the
  * onboarding guards, and the role dashboards.
  */
-export async function getSession(): Promise<SessionContext> {
+export const getSession = cache(async (): Promise<SessionContext> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -49,4 +50,4 @@ export async function getSession(): Promise<SessionContext> {
     roles,
     primary,
   };
-}
+});

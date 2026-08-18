@@ -11,12 +11,19 @@ export const SOCIAL_PLATFORMS: Platform[] = [
   'whatsapp', 'instagram', 'tiktok', 'youtube', 'facebook', 'x', 'snapchat', 'telegram', 'linkedin',
 ];
 
+const COUNTRIES: { code: string; label: string }[] = [
+  { code: 'CM', label: '🇨🇲 Cameroun' },
+  { code: 'CI', label: "🇨🇮 Côte d'Ivoire" },
+  { code: 'GA', label: '🇬🇦 Gabon' },
+];
+
 export type SocialsMap = Partial<Record<Platform, { url: string; followers: number }>>;
 
 export interface ProfileInitial {
   displayName: string;
   city: string;
   bio: string;
+  country: string;
   isCreator: boolean;
   isConsultant: boolean;
   isBusiness: boolean;
@@ -51,7 +58,21 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
 
       <Card title="Informations">
         <Field label="Nom affiché" name="display_name" defaultValue={initial.displayName} required />
-        <Field label="Ville" name="city" defaultValue={initial.city} required />
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Ville" name="city" defaultValue={initial.city} required />
+          <div>
+            <label className="text-xs font-semibold text-ink">Pays</label>
+            <select
+              name="country"
+              defaultValue={initial.country}
+              className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         <div>
           <label className="text-xs font-semibold text-ink">Bio</label>
           <textarea
@@ -69,7 +90,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
           <Field label="Catégories (séparées par des virgules)" name="categories" defaultValue={initial.categories} placeholder="Mode, Beauté, Lifestyle" />
           <NumberField label="Taille d'audience" name="audience_size" defaultValue={initial.audienceSize} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Numéro Mobile Money" name="momo_phone" defaultValue={initial.momoPhone} placeholder="+237 6XX XXX XXX" />
+            <Field label="Numéro Mobile Money" name="momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.momoPhone} placeholder="+237 6XX XXX XXX" />
             <div>
               <label className="text-xs font-semibold text-ink">Opérateur</label>
               <select
@@ -114,8 +135,8 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
           <Field label="Nom de l'entreprise" name="company_name" defaultValue={initial.companyName} required />
           <Field label="Secteur d'activité" name="industry" defaultValue={initial.industry} placeholder="Beauté, FMCG, Télécom…" required />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Email de facturation" name="billing_email" defaultValue={initial.billingEmail} placeholder="factures@entreprise.com" />
-            <Field label="Site web" name="website" defaultValue={initial.website} placeholder="https://…" />
+            <Field label="Email de facturation" name="billing_email" type="email" inputMode="email" autoComplete="email" defaultValue={initial.billingEmail} placeholder="factures@entreprise.com" />
+            <Field label="Site web" name="website" type="url" inputMode="url" defaultValue={initial.website} placeholder="https://…" />
           </div>
         </Card>
       )}
@@ -171,12 +192,24 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function Field(props: { label: string; name: string; defaultValue?: string; placeholder?: string; required?: boolean }) {
+function Field(props: {
+  label: string;
+  name: string;
+  defaultValue?: string;
+  placeholder?: string;
+  required?: boolean;
+  type?: string;
+  inputMode?: 'text' | 'tel' | 'email' | 'url' | 'numeric';
+  autoComplete?: string;
+}) {
   return (
     <div>
       <label className="text-xs font-semibold text-ink">{props.label}</label>
       <input
         name={props.name}
+        type={props.type ?? 'text'}
+        inputMode={props.inputMode}
+        autoComplete={props.autoComplete}
         defaultValue={props.defaultValue}
         required={props.required}
         placeholder={props.placeholder}

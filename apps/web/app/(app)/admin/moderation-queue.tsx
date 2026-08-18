@@ -38,13 +38,13 @@ function ModerationCard({ row }: { row: PendingRow }) {
     <li className="rounded-2xl border border-line bg-white p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="truncate font-bold text-ink">{row.displayName}</span>
-            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">{row.role}</span>
+            <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">{row.role}</span>
           </div>
-          <div className="mt-0.5 flex items-center gap-2 text-xs text-muted">
-            <span>@{row.handle}</span>
-            <span className="inline-flex items-center gap-1">
+          <div className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-muted">
+            <span className="truncate">@{row.handle}</span>
+            <span className="inline-flex shrink-0 items-center gap-1">
               <MapPin className="h-3 w-3" /> {row.city} · {row.country}
             </span>
           </div>

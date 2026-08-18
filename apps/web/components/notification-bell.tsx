@@ -80,7 +80,7 @@ export function NotificationBell({
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <span className="text-sm font-bold text-ink">Notifications</span>
             {unread > 0 && (
-              <button onClick={markAllRead} className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:underline">
+              <button onClick={markAllRead} className="inline-flex min-h-tap items-center gap-1 text-xs font-semibold text-brand hover:underline">
                 <Check className="h-3 w-3" /> Tout marquer lu
               </button>
             )}
@@ -91,19 +91,28 @@ export function NotificationBell({
               <p className="px-4 py-8 text-center text-xs text-muted">Aucune notification pour le moment.</p>
             ) : (
               <ul className="divide-y divide-line">
-                {items.map((n) => (
-                  <li key={n.id} className={`px-4 py-3 ${n.read_at ? '' : 'bg-brand-50/40'}`}>
-                    <a href={n.link ?? '#'} className="block">
-                      <div className="flex items-start gap-2">
-                        {!n.read_at && <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />}
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-ink">{n.title}</p>
-                          {n.body && <p className="mt-0.5 text-xs text-muted">{n.body}</p>}
-                        </div>
+                {items.map((n) => {
+                  const body = (
+                    <div className="flex items-start gap-2">
+                      {!n.read_at && <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />}
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-ink">{n.title}</p>
+                        {n.body && <p className="mt-0.5 text-xs text-muted">{n.body}</p>}
                       </div>
-                    </a>
-                  </li>
-                ))}
+                    </div>
+                  );
+                  return (
+                    <li key={n.id} className={`px-4 py-3 ${n.read_at ? '' : 'bg-brand-50/40'}`}>
+                      {n.link ? (
+                        <a href={n.link} className="block transition hover:opacity-80">
+                          {body}
+                        </a>
+                      ) : (
+                        body
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

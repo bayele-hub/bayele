@@ -51,10 +51,10 @@ function FundingCard({ row }: { row: FundingRow }) {
             name="invoice"
             required
             placeholder="SOKO-2026-000123"
-            className="mt-0.5 w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
+            className="mt-0.5 min-h-tap w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
           />
         </div>
-        <select name="provider" className="rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none">
+        <select name="provider" className="min-h-tap rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none">
           <option value="mtn_momo">MTN MoMo</option>
           <option value="orange_money">Orange Money</option>
           <option value="wave">Wave</option>

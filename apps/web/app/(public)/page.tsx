@@ -5,6 +5,7 @@ import {
 import type { ReactNode } from 'react';
 import { getFeaturedTalent, type TalentSummary } from '@/lib/data/talent';
 import { getDictionary, formatFcfa } from '@/i18n/dictionaries';
+import { getSession } from '@/lib/auth/session';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { CreatorCard, ConsultantCard } from '@/components/talent-cards';
@@ -12,7 +13,8 @@ import { CreatorCard, ConsultantCard } from '@/components/talent-cards';
 const STAT_ICONS = [Lock, Zap, Smartphone, Users] as const;
 
 export default async function HomePage() {
-  const [{ locale, t }, talent] = await Promise.all([getDictionary(), getFeaturedTalent()]);
+  const [{ locale, t }, talent, session] = await Promise.all([getDictionary(), getFeaturedTalent(), getSession()]);
+  const authed = !!session.userId;
 
   return (
     <div className="bg-white">
@@ -42,12 +44,25 @@ export default async function HomePage() {
             </h1>
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">{t.hero.subtitle}</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="/auth?mode=signup&role=business" className="flex min-h-tap items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white shadow-card transition hover:bg-brand-600 active:scale-95">
-                {t.hero.ctaBrand} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/auth?mode=signup&role=creator" className="flex min-h-tap items-center justify-center rounded-xl border border-line bg-white px-6 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand">
-                {t.hero.ctaCreator}
-              </Link>
+              {authed ? (
+                <>
+                  <Link href="/dashboard" className="flex min-h-tap items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white shadow-card transition hover:bg-brand-600 active:scale-95">
+                    {t.hero.ctaDashboard} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link href="/creators" className="flex min-h-tap items-center justify-center rounded-xl border border-line bg-white px-6 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand">
+                    {t.hero.ctaBrowse}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth?mode=signup&role=business" className="flex min-h-tap items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white shadow-card transition hover:bg-brand-600 active:scale-95">
+                    {t.hero.ctaBrand} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link href="/auth?mode=signup&role=creator" className="flex min-h-tap items-center justify-center rounded-xl border border-line bg-white px-6 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand">
+                    {t.hero.ctaCreator}
+                  </Link>
+                </>
+              )}
             </div>
             <div className="mt-7 flex items-center gap-3">
               <div className="flex -space-x-2">
@@ -126,11 +141,11 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 pt-12">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-lg font-bold text-ink">{t.categoriesHeading}</h2>
-          <Link href="/creators" className="shrink-0 text-sm font-semibold text-brand hover:text-brand-600">{t.viewAll}</Link>
+          <Link href="/creators" className="inline-flex min-h-tap shrink-0 items-center text-sm font-semibold text-brand hover:text-brand-600">{t.viewAll}</Link>
         </div>
         <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto pb-1">
           {t.categories.map((c) => (
-            <Link key={c} href={`/creators?cat=${encodeURIComponent(c)}`} className="whitespace-nowrap rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-ink transition hover:border-brand hover:bg-brand-50 hover:text-brand-700">{c}</Link>
+            <Link key={c} href={`/creators?cat=${encodeURIComponent(c)}`} className="inline-flex min-h-tap items-center whitespace-nowrap rounded-full border border-line bg-white px-4 text-sm font-medium text-ink transition hover:border-brand hover:bg-brand-50 hover:text-brand-700">{c}</Link>
           ))}
         </div>
       </section>
@@ -177,7 +192,7 @@ export default async function HomePage() {
             <ul className="mt-4 space-y-2 text-sm text-ink">
               {t.split.brandsBullets.map((li) => (<li key={li} className="flex items-center gap-2"><Check className="h-4 w-4 text-brand" /> {li}</li>))}
             </ul>
-            <Link href="/auth?mode=signup&role=business" className="mt-5 inline-flex min-h-tap items-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95">
+            <Link href={authed ? '/dashboard' : '/auth?mode=signup&role=business'} className="mt-5 inline-flex min-h-tap items-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95">
               {t.split.brandsCta} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -188,7 +203,7 @@ export default async function HomePage() {
             <ul className="mt-4 space-y-2 text-sm">
               {t.split.creatorsBullets.map((li) => (<li key={li} className="flex items-center gap-2"><Check className="h-4 w-4 text-accent" /> {li}</li>))}
             </ul>
-            <Link href="/auth?mode=signup&role=creator" className="mt-5 inline-flex min-h-tap items-center gap-2 rounded-xl bg-accent px-5 text-sm font-bold text-ink transition hover:brightness-105 active:scale-95">
+            <Link href={authed ? '/dashboard' : '/auth?mode=signup&role=creator'} className="mt-5 inline-flex min-h-tap items-center gap-2 rounded-xl bg-accent px-5 text-sm font-bold text-ink transition hover:brightness-105 active:scale-95">
               {t.split.creatorsCta} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -202,8 +217,8 @@ export default async function HomePage() {
           <h2 className="font-display text-2xl font-extrabold sm:text-3xl">{t.finalCta.title}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-white/80">{t.finalCta.subtitle}</p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/auth?mode=signup" className="flex min-h-tap items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-bold text-brand-700 transition hover:bg-white/90 active:scale-95">
-              {t.finalCta.primary} <ArrowRight className="h-4 w-4" />
+            <Link href={authed ? '/dashboard' : '/auth?mode=signup'} className="flex min-h-tap items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-bold text-brand-700 transition hover:bg-white/90 active:scale-95">
+              {authed ? t.hero.ctaDashboard : t.finalCta.primary} <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/legal#escrow" className="flex min-h-tap items-center justify-center rounded-xl border border-white/30 px-6 text-sm font-semibold text-white transition hover:bg-white/10">
               {t.finalCta.secondary}

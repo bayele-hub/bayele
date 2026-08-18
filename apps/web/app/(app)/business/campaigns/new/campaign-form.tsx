@@ -132,6 +132,7 @@ function NumField(props: { label: string; name: string; value: number; onChange:
       <input
         name={props.name}
         type="number"
+        inputMode="numeric"
         min={1}
         value={props.value}
         onChange={(e) => props.onChange(Number(e.target.value))}

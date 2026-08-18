@@ -10,7 +10,8 @@
     "security": "Security",
     "billing": "Billing",
     "login": "Sign in",
-    "start": "Get started"
+    "start": "Get started",
+    "dashboard": "My space"
   },
   "hero": {
     "badge": "Influencer marketplace · Francophone Africa",
@@ -21,7 +22,9 @@
     "ctaBrand": "Launch a campaign",
     "ctaCreator": "Become a paid creator",
     "payoutsLabel": "Withdraw to:",
-    "socialProof": "Creators paid every week across Douala, Abidjan & Libreville."
+    "socialProof": "Creators paid every week across Douala, Abidjan & Libreville.",
+    "ctaDashboard": "Go to my space",
+    "ctaBrowse": "Browse creators"
   },
   "trust": {
     "escrowTitle": "Locked escrow",

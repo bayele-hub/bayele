@@ -42,9 +42,10 @@ function Tags({ p }: { p: TalentSummary }) {
 const CARD =
   'group flex flex-col justify-between rounded-2xl border border-line bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:border-brand-100 hover:shadow-cardHover';
 
+// The whole card is the tap target (mobile funnel: a 48px+ hit area, not a 20px text link).
 export function CreatorCard({ p, t, locale }: { p: TalentSummary; t: Dictionary; locale: Locale }) {
   return (
-    <article className={CARD}>
+    <Link href={`/creators/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
       <CardHead p={p} />
       <Tags p={p} />
       <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
@@ -53,25 +54,25 @@ export function CreatorCard({ p, t, locale }: { p: TalentSummary; t: Dictionary;
           {formatFollowers(p.audienceSize ?? 0, locale)}
           <span className="font-medium text-muted">{t.directory.followers}</span>
         </span>
-        <Link href={`/creators/${p.handle}`} className="inline-flex items-center gap-1 text-sm font-bold text-brand hover:text-brand-600">
+        <span className="inline-flex items-center gap-1 text-sm font-bold text-brand">
           {t.directory.view} <ChevronRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-        </Link>
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
 export function ConsultantCard({ p, t }: { p: TalentSummary; t: Dictionary }) {
   return (
-    <article className={CARD}>
+    <Link href={`/consultants/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
       <CardHead p={p} />
       <Tags p={p} />
       <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
         <span className="text-[12px] font-medium text-muted">{t.directory.roleConsultant}</span>
-        <Link href={`/consultants/${p.handle}`} className="inline-flex items-center gap-1 text-sm font-bold text-brand hover:text-brand-600">
+        <span className="inline-flex items-center gap-1 text-sm font-bold text-brand">
           {t.directory.view} <ChevronRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-        </Link>
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }

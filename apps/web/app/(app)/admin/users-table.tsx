@@ -108,7 +108,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition ${
+      className={`inline-flex min-h-tap shrink-0 items-center whitespace-nowrap rounded-full border px-3.5 text-xs font-bold transition ${
         active ? 'border-brand bg-brand text-white' : 'border-line bg-white text-muted hover:border-brand hover:text-brand'
       }`}
     >
@@ -124,18 +124,18 @@ function UserRow({ user }: { user: AdminUser }) {
     <li className="rounded-2xl border border-line bg-white p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="truncate font-bold text-ink">{user.displayName}</span>
-            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">
+            <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">
               {ROLE_FR[user.role] ?? user.role}
             </span>
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${STATUS_CLASS[user.status] ?? 'bg-surface text-muted'}`}>
+            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${STATUS_CLASS[user.status] ?? 'bg-surface text-muted'}`}>
               {STATUS_FR[user.status] ?? user.status}
             </span>
           </div>
-          <div className="mt-0.5 flex items-center gap-2 text-xs text-muted">
-            <span>@{user.handle}</span>
-            <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {user.city} · {user.country}</span>
+          <div className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-muted">
+            <span className="truncate">@{user.handle}</span>
+            <span className="inline-flex shrink-0 items-center gap-1"><MapPin className="h-3 w-3" /> {user.city} · {user.country}</span>
           </div>
         </div>
 

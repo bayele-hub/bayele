@@ -66,6 +66,8 @@ export async function submitProofAction(_prev: ProofState, formData: FormData): 
     if (msg === 'not_authorized') return { error: "Cette assignation ne vous appartient pas." };
     if (msg === 'not_approved') return { error: "Votre candidature n'est pas encore acceptée." };
     if (msg === 'already_submitted') return { error: 'Une preuve a déjà été soumise.' };
+    if (msg === 'campaign_not_funded') return { error: "Le séquestre de cette campagne n'est pas actif — contactez la marque." };
+    if (msg === 'escrow_pool_exceeded') return { error: 'Le budget de cette campagne est épuisé — contactez la marque.' };
     return { error: 'La soumission a échoué. Réessayez.' };
   }
 

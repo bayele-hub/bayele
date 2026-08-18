@@ -7,11 +7,23 @@ import { getSession } from '@/lib/auth/session';
 import type { Database } from '@bayele/database';
 
 type Provider = Database['public']['Enums']['payment_provider'];
+type Country = Database['public']['Enums']['country_code'];
 type CreatorPlatforms = Database['public']['Tables']['creator_profiles']['Update']['platforms'];
 
 export type ProfileState = { error: string | null; ok?: boolean };
 
 const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money', 'bank_wire'];
+const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
+
+// Normalize a Mobile-Money number to E.164 (strip spaces/dashes/parens). Returns the normalized
+// string, or null for empty. Throws a sentinel for a non-empty but malformed number.
+function normalizeMomo(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const compact = trimmed.replace(/[\s().-]/g, '');
+  if (!/^\+[1-9]\d{7,14}$/.test(compact)) throw new Error('invalid_momo');
+  return compact;
+}
 const SOCIAL_PLATFORMS = ['whatsapp', 'instagram', 'tiktok', 'youtube', 'facebook', 'x', 'snapchat', 'telegram', 'linkedin'] as const;
 
 function parseList(v: FormDataEntryValue | null): string[] {
@@ -37,18 +49,27 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   const city = String(formData.get('city') ?? '').trim();
   if (!displayName) return { error: 'Le nom est requis.' };
   if (!city) return { error: 'La ville est requise.' };
+  const countryRaw = String(formData.get('country') ?? '') as Country;
+  const country: Country = COUNTRIES.includes(countryRaw) ? countryRaw : 'CM';
 
   const supabase = await createClient();
 
   const { error: pErr } = await supabase
     .from('profiles')
-    .update({ display_name: displayName, bio: bio || null, city, updated_at: new Date().toISOString() })
+    .update({ display_name: displayName, bio: bio || null, city, country, updated_at: new Date().toISOString() })
     .eq('id', session.userId);
   if (pErr) return { error: 'La mise à jour a échoué. Réessayez.' };
 
   if (session.roles.includes('creator')) {
     const providerRaw = String(formData.get('momo_provider') ?? 'mtn_momo') as Provider;
     const momoProvider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+
+    let momoPhone: string | null;
+    try {
+      momoPhone = normalizeMomo(String(formData.get('momo_phone') ?? ''));
+    } catch {
+      return { error: 'Numéro Mobile Money invalide. Utilisez le format international, ex. +2376XXXXXXXX.' };
+    }
 
     // Build the platforms JSON from the per-network URL + followers fields (empty URLs are dropped).
     const platforms: Record<string, { url: string; followers: number }> = {};
@@ -63,7 +84,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
       .update({
         categories: parseList(formData.get('categories')),
         audience_size: Math.max(0, Math.round(Number(formData.get('audience_size') ?? 0))),
-        momo_payout_phone_e164: String(formData.get('momo_phone') ?? '').trim() || null,
+        momo_payout_phone_e164: momoPhone,
         momo_provider: momoProvider,
         platforms: platforms as unknown as CreatorPlatforms,
       })

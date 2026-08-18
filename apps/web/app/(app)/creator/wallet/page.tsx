@@ -36,7 +36,8 @@ export default async function CreatorWallet() {
       .eq('direction', 'outbound')
       .order('created_at', { ascending: false })
       .limit(200),
-    supabase.from('creator_profiles').select('momo_payout_phone_e164, momo_provider').eq('user_id', session.userId).maybeSingle(),
+    // momo payout columns are not directly selectable (PII lockdown, migration 0018) — read own via the definer RPC.
+    supabase.rpc('get_my_payout_settings').maybeSingle(),
   ]);
 
   const rows = txns ?? [];

@@ -48,7 +48,7 @@ export default async function ConsultantDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Stat icon={Coins} label="Honoraires encaissés" value={fmtFcfa(earned)} tone="accent" />
         <Stat icon={Handshake} label="Contrats actifs" value={String(activeCount)} tone="brand" />
         <Stat icon={Clock} label="En attente" value={String(pendingCount)} tone="brand" />
@@ -111,7 +111,7 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof Coins; label: s
   return (
     <div className="rounded-2xl border border-line bg-white p-3 shadow-card">
       <Icon className={`h-4 w-4 ${tone === 'accent' ? 'text-accent' : 'text-brand'}`} />
-      <div className="mt-2 font-display text-base font-extrabold leading-tight text-ink">{value}</div>
+      <div className="mt-2 truncate font-display text-base font-extrabold leading-tight tabular-nums text-ink" title={value}>{value}</div>
       <div className="text-[11px] text-muted">{label}</div>
     </div>
   );

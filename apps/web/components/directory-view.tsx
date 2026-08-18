@@ -16,7 +16,7 @@ function buildHref(base: string, params: { country?: string; cat?: string }): st
 }
 
 const chip = (active: boolean) =>
-  `whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition ${
+  `inline-flex min-h-tap items-center whitespace-nowrap rounded-full border px-3.5 text-[13px] font-medium transition ${
     active ? 'border-brand bg-brand text-white' : 'border-line bg-white text-ink hover:border-brand hover:text-brand'
   }`;
 
@@ -82,7 +82,7 @@ export function DirectoryView({
       <div className="mt-6 flex items-center justify-between">
         <p className="text-sm font-semibold text-ink">{countLabel}</p>
         {(activeCountry || activeCategory) && (
-          <Link href={basePath} className="text-[13px] font-semibold text-brand hover:text-brand-600">
+          <Link href={basePath} className="inline-flex min-h-tap items-center text-[13px] font-semibold text-brand hover:text-brand-600">
             {t.directoryPage.reset}
           </Link>
         )}

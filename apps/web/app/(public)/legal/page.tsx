@@ -11,9 +11,9 @@ export const metadata = {
 export default function LegalPage() {
   return (
     <div className="min-h-screen bg-white pb-20">
-      <header className="sticky top-0 z-30 border-b border-line bg-white/85 px-4 py-3 backdrop-blur">
+      <header className="pt-safe sticky top-0 z-30 border-b border-line bg-white/85 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-muted hover:text-ink">
+          <Link href="/" className="inline-flex min-h-tap items-center gap-1.5 text-xs font-bold text-muted hover:text-ink">
             <ArrowLeft className="h-4 w-4" /> Accueil
           </Link>
           <span className="flex items-center gap-1.5 text-xs font-bold text-brand">
@@ -25,10 +25,10 @@ export default function LegalPage() {
         <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Accords Juridiques &amp; Cadre de Séquestre</h1>
         <p className="mt-2 text-xs text-muted sm:text-sm">Dernière mise à jour : 16 août 2026 • Conforme droit OHADA et réglementations CEMAC / UEMOA.</p>
         <div className="mt-6 flex flex-wrap gap-2 border-b border-line pb-4 text-xs">
-          <a href="#cgu" className="rounded-lg border border-line bg-white px-3 py-1.5 font-semibold text-ink hover:border-brand hover:text-brand">1. CGU</a>
-          <a href="#escrow" className="rounded-lg border border-line bg-white px-3 py-1.5 font-semibold text-ink hover:border-brand hover:text-brand">2. Séquestre MoMo</a>
-          <a href="#privacy" className="rounded-lg border border-line bg-white px-3 py-1.5 font-semibold text-ink hover:border-brand hover:text-brand">3. Données</a>
-          <a href="#ohada" className="rounded-lg border border-line bg-white px-3 py-1.5 font-semibold text-ink hover:border-brand hover:text-brand">4. Facturation OHADA</a>
+          <a href="#cgu" className="inline-flex min-h-tap items-center rounded-lg border border-line bg-white px-3 font-semibold text-ink hover:border-brand hover:text-brand">1. CGU</a>
+          <a href="#escrow" className="inline-flex min-h-tap items-center rounded-lg border border-line bg-white px-3 font-semibold text-ink hover:border-brand hover:text-brand">2. Séquestre MoMo</a>
+          <a href="#privacy" className="inline-flex min-h-tap items-center rounded-lg border border-line bg-white px-3 font-semibold text-ink hover:border-brand hover:text-brand">3. Données</a>
+          <a href="#ohada" className="inline-flex min-h-tap items-center rounded-lg border border-line bg-white px-3 font-semibold text-ink hover:border-brand hover:text-brand">4. Facturation OHADA</a>
         </div>
         <section id="cgu" className="mt-8 space-y-3 text-sm leading-relaxed text-ink/80">
           <h2 className="flex items-center gap-2 text-base font-bold text-ink"><FileText className="h-4 w-4 text-brand" /> 1. Conditions Générales d'Utilisation</h2>

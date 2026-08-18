@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -19,7 +19,17 @@ const COUNTRIES: { code: CC; label: string }[] = [
   { code: 'GA', label: '🇬🇦 Gabon' },
 ];
 
+// useSearchParams() forces client rendering; Next 15 requires it under a Suspense boundary, and the
+// fallback avoids a signup→signin flash for users arriving via ?mode=signin.
 export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-surface"><Loader2 className="h-6 w-6 animate-spin text-brand" /></div>}>
+      <AuthPageInner />
+    </Suspense>
+  );
+}
+
+function AuthPageInner() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -35,6 +45,11 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [configured, setConfigured] = useState(true);
+  // Contextual signup: a public "Inviter/Message" CTA carries intent + the handle it came from,
+  // plus a safe internal return path (next) so the flow lands back on that profile after confirmation.
+  const [intent, setIntent] = useState<string | null>(null);
+  const [target, setTarget] = useState<string | null>(null);
+  const [next, setNext] = useState<string | null>(null);
 
   useEffect(() => {
     setConfigured(isSupabaseConfigured());
@@ -42,6 +57,12 @@ export default function AuthPage() {
     const r = params.get('role');
     if (m === 'signin' || m === 'signup') setMode(m);
     if (r && ['creator', 'consultant', 'business'].includes(r)) setRole(r as Role);
+    const i = params.get('intent');
+    if (i === 'invite' || i === 'message' || i === 'hire') setIntent(i);
+    setTarget(params.get('target'));
+    // Only accept a same-origin internal path (leading single slash) to avoid open-redirects.
+    const n = params.get('next');
+    setNext(n && /^\/(?!\/)/.test(n) ? n : null);
   }, [params]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -64,7 +85,8 @@ export default function AuthPage() {
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            // Preserve the return path across the email round-trip (callback validates + honors `next`).
+            emailRedirectTo: `${window.location.origin}/auth/callback${next ? `?next=${encodeURIComponent(next)}` : ''}`,
             data: {
               display_name: fullName,
               role,
@@ -110,6 +132,19 @@ export default function AuthPage() {
           <div className="mb-4 flex items-start gap-2 rounded-xl border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span>Mode démo : la connexion s'activera une fois Supabase configuré (<code>.env.local</code>).</span>
+          </div>
+        )}
+
+        {intent && target && mode === 'signup' && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              {intent === 'invite'
+                ? <>Créez votre compte marque pour inviter <span className="font-bold">@{target}</span> à une campagne sous séquestre.</>
+                : intent === 'hire'
+                ? <>Créez votre compte marque pour démarrer une collaboration avec <span className="font-bold">@{target}</span>.</>
+                : <>Créez votre compte marque pour collaborer avec <span className="font-bold">@{target}</span>.</>}
+            </span>
           </div>
         )}
 

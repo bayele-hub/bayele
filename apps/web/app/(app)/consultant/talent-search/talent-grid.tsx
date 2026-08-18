@@ -60,7 +60,7 @@ export function TalentGrid({ creators }: { creators: TalentItem[] }) {
             key={c}
             type="button"
             onClick={() => setCat(c)}
-            className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition ${
+            className={`inline-flex min-h-tap shrink-0 items-center whitespace-nowrap rounded-full border px-3.5 text-xs font-bold transition ${
               cat === c ? 'border-brand bg-brand text-white' : 'border-line bg-white text-muted hover:border-brand hover:text-brand'
             }`}
           >

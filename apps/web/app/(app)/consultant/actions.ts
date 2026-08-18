@@ -23,6 +23,7 @@ export async function declineRetainerAction(_prev: RetainerActionState, formData
     return { error: "L'annulation a échoué. Réessayez." };
   }
 
+  revalidatePath('/consultant/retainers'); // the DeclineButton lives here — refresh the list it's on
   revalidatePath('/consultant/dashboard');
   return { error: null, ok: true };
 }

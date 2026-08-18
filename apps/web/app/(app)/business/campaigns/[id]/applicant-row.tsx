@@ -24,9 +24,9 @@ export function ApplicantRow({ a }: { a: Applicant }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-bold text-ink">{a.displayName}</p>
-          <div className="mt-0.5 flex items-center gap-2 text-xs text-muted">
-            <span>@{a.handle}</span>
-            <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {a.city} · {a.country}</span>
+          <div className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-muted">
+            <span className="truncate">@{a.handle}</span>
+            <span className="inline-flex shrink-0 items-center gap-1"><MapPin className="h-3 w-3" /> {a.city} · {a.country}</span>
           </div>
         </div>
 

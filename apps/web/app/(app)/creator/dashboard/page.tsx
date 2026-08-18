@@ -21,8 +21,10 @@ export default async function CreatorDashboard() {
       .select('id, status, agreed_payout_fcfa, created_at, campaign:campaigns(id, title, category, target_country, status)')
       .eq('creator_id', session.userId)
       .order('created_at', { ascending: false }),
-    supabase.from('creator_profiles').select('is_pro, momo_payout_phone_e164').eq('user_id', session.userId).maybeSingle(),
+    // payout settings via the definer RPC (is_pro + own momo — momo columns are not directly selectable, 0018).
+    supabase.rpc('get_my_payout_settings').maybeSingle(),
   ]);
+  const payoutConfigured = !!creatorProfile?.momo_payout_phone_e164;
 
   const list = assignments ?? [];
   const earned = list.filter((a) => a.status === 'paid').reduce((s, a) => s + (a.agreed_payout_fcfa ?? 0), 0);
@@ -57,8 +59,27 @@ export default async function CreatorDashboard() {
         </Link>
       </div>
 
+      {/* Payout nudge — a creator who hasn't set a Mobile Money number can't be paid. */}
+      {!payoutConfigured && (
+        <Link
+          href="/profile"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent-soft p-4 transition hover:border-accent/50"
+        >
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-accent">
+              <Wallet className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-sm font-bold text-ink">Ajoutez votre numéro Mobile Money</p>
+              <p className="text-[11px] text-muted">Sans numéro de paiement, vos gains ne peuvent pas être versés.</p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-accent" />
+        </Link>
+      )}
+
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Stat icon={Coins} label="Gains encaissés" value={fmtFcfa(earned)} tone="accent" />
         <Stat icon={Wallet} label="En attente" value={fmtFcfa(pendingPay)} tone="brand" />
         <Stat icon={Clock} label="Missions actives" value={String(activeCount)} tone="brand" />
@@ -138,7 +159,7 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof Coins; label: s
   return (
     <div className="rounded-2xl border border-line bg-white p-3 shadow-card">
       <Icon className={`h-4 w-4 ${tone === 'accent' ? 'text-accent' : 'text-brand'}`} />
-      <div className="mt-2 font-display text-base font-extrabold leading-tight text-ink">{value}</div>
+      <div className="mt-2 truncate font-display text-base font-extrabold leading-tight tabular-nums text-ink" title={value}>{value}</div>
       <div className="text-[11px] text-muted">{label}</div>
     </div>
   );

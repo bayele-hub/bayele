@@ -6,6 +6,7 @@ import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, CAMPAIGN_STATUS_FR } from '@/lib/data/campaigns';
 import { ApplicantRow, type Applicant } from './applicant-row';
 import { ProofRow, type ProofItem } from './proof-row';
+import { CancelCampaignButton } from './cancel-campaign-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -95,6 +96,9 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
           <span className="text-muted">{campaign.creator_count_target} créateurs · {fmtFcfa(campaign.payout_per_creator_fcfa)} / créateur</span>
           <span className="font-display font-extrabold text-ink">{fmtFcfa(campaign.total_budget_fcfa)}</span>
         </div>
+        {(campaign.status === 'draft' || campaign.status === 'pending_funding') && (
+          <CancelCampaignButton campaignId={campaign.id} />
+        )}
       </div>
 
       <div>

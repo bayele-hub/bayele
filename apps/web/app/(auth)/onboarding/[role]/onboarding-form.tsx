@@ -85,7 +85,7 @@ export function OnboardingForm({
                         type="button"
                         key={c}
                         onClick={() => setCats((p) => (on ? p.filter((x) => x !== c) : [...p, c]))}
-                        className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition ${on ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-white text-muted hover:border-brand-100'}`}
+                        className={`inline-flex min-h-tap items-center rounded-full border px-3.5 text-[13px] font-bold transition ${on ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-white text-muted hover:border-brand-100'}`}
                       >
                         {c}
                       </button>

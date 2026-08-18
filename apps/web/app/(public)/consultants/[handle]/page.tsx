@@ -30,7 +30,7 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
     <div className="min-h-screen bg-white">
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <Link href="/consultants" className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
+        <Link href="/consultants" className="inline-flex min-h-tap items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
           <ArrowLeft className="h-4 w-4" /> {t.profile.backConsultants}
         </Link>
 
@@ -61,13 +61,13 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
                   <span className="inline-flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-brand" /> {c.yearsExperience} {t.profile.experience.toLowerCase()}</span>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Link href={`/auth?mode=signup&role=business&intent=hire&target=${c.handle}`}
-                  className="inline-flex min-h-tap items-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95">
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                <Link href={`/auth?mode=signup&role=business&intent=hire&target=${c.handle}&next=${encodeURIComponent(`/consultants/${c.handle}`)}`}
+                  className="inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 sm:w-auto">
                   {t.profile.hire}
                 </Link>
-                <Link href={`/auth?mode=signup&role=business&intent=message&target=${c.handle}`}
-                  className="inline-flex min-h-tap items-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand">
+                <Link href={`/auth?mode=signup&role=business&intent=message&target=${c.handle}&next=${encodeURIComponent(`/consultants/${c.handle}`)}`}
+                  className="inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand sm:w-auto">
                   <MessageCircle className="h-4 w-4" /> {t.profile.message}
                 </Link>
               </div>

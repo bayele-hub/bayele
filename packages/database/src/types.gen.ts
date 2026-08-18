@@ -668,10 +668,24 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_refund_campaign: {
+        Args: {
+          p_campaign_id: string
+          p_reason?: string
+          p_sokoclick_receipt_id?: string
+        }
+        Returns: string
+      }
       attach_retainer_invoice: {
         Args: {
           p_retainer_id: string
           p_sokoclick_invoice_id: string
+        }
+        Returns: undefined
+      }
+      cancel_campaign: {
+        Args: {
+          p_campaign_id: string
         }
         Returns: undefined
       }
@@ -722,6 +736,14 @@ export type Database = {
           p_reason?: string
         }
         Returns: undefined
+      }
+      get_my_payout_settings: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          is_pro: boolean
+          momo_payout_phone_e164: string | null
+          momo_provider: Database["public"]["Enums"]["payment_provider"] | null
+        }[]
       }
       handle_sokoclick_invoice_paid: {
         Args: {

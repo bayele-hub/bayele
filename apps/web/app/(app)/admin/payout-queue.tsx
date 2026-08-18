@@ -50,10 +50,10 @@ function PayoutCard({ row }: { row: PayoutRow }) {
             name="ref"
             required
             placeholder="MOMO-OUT-000123"
-            className="mt-0.5 w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
+            className="mt-0.5 min-h-tap w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
           />
         </div>
-        <select name="provider" className="rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none">
+        <select name="provider" className="min-h-tap rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none">
           {PROVIDERS.map((p) => (
             <option key={p.id} value={p.id}>{p.label}</option>
           ))}

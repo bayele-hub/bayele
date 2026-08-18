@@ -64,7 +64,7 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
 
       <NumField label="Valeur du contrat (FCFA)" name="contract" value={contract} onChange={setContract} />
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <NumField label="Commission Bayele" name="cut" value={cut} onChange={setCut} />
         <NumField label="Honoraires consultant" name="fee" value={fee} onChange={setFee} />
         <NumField label="Budget média" name="media" value={media} onChange={setMedia} />
@@ -105,6 +105,7 @@ function NumField(props: { label: string; name: string; value: number; onChange:
       <input
         name={props.name}
         type="number"
+        inputMode="numeric"
         min={0}
         value={props.value}
         onChange={(e) => props.onChange(Number(e.target.value))}

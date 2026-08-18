@@ -10,7 +10,8 @@
     "security": "Sécurité",
     "billing": "Facturation",
     "login": "Connexion",
-    "start": "Commencer"
+    "start": "Commencer",
+    "dashboard": "Mon espace"
   },
   "hero": {
     "badge": "Marketplace d'influence · Afrique francophone",
@@ -21,7 +22,9 @@
     "ctaBrand": "Lancer une campagne",
     "ctaCreator": "Devenir créateur rémunéré",
     "payoutsLabel": "Retraits vers :",
-    "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville."
+    "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville.",
+    "ctaDashboard": "Aller à mon espace",
+    "ctaBrowse": "Parcourir les créateurs"
   },
   "trust": {
     "escrowTitle": "Séquestre bloqué",
