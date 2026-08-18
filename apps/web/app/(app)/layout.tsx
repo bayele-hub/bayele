@@ -3,10 +3,19 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { NotificationBell } from '@/components/notification-bell';
+import { AccountMenu } from '@/components/account-menu';
 import { BottomNav } from '@/components/bottom-nav';
 import type { Database } from '@bayele/database';
 
 type Notif = Database['public']['Tables']['notifications']['Row'];
+type Role = Database['public']['Enums']['user_role'];
+
+const ROLE_FR: Record<Role, string> = {
+  super_admin: 'Admin',
+  business: 'Marque',
+  consultant: 'Consultant',
+  creator: 'Créateur',
+};
 
 // Shared authenticated shell: header with the Realtime notification bell + a per-role bottom nav.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -35,7 +44,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               Bayele<span className="brand-dot">.</span>
             </span>
           </Link>
-          <NotificationBell userId={session.userId} initial={notifications} initialUnread={unread} />
+          <div className="flex items-center gap-1">
+            <NotificationBell userId={session.userId} initial={notifications} initialUnread={unread} />
+            <AccountMenu
+              displayName={session.profile?.display_name ?? null}
+              email={session.email}
+              roleLabel={session.primary ? ROLE_FR[session.primary] : null}
+            />
+          </div>
         </div>
       </header>
 
