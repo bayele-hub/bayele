@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
@@ -16,6 +17,9 @@ const ROLE_FR: Record<Role, string> = {
   consultant: 'Consultant',
   creator: 'Créateur',
 };
+
+// Signed-in workspaces are private — keep them out of the index (belt-and-suspenders with robots.txt).
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // Shared authenticated shell: header with the Realtime notification bell + a per-role bottom nav.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {

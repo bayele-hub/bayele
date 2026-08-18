@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, Star, Briefcase, MapPin, ArrowUpRight, MessageCircle, Globe, KeyRound } from 'lucide-react';
@@ -5,16 +6,29 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
+import { JsonLd } from '@/components/json-ld';
 import { getConsultant, type ConsultantLink } from '@/lib/data/talent';
 import { getDictionary } from '@/i18n/dictionaries';
+import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
 
 const FLAG: Record<'CM' | 'CI' | 'GA', string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
-export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   const c = await getConsultant(handle);
-  if (!c) return { title: 'Consultant' };
-  return { title: `${c.displayName} (@${c.handle})`, description: c.bio };
+  if (!c) return { title: 'Consultant introuvable', robots: { index: false } };
+  const path = `/consultants/${c.handle}`;
+  const description =
+    c.bio ||
+    `Confiez vos campagnes à ${c.displayName}, consultant média ${c.tags.slice(0, 3).join(', ')} à ${c.city} (${COUNTRY_NAME[c.country]}). Gestion et exécution sécurisées par séquestre sur ${SITE_NAME}.`;
+  const title = `${c.displayName} (@${c.handle}) — Consultant`;
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { type: 'profile', title: `${c.displayName} · ${SITE_NAME}`, description, url: path },
+    twitter: { card: 'summary_large_image', title: `${c.displayName} · ${SITE_NAME}`, description },
+  };
 }
 
 function linkLabel(link: ConsultantLink, websiteLabel: string): string {
@@ -28,6 +42,26 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
 
   return (
     <div className="min-h-screen bg-white">
+      <JsonLd
+        data={[
+          personLd({
+            handle: c.handle,
+            displayName: c.displayName,
+            bio: c.bio,
+            avatarUrl: c.avatarUrl,
+            city: c.city,
+            country: c.country,
+            role: 'consultant',
+            tags: c.tags,
+            path: `/consultants/${c.handle}`,
+          }),
+          breadcrumbLd([
+            { name: 'Accueil', path: '/' },
+            { name: 'Consultants', path: '/consultants' },
+            { name: c.displayName, path: `/consultants/${c.handle}` },
+          ]),
+        ]}
+      />
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link href="/consultants" className="inline-flex min-h-tap items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">

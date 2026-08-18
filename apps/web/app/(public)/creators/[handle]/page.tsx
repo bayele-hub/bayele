@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, Star, Users, MapPin, ArrowUpRight, MessageCircle } from 'lucide-react';
@@ -5,16 +6,29 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { SocialIcon, SOCIAL_META } from '@/components/social-icons';
+import { JsonLd } from '@/components/json-ld';
 import { getCreator } from '@/lib/data/talent';
 import { getDictionary, formatFollowers } from '@/i18n/dictionaries';
+import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
 
 const FLAG: Record<'CM' | 'CI' | 'GA', string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
-export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   const creator = await getCreator(handle);
-  if (!creator) return { title: 'Créateur' };
-  return { title: `${creator.displayName} (@${creator.handle})`, description: creator.bio };
+  if (!creator) return { title: 'Créateur introuvable', robots: { index: false } };
+  const path = `/creators/${creator.handle}`;
+  const description =
+    creator.bio ||
+    `Collaborez avec ${creator.displayName}, créateur ${creator.tags.slice(0, 3).join(', ')} à ${creator.city} (${COUNTRY_NAME[creator.country]}). Campagnes rémunérées et sécurisées par séquestre sur ${SITE_NAME}.`;
+  const title = `${creator.displayName} (@${creator.handle}) — Créateur`;
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { type: 'profile', title: `${creator.displayName} · ${SITE_NAME}`, description, url: path },
+    twitter: { card: 'summary_large_image', title: `${creator.displayName} · ${SITE_NAME}`, description },
+  };
 }
 
 export default async function CreatorProfilePage({ params }: { params: Promise<{ handle: string }> }) {
@@ -24,6 +38,26 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
 
   return (
     <div className="min-h-screen bg-white">
+      <JsonLd
+        data={[
+          personLd({
+            handle: creator.handle,
+            displayName: creator.displayName,
+            bio: creator.bio,
+            avatarUrl: creator.avatarUrl,
+            city: creator.city,
+            country: creator.country,
+            role: 'creator',
+            tags: creator.tags,
+            path: `/creators/${creator.handle}`,
+          }),
+          breadcrumbLd([
+            { name: 'Accueil', path: '/' },
+            { name: 'Créateurs', path: '/creators' },
+            { name: creator.displayName, path: `/creators/${creator.handle}` },
+          ]),
+        ]}
+      />
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link href="/creators" className="inline-flex min-h-tap items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">

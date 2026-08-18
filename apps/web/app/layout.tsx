@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Inter } from 'next/font/google';
 import './globals.css';
 import { getDictionary, getLocale } from '@/i18n/dictionaries';
+import { JsonLd } from '@/components/json-ld';
+import { organizationLd, websiteLd } from '@/lib/seo';
 
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -46,7 +48,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale(); // drives <html lang> (fixes audit F3)
   return (
     <html lang={locale} className={`${display.variable} ${sans.variable}`}>
-      <body className="bg-white text-ink antialiased">{children}</body>
+      <body className="bg-white text-ink antialiased">
+        {/* Site-wide structured data: knowledge-panel identity + sitelinks search box. */}
+        <JsonLd data={[organizationLd(), websiteLd()]} />
+        {children}
+      </body>
     </html>
   );
 }
