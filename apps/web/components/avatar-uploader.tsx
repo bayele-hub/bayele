@@ -12,8 +12,8 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 // Extract the storage object path from a public avatar URL, so we can delete the previous file.
 function pathFromUrl(url: string | null): string | null {
   if (!url) return null;
-  const m = url.match(/\/storage\/v1\/object\/public\/avatars\/(.+)$/);
-  return m ? decodeURIComponent(m[1]) : null;
+  const encoded = url.match(/\/storage\/v1\/object\/public\/avatars\/(.+)$/)?.[1];
+  return encoded ? decodeURIComponent(encoded) : null;
 }
 
 /**
