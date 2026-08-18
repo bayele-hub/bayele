@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight } from 'lucide-react';
+import { Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight } from 'lucide-react';
+import { SmartAvatar } from '@/components/smart-avatar';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
@@ -38,7 +39,7 @@ export default async function CreatorDashboard() {
       {/* Hero */}
       <div className="rounded-2xl border border-line bg-gradient-to-br from-brand-50 via-white to-accent-soft p-4 shadow-card">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-brand" />
+          <SmartAvatar src={session.profile?.avatar_url} name={firstName} className="h-9 w-9 shrink-0 text-sm" />
           <h1 className="font-display text-xl font-extrabold text-ink">Bonjour, {firstName} 👋</h1>
           {creatorProfile?.is_pro && (
             <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">

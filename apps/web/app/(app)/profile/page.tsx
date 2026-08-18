@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import type { Platform } from '@/components/social-icons';
 import { ProfileForm, type ProfileInitial, type SocialsMap } from './profile-form';
+import { AvatarUploader } from '@/components/avatar-uploader';
 
 export const dynamic = 'force-dynamic';
 
@@ -109,6 +110,8 @@ export default async function ProfilePage() {
           </span>
         </div>
       </div>
+
+      <AvatarUploader userId={session.userId} initialUrl={profile.avatar_url} name={profile.display_name} />
 
       <ProfileForm initial={initial} />
     </section>
