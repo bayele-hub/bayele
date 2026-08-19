@@ -97,6 +97,19 @@ function AuthPageInner() {
           },
         });
         if (error) throw error;
+        // Supabase obscures "email already registered" to prevent enumeration: with email
+        // confirmation on, a repeat signup returns a 200 with an obfuscated user whose
+        // identities array is EMPTY and no session — and it sends no confirmation email.
+        // Detect that shape so the user isn't left waiting for a mail that never arrives;
+        // steer them to sign in (or reset) instead of the false "check your inbox" notice.
+        const identities = data.user?.identities;
+        const alreadyRegistered = Array.isArray(identities) && identities.length === 0;
+        if (alreadyRegistered) {
+          setMode('signin');
+          setPassword('');
+          setError("Cette adresse email est déjà associée à un compte Bayele. Connectez-vous ci-dessous avec votre mot de passe. Aucun nouvel email de confirmation n'est envoyé pour une adresse déjà inscrite.");
+          return;
+        }
         // If email confirmation is on, there is no session yet.
         if (!data.session) {
           setNotice("Vérifiez votre boîte mail pour confirmer votre adresse, puis connectez-vous.");
