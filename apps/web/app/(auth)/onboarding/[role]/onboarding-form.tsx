@@ -5,6 +5,7 @@ import { Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 import { onboardAction, type OnboardState } from '../actions';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
 import { OnboardingAvatar } from '@/components/onboarding-avatar';
+import { normalizeHandle } from '@/lib/handle';
 
 type Role = 'creator' | 'consultant' | 'business';
 type CC = 'CM' | 'CI' | 'GA';
@@ -68,7 +69,7 @@ export function OnboardingForm({
           <Text name="company_name" label="Nom de l'entreprise" defaultValue={defaults.companyName} required placeholder="SARL Douala Logistics" />
           <div className="grid grid-cols-2 gap-3">
             <Text name="display_name" label="Nom public" defaultValue={defaults.displayName || defaults.companyName} required placeholder="Douala Logistics" />
-            <Text name="handle" label="Identifiant" defaultValue={defaults.handle} required placeholder="douala_logistics" />
+            <HandleField defaultValue={defaults.handle} placeholder="douala_logistics" />
           </div>
           <Text name="industry" label="Secteur" required placeholder="Logistique, FMCG, Fintech…" />
           <Text name="billing_email" label="Email de facturation (OHADA)" type="email" placeholder="factures@entreprise.com" />
@@ -77,7 +78,7 @@ export function OnboardingForm({
         <>
           <div className="grid grid-cols-2 gap-3">
             <Text name="display_name" label="Nom complet" defaultValue={defaults.displayName} required placeholder="Awa Ngono" />
-            <Text name="handle" label="Identifiant" defaultValue={defaults.handle} required placeholder="awa_beauty" />
+            <HandleField defaultValue={defaults.handle} placeholder="awa_beauty" />
           </div>
           {role === 'creator' ? (
             <>
@@ -173,6 +174,30 @@ export function OnboardingForm({
         {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>Finaliser mon profil <ArrowRight className="h-3.5 w-3.5" /></>)}
       </button>
     </form>
+  );
+}
+
+// Controlled identifier field: normalizes every keystroke to the DB's handle format
+// (a–z, 0–9, _), so accents/spaces can't reach submit and trigger invalid_handle_format.
+function HandleField({ defaultValue, placeholder }: { defaultValue: string; placeholder: string }) {
+  const [value, setValue] = useState(() => normalizeHandle(defaultValue));
+  return (
+    <div>
+      <label className="text-xs font-semibold text-ink">Identifiant</label>
+      <input
+        name="handle"
+        required
+        value={value}
+        onChange={(e) => setValue(normalizeHandle(e.target.value))}
+        placeholder={placeholder}
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        inputMode="text"
+        className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
+      />
+      <p className="mt-1 text-[11px] text-muted">3–30 caractères : lettres, chiffres et « _ ».</p>
+    </div>
   );
 }
 

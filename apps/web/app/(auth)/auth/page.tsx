@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient, isSupabaseConfigured } from '@bayele/database/client';
 import { Smartphone, Briefcase, Building2, ArrowRight, Loader2, AlertCircle, Info } from 'lucide-react';
+import { normalizeHandle } from '@/lib/handle';
 
 type Mode = 'signin' | 'signup';
 type Role = 'creator' | 'consultant' | 'business';
@@ -198,7 +199,7 @@ function AuthPageInner() {
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   <Field label="Nom complet" value={fullName} onChange={setFullName} placeholder="Jean Dupont" />
-                  <Field label="Identifiant" value={handle} onChange={setHandle} placeholder="jean_d" />
+                  <Field label="Identifiant" value={handle} onChange={(v) => setHandle(normalizeHandle(v))} placeholder="jean_d" />
                 </div>
               )}
 
@@ -228,6 +229,11 @@ function AuthPageInner() {
             <input type="password" required autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••"
               className="mt-1 w-full rounded-xl border border-line bg-white px-3.5 py-3 text-sm text-ink placeholder-muted/60 focus:border-brand focus:outline-none" />
+            {mode === 'signin' && (
+              <div className="mt-1.5 text-right">
+                <Link href="/auth/reset" className="text-[11px] font-semibold text-brand hover:underline">Mot de passe oublié ?</Link>
+              </div>
+            )}
           </div>
 
           {mode === 'signup' && (
