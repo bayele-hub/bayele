@@ -10,7 +10,8 @@ type OnboardPlatforms = Database['public']['Functions']['onboard_profile']['Args
 
 const ROLES: Role[] = ['creator', 'consultant', 'business'];
 const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
-const ONBOARD_SOCIALS = ['whatsapp', 'instagram', 'tiktok', 'youtube'] as const;
+// Keep in sync with ONBOARD_SOCIALS in [role]/onboarding-form.tsx (the fields rendered there).
+const ONBOARD_SOCIALS = ['whatsapp', 'instagram', 'tiktok', 'youtube', 'linkedin'] as const;
 
 // Map the RPC's stable error codes to French, user-facing copy.
 const ERR_FR: Record<string, string> = {
@@ -49,6 +50,12 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     return v.length ? v : undefined;
   };
 
+  // The avatar_url hidden field is client-supplied, so only accept a URL that actually points at our
+  // public avatars bucket — otherwise ignore it rather than persisting an arbitrary external URL.
+  const avatarRaw = opt('avatar_url');
+  const avatarUrl =
+    avatarRaw && /\/storage\/v1\/object\/public\/avatars\//.test(avatarRaw) ? avatarRaw : undefined;
+
   // Build the creator's social platforms JSON ({ instagram: { url, followers }, … }) from the optional
   // onboarding fields; empty URLs are dropped. Non-creator roles submit none.
   const platforms: Record<string, { url: string; followers: number }> = {};
@@ -69,6 +76,8 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     p_city: String(formData.get('city') ?? ''),
     p_country: country,
     p_bio: opt('bio'),
+    // Public URL of the photo uploaded client-side to the owner-scoped avatars bucket (optional).
+    p_avatar_url: avatarUrl,
     p_categories: csv('categories'),
     p_audience_size: Number(formData.get('audience_size') ?? 0) || 0,
     p_platforms: platforms as unknown as OnboardPlatforms,

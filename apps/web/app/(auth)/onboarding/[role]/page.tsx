@@ -40,7 +40,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ rol
       </div>
 
       <div className="mx-auto mt-2 w-full max-w-lg rounded-2xl border border-line bg-white p-5 shadow-card sm:p-6">
-        <OnboardingForm role={role as Role} defaults={defaults} />
+        <OnboardingForm role={role as Role} userId={session.userId} defaults={defaults} />
       </div>
     </div>
   );

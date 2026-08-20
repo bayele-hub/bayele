@@ -4,12 +4,14 @@ import { useActionState, useState } from 'react';
 import { Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 import { onboardAction, type OnboardState } from '../actions';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
+import { OnboardingAvatar } from '@/components/onboarding-avatar';
 
 type Role = 'creator' | 'consultant' | 'business';
 type CC = 'CM' | 'CI' | 'GA';
 
 // Curated primary networks for onboarding (the rest are addable later in Profil) — keeps signup fast.
-const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'tiktok', 'youtube'];
+// Keep this list in sync with ONBOARD_SOCIALS in ../actions.ts, which persists these same keys.
+const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'tiktok', 'youtube', 'linkedin'];
 
 const COUNTRIES: { code: CC; label: string }[] = [
   { code: 'CM', label: '🇨🇲 Cameroun' },
@@ -30,9 +32,11 @@ const ROLE_COPY: Record<Role, { title: string; blurb: string }> = {
 
 export function OnboardingForm({
   role,
+  userId,
   defaults,
 }: {
   role: Role;
+  userId: string;
   defaults: { displayName: string; handle: string; country: CC; companyName: string };
 }) {
   const [state, formAction, pending] = useActionState<OnboardState, FormData>(onboardAction, { error: null });
@@ -50,6 +54,8 @@ export function OnboardingForm({
       </div>
 
       <input type="hidden" name="role" value={role} />
+
+      <OnboardingAvatar userId={userId} name={defaults.displayName || defaults.companyName} />
 
       {state.error && (
         <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
