@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Bell, Check } from 'lucide-react';
 import { createClient } from '@bayele/database/client';
 import type { Database } from '@bayele/database';
+import { addIncoming, markOneRead, markAllRead, type NotifState } from '@/lib/notifications/state';
 
 type Notif = Database['public']['Tables']['notifications']['Row'];
 
@@ -16,12 +18,12 @@ export function NotificationBell({
   initial: Notif[];
   initialUnread: number;
 }) {
-  const [items, setItems] = useState<Notif[]>(initial);
-  const [unread, setUnread] = useState(initialUnread);
+  const [state, setState] = useState<NotifState<Notif>>({ items: initial, unread: initialUnread });
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { items, unread } = state;
 
-  // Live subscription: new notifications for THIS user push straight into the bell (< 1s).
+  // Live subscription: new notifications for THIS user push straight into the bell (< 1s), deduped.
   useEffect(() => {
     if (!userId) return;
     const supabase = createClient();
@@ -30,11 +32,7 @@ export function NotificationBell({
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
-        (payload) => {
-          const n = payload.new as Notif;
-          setItems((prev) => [n, ...prev].slice(0, 20));
-          if (!n.read_at) setUnread((u) => u + 1);
-        },
+        (payload) => setState((s) => addIncoming(s, payload.new as Notif)),
       )
       .subscribe();
     return () => {
@@ -51,13 +49,29 @@ export function NotificationBell({
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  async function markAllRead() {
-    if (unread === 0) return;
+  async function markAllReadHandler() {
+    if (!userId || unread === 0) return;
     const now = new Date().toISOString();
-    setUnread(0);
-    setItems((prev) => prev.map((i) => ({ ...i, read_at: i.read_at ?? now })));
+    const prev = state;
+    setState((s) => markAllRead(s, now)); // optimistic
     const supabase = createClient();
-    await supabase.from('notifications').update({ read_at: now }).is('read_at', null);
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read_at: now })
+      .eq('user_id', userId) // defense in depth alongside RLS
+      .is('read_at', null);
+    if (error) setState(prev); // revert on failure so the badge doesn't lie
+  }
+
+  // Mark a single notification read when the user opens it. Fire-and-forget: navigation proceeds
+  // via <Link> regardless, and RLS scopes the update to the owner.
+  function openOne(n: Notif) {
+    setOpen(false);
+    if (n.read_at) return;
+    const now = new Date().toISOString();
+    setState((s) => markOneRead(s, n.id, now));
+    const supabase = createClient();
+    void supabase.from('notifications').update({ read_at: now }).eq('id', n.id).is('read_at', null);
   }
 
   return (
@@ -80,7 +94,7 @@ export function NotificationBell({
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <span className="text-sm font-bold text-ink">Notifications</span>
             {unread > 0 && (
-              <button onClick={markAllRead} className="inline-flex min-h-tap items-center gap-1 text-xs font-semibold text-brand hover:underline">
+              <button onClick={markAllReadHandler} className="inline-flex min-h-tap items-center gap-1 text-xs font-semibold text-brand hover:underline">
                 <Check className="h-3 w-3" /> Tout marquer lu
               </button>
             )}
@@ -104,9 +118,13 @@ export function NotificationBell({
                   return (
                     <li key={n.id} className={`px-4 py-3 ${n.read_at ? '' : 'bg-brand-50/40'}`}>
                       {n.link ? (
-                        <a href={n.link} className="block transition hover:opacity-80">
+                        <Link href={n.link} onClick={() => openOne(n)} className="block transition hover:opacity-80">
                           {body}
-                        </a>
+                        </Link>
+                      ) : !n.read_at ? (
+                        <button type="button" onClick={() => openOne(n)} className="block w-full text-left transition hover:opacity-80">
+                          {body}
+                        </button>
                       ) : (
                         body
                       )}
