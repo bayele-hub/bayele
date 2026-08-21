@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { Handshake, Clock, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { Handshake, Clock, CheckCircle2, MessageCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, RETAINER_STATUS_FR } from '@/lib/data/campaigns';
@@ -54,11 +55,15 @@ export default async function ConsultantRetainers() {
                     </div>
                   </div>
                 </div>
-                {canDecline && (
-                  <div className="mt-3 flex justify-end">
-                    <DeclineButton retainerId={r.id} />
-                  </div>
-                )}
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <Link
+                    href={`/messages/open?ctx=retainer&id=${r.id}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" /> Contacter la marque
+                  </Link>
+                  {canDecline && <DeclineButton retainerId={r.id} />}
+                </div>
               </li>
             );
           })}

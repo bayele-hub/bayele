@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Handshake, Plus, Clock, CheckCircle2 } from 'lucide-react';
+import { Handshake, Plus, Clock, CheckCircle2, MessageCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, RETAINER_STATUS_FR } from '@/lib/data/campaigns';
@@ -75,6 +75,12 @@ export default async function BusinessRetainers() {
                     Facture générée. Réglez le contrat par Mobile Money — le contrat s'active dès la confirmation.
                   </p>
                 )}
+                <Link
+                  href={`/messages/open?ctx=retainer&id=${r.id}`}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" /> Contacter le consultant
+                </Link>
               </li>
             );
           })}

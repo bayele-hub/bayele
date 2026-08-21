@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import { MessagesSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
+import { getUnreadMessageCount } from '@/lib/data/conversations';
 import { NotificationBell } from '@/components/notification-bell';
 import { AccountMenu } from '@/components/account-menu';
 import { BottomNav } from '@/components/bottom-nav';
@@ -27,15 +29,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   let notifications: Notif[] = [];
   let unread = 0;
+  let unreadMessages = 0;
   if (session.userId) {
     const supabase = await createClient();
     // RLS scopes both queries to the signed-in user; the unread count uses the partial index.
-    const [{ data }, { count }] = await Promise.all([
+    const [{ data }, { count }, msgCount] = await Promise.all([
       supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20),
       supabase.from('notifications').select('*', { count: 'exact', head: true }).is('read_at', null),
+      getUnreadMessageCount(),
     ]);
     notifications = (data ?? []) as Notif[];
     unread = count ?? 0;
+    unreadMessages = msgCount;
   }
 
   return (
@@ -49,6 +54,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </span>
           </Link>
           <div className="flex items-center gap-1">
+            <Link href="/messages" aria-label="Messages" className="relative grid min-h-tap min-w-tap place-items-center text-muted hover:text-ink">
+              <MessagesSquare className="h-5 w-5" />
+              {unreadMessages > 0 && (
+                <span className="absolute right-1.5 top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
+                  {unreadMessages > 9 ? '9+' : unreadMessages}
+                </span>
+              )}
+            </Link>
             <NotificationBell userId={session.userId} initial={notifications} initialUnread={unread} />
             <AccountMenu
               displayName={session.profile?.display_name ?? null}
@@ -61,7 +74,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 pb-24 sm:pb-8">{children}</main>
 
-      {session.primary && <BottomNav role={session.primary} />}
+      {session.primary && <BottomNav role={session.primary} unreadMessages={unreadMessages} />}
     </div>
   );
 }

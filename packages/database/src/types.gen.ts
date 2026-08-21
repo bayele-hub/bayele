@@ -841,6 +841,23 @@ export type Database = {
         }
         Returns: undefined
       }
+      list_my_conversations: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          conversation_id: string
+          counterparty_id: string
+          counterparty_name: string | null
+          counterparty_avatar: string | null
+          counterparty_handle: string | null
+          last_body: string | null
+          last_at: string
+          unread: boolean
+        }[]
+      }
+      my_unread_conversation_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       set_campaign_visibility: {
         Args: {
           p_campaign_id: string

@@ -63,6 +63,39 @@ export async function getThreadMessages(conversationId: string, limit = 100): Pr
   return (data ?? []).reverse();
 }
 
+export interface InboxItem {
+  conversationId: string;
+  counterpartyName: string;
+  counterpartyAvatar: string | null;
+  counterpartyHandle: string | null;
+  lastBody: string;
+  lastAt: string;
+  unread: boolean;
+}
+
+/** The current user's active threads (newest first) for the inbox. Empty on any error. */
+export async function listConversations(): Promise<InboxItem[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('list_my_conversations');
+  if (error || !data) return [];
+  return data.map((r) => ({
+    conversationId: r.conversation_id,
+    counterpartyName: r.counterparty_name ?? 'Interlocuteur',
+    counterpartyAvatar: r.counterparty_avatar ?? null,
+    counterpartyHandle: r.counterparty_handle ?? null,
+    lastBody: r.last_body ?? '',
+    lastAt: r.last_at,
+    unread: r.unread ?? false,
+  }));
+}
+
+/** Number of the current user's threads with an unread message (nav badge). */
+export async function getUnreadMessageCount(): Promise<number> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc('my_unread_conversation_count');
+  return typeof data === 'number' ? data : 0;
+}
+
 /**
  * Resolve (creating on first use) the conversation id for a deal, via the open_conversation RPC
  * which enforces that the caller is a participant. Returns null when the deal is missing or the
