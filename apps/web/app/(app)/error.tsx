@@ -9,5 +9,17 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
   useEffect(() => {
     console.error('[app] route error', error);
   }, [error]);
-  return <ErrorState reset={reset} home="/dashboard" />;
+  return (
+    <>
+      <ErrorState reset={reset} home="/dashboard" />
+      {/* TEMPORARY diagnostic — remove once the production crash is resolved. */}
+      {(error?.message || error?.digest) && (
+        <pre className="mx-auto mt-4 max-w-md overflow-x-auto whitespace-pre-wrap break-words rounded-lg border border-line bg-white p-3 text-left text-[11px] leading-relaxed text-rose-700">
+          {error.digest ? `digest: ${error.digest}\n` : ''}
+          {error.message || '(no message)'}
+          {error.stack ? `\n\n${error.stack.split('\n').slice(0, 6).join('\n')}` : ''}
+        </pre>
+      )}
+    </>
+  );
 }

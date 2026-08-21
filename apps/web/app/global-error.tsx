@@ -29,6 +29,15 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           >
             Réessayer
           </button>
+          {/* TEMPORARY diagnostic — surfaces the real error to the owner while we track a production
+              crash. Remove once resolved. */}
+          {(error?.message || error?.digest) && (
+            <pre className="mt-8 max-w-md overflow-x-auto whitespace-pre-wrap break-words rounded-lg border border-line bg-white p-3 text-left text-[11px] leading-relaxed text-rose-700">
+              {error.digest ? `digest: ${error.digest}\n` : ''}
+              {error.message || '(no message)'}
+              {error.stack ? `\n\n${error.stack.split('\n').slice(0, 6).join('\n')}` : ''}
+            </pre>
+          )}
         </main>
       </body>
     </html>
