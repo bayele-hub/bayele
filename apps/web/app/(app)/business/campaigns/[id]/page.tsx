@@ -7,6 +7,7 @@ import { fmtFcfa, CAMPAIGN_STATUS_FR } from '@/lib/data/campaigns';
 import { ApplicantRow, type Applicant } from './applicant-row';
 import { ProofRow, type ProofItem } from './proof-row';
 import { CancelCampaignButton } from './cancel-campaign-button';
+import { ShareCampaignButton } from '@/components/share-campaign-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,6 +99,9 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
         </div>
         {(campaign.status === 'draft' || campaign.status === 'pending_funding') && (
           <CancelCampaignButton campaignId={campaign.id} />
+        )}
+        {(campaign.status === 'published' || campaign.status === 'in_progress') && (
+          <ShareCampaignButton campaignId={campaign.id} />
         )}
       </div>
 

@@ -59,7 +59,7 @@ function AuthPageInner() {
     if (m === 'signin' || m === 'signup') setMode(m);
     if (r && ['creator', 'consultant', 'business'].includes(r)) setRole(r as Role);
     const i = params.get('intent');
-    if (i === 'invite' || i === 'message' || i === 'hire') setIntent(i);
+    if (i === 'invite' || i === 'message' || i === 'hire' || i === 'apply') setIntent(i);
     setTarget(params.get('target'));
     // Only accept a same-origin internal path (leading single slash) to avoid open-redirects.
     const n = params.get('next');
@@ -80,7 +80,8 @@ function AuthPageInner() {
       if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
-        router.push('/dashboard');
+        // Honor a validated internal return path (e.g. back to a shared campaign), else the dispatcher.
+        router.push(next ?? '/dashboard');
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -153,7 +154,9 @@ function AuthPageInner() {
           <div className="mb-4 flex items-start gap-2 rounded-xl border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
-              {intent === 'invite'
+              {intent === 'apply'
+                ? <>Créez votre compte créateur pour postuler à cette campagne et être payé en toute sécurité via séquestre.</>
+                : intent === 'invite'
                 ? <>Créez votre compte marque pour inviter <span className="font-bold">@{target}</span> à une campagne sous séquestre.</>
                 : intent === 'hire'
                 ? <>Créez votre compte marque pour démarrer une collaboration avec <span className="font-bold">@{target}</span>.</>

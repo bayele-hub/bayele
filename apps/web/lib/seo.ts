@@ -97,6 +97,57 @@ export interface PersonLdInput {
   path: string; // e.g. /creators/awa_beauty
 }
 
+// FCFA is two currencies: XOF (West Africa — Côte d'Ivoire) and XAF (Central Africa — Cameroon, Gabon).
+export function currencyForCountry(country: 'CM' | 'CI' | 'GA'): 'XOF' | 'XAF' {
+  return country === 'CI' ? 'XOF' : 'XAF';
+}
+
+export interface JobPostingLdInput {
+  id: string;
+  title: string;
+  description: string;
+  datePosted: string; // ISO
+  country: 'CM' | 'CI' | 'GA';
+  payoutFcfa: number;
+  brandName: string;
+  path: string; // e.g. /campaigns/<id>
+}
+
+/**
+ * schema.org JobPosting for a public campaign — the same structured data that powers job-listing rich
+ * results (as for a LinkedIn job). Paid creator gig → CONTRACTOR, per-project compensation. We omit
+ * validThrough (campaigns have no fixed close date; it's optional, only a Search Console warning).
+ */
+export function jobPostingLd(j: JobPostingLdInput): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    '@id': `${SITE_URL}${j.path}#jobposting`,
+    title: j.title,
+    description: j.description || j.title,
+    datePosted: j.datePosted,
+    employmentType: 'CONTRACTOR',
+    directApply: true,
+    url: `${SITE_URL}${j.path}`,
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: j.brandName,
+      memberOf: { '@id': ORG_ID },
+    },
+    jobLocationType: 'TELECOMMUTE',
+    applicantLocationRequirements: { '@type': 'Country', name: COUNTRY_NAME[j.country] },
+    baseSalary: {
+      '@type': 'MonetaryAmount',
+      currency: currencyForCountry(j.country),
+      value: {
+        '@type': 'QuantitativeValue',
+        value: j.payoutFcfa,
+        unitText: 'PROJECT',
+      },
+    },
+  };
+}
+
 export function personLd(p: PersonLdInput): Json {
   return {
     '@context': 'https://schema.org',
