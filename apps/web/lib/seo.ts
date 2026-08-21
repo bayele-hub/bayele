@@ -111,6 +111,7 @@ export interface JobPostingLdInput {
   payoutFcfa: number;
   brandName: string;
   path: string; // e.g. /campaigns/<id>
+  validThrough?: string | null; // ISO date (campaign posting deadline), optional
 }
 
 /**
@@ -126,6 +127,7 @@ export function jobPostingLd(j: JobPostingLdInput): Json {
     title: j.title,
     description: j.description || j.title,
     datePosted: j.datePosted,
+    ...(j.validThrough ? { validThrough: j.validThrough } : {}),
     employmentType: 'CONTRACTOR',
     directApply: true,
     url: `${SITE_URL}${j.path}`,

@@ -6,6 +6,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { JsonLd } from '@/components/json-ld';
 import { CampaignApplyCTA } from '@/components/campaign-apply-cta';
+import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { getPublicCampaign } from '@/lib/data/public-campaigns';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { jobPostingLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
@@ -48,6 +49,7 @@ export default async function PublicCampaignPage({ params }: { params: Promise<{
             payoutFcfa: c.payoutPerCreatorFcfa,
             brandName: c.brandName,
             path: `/campaigns/${c.id}`,
+            validThrough: c.deadline,
           }),
           breadcrumbLd([
             { name: 'Accueil', path: '/' },
@@ -84,6 +86,18 @@ export default async function PublicCampaignPage({ params }: { params: Promise<{
             </p>
 
             {c.brief && <p className="mt-4 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-ink/80">{c.brief}</p>}
+
+            <div className="mt-5 sm:max-w-md">
+              <CampaignBriefDetails
+                brief={{
+                  platforms: c.platforms,
+                  contentType: c.contentType,
+                  deliverableQuantity: c.deliverableQuantity,
+                  mandatoryTags: c.mandatoryTags,
+                  deadline: c.deadline,
+                }}
+              />
+            </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 sm:max-w-md">
               <div className="rounded-2xl border border-line bg-surface px-4 py-4">

@@ -5,6 +5,29 @@ import { createClient } from '@/lib/supabase/server';
 
 export type DecideState = { error: string | null; ok?: boolean };
 export type ReviewState = { error: string | null; ok?: boolean };
+export type VisibilityState = { error: string | null; ok?: boolean };
+
+/**
+ * Owner (or admin) flips a campaign public/private. Authorization lives in the set_campaign_visibility
+ * RPC (owner_id = auth.uid() OR is_admin); it only ever writes the is_public column.
+ */
+export async function setVisibilityAction(_prev: VisibilityState, formData: FormData): Promise<VisibilityState> {
+  const campaign = String(formData.get('campaign') ?? '');
+  const isPublic = String(formData.get('is_public') ?? '') === 'true';
+  if (!campaign) return { error: 'Campagne manquante.' };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('set_campaign_visibility', { p_campaign_id: campaign, p_is_public: isPublic });
+
+  if (error) {
+    const msg = (error.message ?? '').trim();
+    if (msg === 'not_authorized') return { error: "Vous n'êtes pas autorisé." };
+    return { error: 'Changement de visibilité impossible. Réessayez.' };
+  }
+
+  revalidatePath('/business/campaigns/[id]', 'page');
+  return { error: null, ok: true };
+}
 
 /**
  * Owner (or admin) approves/rejects a creator application. Authorization + capacity are enforced in

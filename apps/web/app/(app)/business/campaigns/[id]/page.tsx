@@ -8,6 +8,8 @@ import { ApplicantRow, type Applicant } from './applicant-row';
 import { ProofRow, type ProofItem } from './proof-row';
 import { CancelCampaignButton } from './cancel-campaign-button';
 import { ShareCampaignButton } from '@/components/share-campaign-button';
+import { CampaignBriefDetails } from '@/components/campaign-brief-details';
+import { VisibilityToggle } from './visibility-toggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +21,7 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
   const supabase = await createClient();
   const { data: campaign } = await supabase
     .from('campaigns')
-    .select('id, owner_id, title, brief, category, target_country, status, total_budget_fcfa, payout_per_creator_fcfa, creator_count_target')
+    .select('id, owner_id, title, brief, category, target_country, status, total_budget_fcfa, payout_per_creator_fcfa, creator_count_target, is_public, platforms, content_type, deliverable_quantity, mandatory_tags, deadline')
     .eq('id', id)
     .maybeSingle();
 
@@ -99,10 +101,26 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
           <span className="text-muted">{campaign.creator_count_target} créateurs · {fmtFcfa(campaign.payout_per_creator_fcfa)} / créateur</span>
           <span className="font-display font-extrabold text-ink">{fmtFcfa(campaign.total_budget_fcfa)}</span>
         </div>
+
+        <div className="mt-3">
+          <CampaignBriefDetails
+            brief={{
+              platforms: campaign.platforms ?? [],
+              contentType: campaign.content_type,
+              deliverableQuantity: campaign.deliverable_quantity,
+              mandatoryTags: campaign.mandatory_tags,
+              deadline: campaign.deadline,
+            }}
+          />
+        </div>
+
         {(campaign.status === 'draft' || campaign.status === 'pending_funding') && (
           <CancelCampaignButton campaignId={campaign.id} />
         )}
-        {(campaign.status === 'published' || campaign.status === 'in_progress') && (
+        {campaign.status !== 'cancelled' && campaign.status !== 'completed' && (
+          <VisibilityToggle campaignId={campaign.id} isPublic={campaign.is_public} />
+        )}
+        {campaign.is_public && (campaign.status === 'published' || campaign.status === 'in_progress') && (
           <ShareCampaignButton campaignId={campaign.id} />
         )}
       </div>

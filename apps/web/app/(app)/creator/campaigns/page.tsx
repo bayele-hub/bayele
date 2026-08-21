@@ -3,6 +3,7 @@ import { Megaphone, MapPin, Coins } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa } from '@/lib/data/campaigns';
+import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { ApplyButton } from './apply-button';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,7 @@ export default async function CreatorCampaigns() {
   const [{ data: campaigns }, { data: mine }] = await Promise.all([
     supabase
       .from('campaigns')
-      .select('id, title, brief, category, target_country, payout_per_creator_fcfa, creator_count_target, status, created_at')
+      .select('id, title, brief, category, target_country, payout_per_creator_fcfa, creator_count_target, status, created_at, platforms, content_type, deliverable_quantity, mandatory_tags, deadline')
       .in('status', ['published', 'in_progress'])
       .order('created_at', { ascending: false }),
     supabase.from('campaign_creators').select('campaign_id').eq('creator_id', session.userId),
@@ -60,6 +61,17 @@ export default async function CreatorCampaigns() {
                   </p>
                 </div>
                 <ApplyButton campaignId={c.id} />
+              </div>
+              <div className="mt-3">
+                <CampaignBriefDetails
+                  brief={{
+                    platforms: c.platforms ?? [],
+                    contentType: c.content_type,
+                    deliverableQuantity: c.deliverable_quantity,
+                    mandatoryTags: c.mandatory_tags,
+                    deadline: c.deadline,
+                  }}
+                />
               </div>
             </li>
           ))}

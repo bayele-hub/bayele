@@ -14,6 +14,12 @@ export interface PublicCampaign {
   createdAt: string;
   brandName: string;
   brandHandle: string | null;
+  // Structured deliverables.
+  platforms: string[];
+  contentType: string | null;
+  deliverableQuantity: number | null;
+  mandatoryTags: string | null;
+  deadline: string | null;
 }
 
 // Only these two states are publicly shareable: a funded, open campaign creators can still join.
@@ -32,8 +38,9 @@ export async function getPublicCampaign(id: string): Promise<PublicCampaign | nu
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('campaigns')
-      .select('id, owner_id, title, brief, category, target_country, status, payout_per_creator_fcfa, creator_count_target, created_at')
+      .select('id, owner_id, title, brief, category, target_country, status, payout_per_creator_fcfa, creator_count_target, created_at, platforms, content_type, deliverable_quantity, mandatory_tags, deadline')
       .eq('id', id)
+      .eq('is_public', true) // the public route serves ONLY public campaigns; private ones 404 here
       .in('status', SHAREABLE)
       .maybeSingle();
     if (error || !data) return null;
@@ -58,6 +65,11 @@ export async function getPublicCampaign(id: string): Promise<PublicCampaign | nu
       createdAt: data.created_at,
       brandName: owner?.display_name ?? 'Une marque',
       brandHandle: owner?.handle ?? null,
+      platforms: data.platforms ?? [],
+      contentType: data.content_type ?? null,
+      deliverableQuantity: data.deliverable_quantity ?? null,
+      mandatoryTags: data.mandatory_tags ?? null,
+      deadline: data.deadline ?? null,
     };
   } catch {
     return null;
@@ -71,6 +83,7 @@ export async function listPublicCampaignIds(limit = 500): Promise<{ id: string; 
     const { data, error } = await supabase
       .from('campaigns')
       .select('id, created_at')
+      .eq('is_public', true)
       .in('status', SHAREABLE)
       .order('created_at', { ascending: false })
       .limit(limit);

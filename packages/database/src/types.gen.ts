@@ -173,10 +173,16 @@ export type Database = {
         Row: {
           brief: string
           category: string
+          content_type: string | null
           created_at: string
           creator_count_target: number
+          deadline: string | null
+          deliverable_quantity: number | null
           id: string
+          is_public: boolean
+          mandatory_tags: string | null
           match_pass_paid: boolean
+          platforms: string[]
           owner_id: string
           owner_role: Database["public"]["Enums"]["user_role"]
           payout_per_creator_fcfa: number
@@ -190,10 +196,16 @@ export type Database = {
         Insert: {
           brief: string
           category: string
+          content_type?: string | null
           created_at?: string
           creator_count_target?: number
+          deadline?: string | null
+          deliverable_quantity?: number | null
           id?: string
+          is_public?: boolean
+          mandatory_tags?: string | null
           match_pass_paid?: boolean
+          platforms?: string[]
           owner_id: string
           owner_role: Database["public"]["Enums"]["user_role"]
           payout_per_creator_fcfa: number
@@ -207,10 +219,16 @@ export type Database = {
         Update: {
           brief?: string
           category?: string
+          content_type?: string | null
           created_at?: string
           creator_count_target?: number
+          deadline?: string | null
+          deliverable_quantity?: number | null
           id?: string
+          is_public?: boolean
+          mandatory_tags?: string | null
           match_pass_paid?: boolean
+          platforms?: string[]
           owner_id?: string
           owner_role?: Database["public"]["Enums"]["user_role"]
           payout_per_creator_fcfa?: number
@@ -712,6 +730,13 @@ export type Database = {
           p_campaign_id: string
         }
         Returns: string
+      }
+      set_campaign_visibility: {
+        Args: {
+          p_campaign_id: string
+          p_is_public: boolean
+        }
+        Returns: undefined
       }
       creator_submit_proof: {
         Args: {

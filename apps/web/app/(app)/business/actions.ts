@@ -29,7 +29,21 @@ export async function createCampaignAction(_prev: CampaignState, formData: FormD
   const payout = Math.round(Number(formData.get('payout') ?? 0));
   const count = Math.round(Number(formData.get('count') ?? 0));
 
+  // Structured deliverable fields — these make expectations explicit (what proof-of-post is judged on).
+  const platforms = String(formData.get('platforms') ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const contentType = String(formData.get('content_type') ?? '').trim() || null;
+  const quantity = Math.max(1, Math.round(Number(formData.get('quantity') ?? 1))) || 1;
+  const mandatoryTags = String(formData.get('mandatory_tags') ?? '').trim() || null;
+  const deadlineRaw = String(formData.get('deadline') ?? '').trim();
+  const deadline = /^\d{4}-\d{2}-\d{2}$/.test(deadlineRaw) ? deadlineRaw : null;
+  // Visibility: private by default (signed-in creators only); brand opts a campaign public.
+  const isPublic = String(formData.get('is_public') ?? '') === 'true';
+
   if (!title || !brief || !category) return { error: 'Titre, brief et catégorie sont requis.' };
+  if (!platforms.length || !contentType) return { error: 'Indiquez au moins une plateforme et un type de contenu.' };
   if (payout <= 0 || count <= 0) return { error: 'Indiquez un paiement par créateur et un nombre de créateurs.' };
 
   const { total } = computeBudget(payout, count, rate);
@@ -47,6 +61,12 @@ export async function createCampaignAction(_prev: CampaignState, formData: FormD
     creator_count_target: count,
     platform_fee_rate: rate,
     status: 'draft',
+    platforms,
+    content_type: contentType,
+    deliverable_quantity: quantity,
+    mandatory_tags: mandatoryTags,
+    deadline,
+    is_public: isPublic,
   });
 
   if (error) return { error: 'La création a échoué. Vérifiez les montants et réessayez.' };
