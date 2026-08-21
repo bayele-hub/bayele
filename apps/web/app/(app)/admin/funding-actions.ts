@@ -39,5 +39,6 @@ export async function fundCampaignAction(_prev: FundState, formData: FormData): 
   }
 
   revalidatePath('/admin/dashboard');
+  revalidatePath('/admin/funding'); // the just-funded campaign must leave its own queue too
   return { error: null, ok: true };
 }

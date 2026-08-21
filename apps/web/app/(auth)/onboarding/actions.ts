@@ -11,7 +11,7 @@ type OnboardPlatforms = Database['public']['Functions']['onboard_profile']['Args
 const ROLES: Role[] = ['creator', 'consultant', 'business'];
 const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
 // Keep in sync with ONBOARD_SOCIALS in [role]/onboarding-form.tsx (the fields rendered there).
-const ONBOARD_SOCIALS = ['whatsapp', 'instagram', 'tiktok', 'youtube', 'linkedin'] as const;
+const ONBOARD_SOCIALS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'youtube', 'linkedin'] as const;
 
 // Map the RPC's stable error codes to French, user-facing copy.
 const ERR_FR: Record<string, string> = {
@@ -50,11 +50,12 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     return v.length ? v : undefined;
   };
 
-  // The avatar_url hidden field is client-supplied, so only accept a URL that actually points at our
-  // public avatars bucket — otherwise ignore it rather than persisting an arbitrary external URL.
+  // The avatar_url hidden field is client-supplied, so only accept a URL that points at THIS user's
+  // own folder in the public avatars bucket (avatars/{userId}/…). This rejects both arbitrary external
+  // URLs and another user's avatar path; anything else is ignored rather than persisted.
   const avatarRaw = opt('avatar_url');
   const avatarUrl =
-    avatarRaw && /\/storage\/v1\/object\/public\/avatars\//.test(avatarRaw) ? avatarRaw : undefined;
+    avatarRaw && avatarRaw.includes(`/storage/v1/object/public/avatars/${user.id}/`) ? avatarRaw : undefined;
 
   // Build the creator's social platforms JSON ({ instagram: { url, followers }, … }) from the optional
   // onboarding fields; empty URLs are dropped. Non-creator roles submit none.

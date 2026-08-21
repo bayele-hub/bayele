@@ -12,7 +12,7 @@ type CC = 'CM' | 'CI' | 'GA';
 
 // Curated primary networks for onboarding (the rest are addable later in Profil) — keeps signup fast.
 // Keep this list in sync with ONBOARD_SOCIALS in ../actions.ts, which persists these same keys.
-const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'tiktok', 'youtube', 'linkedin'];
+const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'youtube', 'linkedin'];
 
 const COUNTRIES: { code: CC; label: string }[] = [
   { code: 'CM', label: '🇨🇲 Cameroun' },

@@ -16,7 +16,11 @@ export default async function BusinessDashboard() {
   const [{ data: campaigns }, { data: retainers }, { data: bp }] = await Promise.all([
     supabase
       .from('campaigns')
+      // Scope to this brand's own campaigns. The campaigns SELECT policy also exposes any
+      // published/in_progress/completed campaign (that path feeds creators), so without this filter
+      // the KPIs and list would fold in other brands' campaigns.
       .select('id, title, status, total_budget_fcfa, payout_per_creator_fcfa, creator_count_target, target_country, created_at')
+      .eq('owner_id', session.userId)
       .order('created_at', { ascending: false }),
     supabase.from('agency_retainers').select('status'),
     supabase.from('business_profiles').select('company_name, is_verified').eq('user_id', session.userId).maybeSingle(),
@@ -67,6 +71,12 @@ export default async function BusinessDashboard() {
             className="inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"
           >
             <Plus className="h-4 w-4" /> Nouvelle campagne
+          </Link>
+          <Link
+            href="/business/talent"
+            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl border border-line bg-white px-4 text-sm font-bold text-ink transition hover:border-brand hover:text-brand"
+          >
+            <Users className="h-4 w-4" /> Trouver des créateurs
           </Link>
           <Link
             href="/business/retainers"

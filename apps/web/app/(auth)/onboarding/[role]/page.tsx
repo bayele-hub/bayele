@@ -9,12 +9,20 @@ type Role = (typeof VALID)[number];
 
 export default async function OnboardingPage({ params }: { params: Promise<{ role: string }> }) {
   const { role } = await params;
-  if (!VALID.includes(role as Role)) redirect('/auth?mode=signup');
 
+  // Resolve the session first, so a mistyped role URL never bounces a signed-in user to signup.
   const session = await getSession();
-  if (!session.userId) redirect(`/auth?mode=signin`);
+  if (!session.userId) redirect('/auth?mode=signin');
   // Already onboarded → straight to the dispatcher.
   if (session.profile) redirect('/dashboard');
+
+  // The role is bound to what was chosen at signup (captured in auth metadata). This prevents a user
+  // from self-assigning a different — potentially higher-privilege — role by editing the URL. When
+  // signup captured no role, the URL role is honored.
+  const metaRole = session.metadata.role as string | undefined;
+  const intendedRole = VALID.includes(metaRole as Role) ? (metaRole as Role) : null;
+  if (!VALID.includes(role as Role)) redirect(intendedRole ? `/onboarding/${intendedRole}` : '/dashboard');
+  if (intendedRole && intendedRole !== role) redirect(`/onboarding/${intendedRole}`);
 
   const meta = session.metadata;
   const defaults = {

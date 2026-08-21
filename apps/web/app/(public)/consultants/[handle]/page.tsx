@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, Star, Briefcase, MapPin, ArrowUpRight, MessageCircle, Globe, KeyRound } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Star, Briefcase, MapPin, ArrowUpRight, Globe, KeyRound } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
 import { JsonLd } from '@/components/json-ld';
+import { ProfileContactCTA } from '@/components/profile-contact-cta';
 import { getConsultant, type ConsultantLink } from '@/lib/data/talent';
 import { getDictionary } from '@/i18n/dictionaries';
 import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
@@ -95,16 +96,7 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
                   <span className="inline-flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-brand" /> {c.yearsExperience} {t.profile.experience.toLowerCase()}</span>
                 </div>
               </div>
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                <Link href={`/auth?mode=signup&role=business&intent=hire&target=${c.handle}&next=${encodeURIComponent(`/consultants/${c.handle}`)}`}
-                  className="inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 sm:w-auto">
-                  {t.profile.hire}
-                </Link>
-                <Link href={`/auth?mode=signup&role=business&intent=message&target=${c.handle}&next=${encodeURIComponent(`/consultants/${c.handle}`)}`}
-                  className="inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand sm:w-auto">
-                  <MessageCircle className="h-4 w-4" /> {t.profile.message}
-                </Link>
-              </div>
+              <ProfileContactCTA handle={c.handle} kind="consultant" primaryLabel={t.profile.hire} messageLabel={t.profile.message} />
             </div>
 
             {c.bio && <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink/80">{c.bio}</p>}

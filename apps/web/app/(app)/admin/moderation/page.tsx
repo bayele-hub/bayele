@@ -5,6 +5,11 @@ import { ModerationQueue, type PendingRow } from '../moderation-queue';
 
 export const dynamic = 'force-dynamic';
 
+// Highest-privilege role first, matching the users table — so a multi-role profile shows a stable,
+// meaningful role on its approval card instead of whichever row the join happened to return first.
+const ROLE_ORDER = ['super_admin', 'business', 'consultant', 'creator'];
+const primaryRole = (roles: string[]): string => ROLE_ORDER.find((r) => roles.includes(r)) ?? '—';
+
 export default async function AdminModeration() {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
@@ -23,7 +28,7 @@ export default async function AdminModeration() {
     displayName: p.display_name,
     city: p.city,
     country: p.country,
-    role: (p.user_roles?.[0]?.role as string) ?? '—',
+    role: primaryRole((p.user_roles ?? []).map((r) => r.role as string)),
     createdAt: p.created_at,
   }));
 

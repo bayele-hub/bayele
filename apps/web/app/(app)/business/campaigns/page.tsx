@@ -14,7 +14,10 @@ export default async function BusinessCampaigns() {
   const supabase = await createClient();
   const { data: campaigns } = await supabase
     .from('campaigns')
+    // Own campaigns only — the SELECT policy also exposes every published campaign to creators, so
+    // "Mes campagnes" must filter by owner or it would list other brands' campaigns too.
     .select('id, title, status, total_budget_fcfa, payout_per_creator_fcfa, creator_count_target, target_country, created_at')
+    .eq('owner_id', session.userId)
     .order('created_at', { ascending: false });
 
   const list = campaigns ?? [];

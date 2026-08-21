@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, Star, Users, MapPin, ArrowUpRight, MessageCircle } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Star, Users, MapPin, ArrowUpRight } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { SocialIcon, SOCIAL_META } from '@/components/social-icons';
 import { JsonLd } from '@/components/json-ld';
+import { ProfileContactCTA } from '@/components/profile-contact-cta';
 import { getCreator } from '@/lib/data/talent';
 import { getDictionary, formatFollowers } from '@/i18n/dictionaries';
 import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
@@ -86,16 +87,7 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
                   <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5 text-brand" /> {formatFollowers(creator.audienceSize ?? 0, locale)} {t.directory.followers}</span>
                 </div>
               </div>
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                <Link href={`/auth?mode=signup&role=business&intent=invite&target=${creator.handle}&next=${encodeURIComponent(`/creators/${creator.handle}`)}`}
-                  className="inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 sm:w-auto">
-                  {t.profile.invite}
-                </Link>
-                <Link href={`/auth?mode=signup&role=business&intent=message&target=${creator.handle}&next=${encodeURIComponent(`/creators/${creator.handle}`)}`}
-                  className="inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand sm:w-auto">
-                  <MessageCircle className="h-4 w-4" /> {t.profile.message}
-                </Link>
-              </div>
+              <ProfileContactCTA handle={creator.handle} kind="creator" primaryLabel={t.profile.invite} messageLabel={t.profile.message} />
             </div>
 
             {creator.bio && <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink/80">{creator.bio}</p>}

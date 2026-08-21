@@ -40,5 +40,6 @@ export async function payoutAction(_prev: PayoutState, formData: FormData): Prom
   }
 
   revalidatePath('/admin/dashboard');
+  revalidatePath('/admin/payouts'); // clear the paid-out row from its own queue
   return { error: null, ok: true };
 }
