@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { Check, X, Loader2, MapPin } from 'lucide-react';
+import { Check, X, Loader2, MapPin, ShieldQuestion } from 'lucide-react';
 import { decideAction, type DecideState } from './review-actions';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 
@@ -13,6 +13,7 @@ export interface Applicant {
   country: string;
   payout: number;
   status: string;
+  verified: boolean;
 }
 
 export function ApplicantRow({ a }: { a: Applicant }) {
@@ -40,13 +41,20 @@ export function ApplicantRow({ a }: { a: Applicant }) {
                 {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />} Refuser
               </button>
             </form>
-            <form action={action}>
-              <input type="hidden" name="cc" value={a.id} />
-              <input type="hidden" name="decision" value="approve" />
-              <button type="submit" disabled={pending} className="inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-3 text-xs font-bold text-white transition hover:bg-brand-600 active:scale-95 disabled:opacity-50">
-                {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />} Accepter
-              </button>
-            </form>
+            {a.verified ? (
+              <form action={action}>
+                <input type="hidden" name="cc" value={a.id} />
+                <input type="hidden" name="decision" value="approve" />
+                <button type="submit" disabled={pending} className="inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-3 text-xs font-bold text-white transition hover:bg-brand-600 active:scale-95 disabled:opacity-50">
+                  {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />} Accepter
+                </button>
+              </form>
+            ) : (
+              // Payment gate: a creator can only be accepted once Bayele has verified their profile.
+              <span title="Ce créateur doit d'abord être validé par Bayele." className="inline-flex min-h-tap cursor-not-allowed items-center gap-1.5 rounded-xl border border-line bg-surface px-3 text-xs font-bold text-muted">
+                <ShieldQuestion className="h-3.5 w-3.5" /> Validation Bayele en attente
+              </span>
+            )}
           </div>
         ) : (
           <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-bold text-muted">

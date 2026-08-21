@@ -23,6 +23,7 @@ export async function decideAction(_prev: DecideState, formData: FormData): Prom
     if (msg === 'not_authorized') return { error: "Vous n'êtes pas autorisé." };
     if (msg === 'campaign_full') return { error: 'Le nombre de créateurs visé est déjà atteint.' };
     if (msg === 'not_pending') return { error: 'Cette candidature a déjà été traitée.' };
+    if (msg === 'creator_not_verified') return { error: "Ce créateur doit d'abord être validé par Bayele avant d'être accepté." };
     return { error: 'Action impossible. Réessayez.' };
   }
 

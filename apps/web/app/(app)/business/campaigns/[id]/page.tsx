@@ -29,7 +29,7 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
 
   const { data: ccRows } = await supabase
     .from('campaign_creators')
-    .select('id, status, agreed_payout_fcfa, creator:profiles!campaign_creators_creator_id_fkey(display_name, handle, city, country)')
+    .select('id, status, agreed_payout_fcfa, creator:profiles!campaign_creators_creator_id_fkey(display_name, handle, city, country, status)')
     .eq('campaign_id', id)
     .order('created_at', { ascending: true });
 
@@ -51,8 +51,9 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
     }),
   );
 
+  type CreatorEmbed = { display_name: string; handle: string; city: string; country: string; status: string };
   const applicants: Applicant[] = rows.map((r) => {
-    const c = r.creator as { display_name: string; handle: string; city: string; country: string } | { display_name: string; handle: string; city: string; country: string }[] | null;
+    const c = r.creator as CreatorEmbed | CreatorEmbed[] | null;
     const cr = Array.isArray(c) ? c[0] : c;
     return {
       id: r.id,
@@ -62,6 +63,7 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
       country: cr?.country ?? '',
       payout: r.agreed_payout_fcfa,
       status: r.status,
+      verified: cr?.status === 'active',
     };
   });
 

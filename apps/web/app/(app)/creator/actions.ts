@@ -24,7 +24,7 @@ export async function applyAction(_prev: ApplyState, formData: FormData): Promis
   if (error) {
     const msg = (error.message ?? '').trim();
     if (msg === 'not_a_creator') return { error: 'Seuls les créateurs peuvent postuler.' };
-    if (msg === 'profile_not_active') return { error: 'Votre profil doit être validé avant de postuler.' };
+    if (msg === 'profile_not_eligible') return { error: "Votre compte n'est pas éligible pour postuler." };
     if (msg === 'already_applied') return { error: 'Vous avez déjà postulé à cette campagne.' };
     if (msg === 'campaign_not_open') return { error: "Cette campagne n'accepte plus de candidatures." };
     if (msg === 'campaign_not_found') return { error: 'Campagne introuvable.' };

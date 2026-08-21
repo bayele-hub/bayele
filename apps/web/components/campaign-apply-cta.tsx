@@ -60,17 +60,19 @@ export async function CampaignApplyCTA({ campaignId }: { campaignId: string }) {
     );
   }
 
-  // Creator, but profile not yet approved → approval-gated apply.
-  if (session.profile?.status !== 'active') {
+  // Suspended/rejected accounts can't apply. Pending + active creators CAN apply — selection is
+  // still gated (a brand can only approve a verified creator), so applying early is safe.
+  const status = session.profile.status;
+  if (status === 'suspended' || status === 'rejected') {
     return (
-      <div className="flex items-start gap-2 rounded-xl border border-accent-soft bg-accent-soft/50 p-3 text-xs text-accent sm:max-w-xs">
+      <div className="flex items-start gap-2 rounded-xl border border-line bg-surface p-3 text-xs text-muted sm:max-w-xs">
         <Clock className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>Votre profil est en cours de validation. Vous pourrez postuler dès qu&apos;il sera approuvé.</span>
+        <span>Votre compte n&apos;est pas éligible pour postuler pour le moment.</span>
       </div>
     );
   }
 
-  // Active creator: already applied → badge; else the real apply action.
+  // Already applied → status badge.
   const supabase = await createClient();
   const { data: existing } = await supabase
     .from('campaign_creators')
@@ -87,5 +89,13 @@ export async function CampaignApplyCTA({ campaignId }: { campaignId: string }) {
     );
   }
 
-  return <ApplyButton campaignId={campaignId} />;
+  // Apply now. A pending creator sees a verification hint so expectations are clear.
+  return (
+    <div className="flex flex-col gap-1.5">
+      <ApplyButton campaignId={campaignId} />
+      {status !== 'active' && (
+        <p className="text-[11px] text-muted">Votre profil est en cours de validation par Bayele — vous pourrez être retenu une fois vérifié.</p>
+      )}
+    </div>
+  );
 }
