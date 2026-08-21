@@ -1,7 +1,8 @@
 'use client';
 
 import { useActionState } from 'react';
-import { Check, X, Loader2, MapPin, ShieldQuestion } from 'lucide-react';
+import Link from 'next/link';
+import { Check, X, Loader2, MapPin, ShieldQuestion, MessageCircle } from 'lucide-react';
 import { decideAction, type DecideState } from './review-actions';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 
@@ -29,6 +30,12 @@ export function ApplicantRow({ a }: { a: Applicant }) {
             <span className="truncate">@{a.handle}</span>
             <span className="inline-flex shrink-0 items-center gap-1"><MapPin className="h-3 w-3" /> {a.city} · {a.country}</span>
           </div>
+          <Link
+            href={`/messages/open?ctx=campaign_creator&id=${a.id}`}
+            className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-brand hover:underline"
+          >
+            <MessageCircle className="h-3 w-3" /> Message
+          </Link>
         </div>
 
         {pendingDecision ? (

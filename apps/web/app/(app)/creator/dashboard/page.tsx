@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight } from 'lucide-react';
+import { Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight, MessageCircle } from 'lucide-react';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
@@ -134,6 +134,13 @@ export default async function CreatorDashboard() {
                       </div>
                     </div>
                   </div>
+
+                  <Link
+                    href={`/messages/open?ctx=campaign_creator&id=${a.id}`}
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" /> Contacter la marque
+                  </Link>
 
                   {a.status === 'approved' && <ProofForm cc={a.id} />}
                   {a.status === 'content_submitted' && (

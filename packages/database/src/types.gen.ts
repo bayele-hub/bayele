@@ -249,6 +249,96 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          business_id: string
+          business_last_read_at: string | null
+          context_id: string
+          context_type: Database["public"]["Enums"]["conversation_context"]
+          counterparty_id: string
+          counterparty_last_read_at: string | null
+          created_at: string
+          id: string
+          last_message_at: string | null
+        }
+        Insert: {
+          business_id: string
+          business_last_read_at?: string | null
+          context_id: string
+          context_type: Database["public"]["Enums"]["conversation_context"]
+          counterparty_id: string
+          counterparty_last_read_at?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+        }
+        Update: {
+          business_id?: string
+          business_last_read_at?: string | null
+          context_id?: string
+          context_type?: Database["public"]["Enums"]["conversation_context"]
+          counterparty_id?: string
+          counterparty_last_read_at?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_counterparty_id_fkey"
+            columns: ["counterparty_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultant_profiles: {
         Row: {
           agency_access: boolean
@@ -731,6 +821,26 @@ export type Database = {
         }
         Returns: string
       }
+      open_conversation: {
+        Args: {
+          p_context_id: string
+          p_context_type: Database["public"]["Enums"]["conversation_context"]
+        }
+        Returns: string
+      }
+      send_message: {
+        Args: {
+          p_body: string
+          p_conversation_id: string
+        }
+        Returns: string
+      }
+      mark_conversation_read: {
+        Args: {
+          p_conversation_id: string
+        }
+        Returns: undefined
+      }
       set_campaign_visibility: {
         Args: {
           p_campaign_id: string
@@ -866,6 +976,7 @@ export type Database = {
         | "completed"
         | "disputed"
         | "cancelled"
+      conversation_context: "campaign_creator" | "retainer"
       country_code: "CM" | "GA" | "CI"
       creator_campaign_status:
         | "invited"
@@ -1032,6 +1143,7 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["pending_review", "active", "suspended", "rejected"],
+      conversation_context: ["campaign_creator", "retainer"],
       campaign_status: [
         "draft",
         "pending_funding",

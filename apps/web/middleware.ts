@@ -19,7 +19,7 @@ export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   // Precise prefixes: the trailing slash on /creator/ and /consultant/ is deliberate so the PUBLIC
   // directory (/creators, /consultants — plural) is NOT gated, only the role areas (/creator/…).
-  const AUTH_PREFIXES = ['/dashboard', '/onboarding', '/admin', '/creator/', '/consultant/', '/business/', '/profile'];
+  const AUTH_PREFIXES = ['/dashboard', '/onboarding', '/admin', '/creator/', '/consultant/', '/business/', '/profile', '/messages'];
   const needsAuth = AUTH_PREFIXES.some((p) => path === p || path.startsWith(p));
 
   if (!needsAuth) return NextResponse.next();
