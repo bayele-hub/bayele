@@ -17,6 +17,8 @@ export interface ConversationView {
   counterpartyName: string;
   counterpartyAvatarUrl: string | null;
   counterpartyHandle: string | null;
+  /** Whether the viewer has muted their own side of this thread. */
+  muted: boolean;
 }
 
 /**
@@ -30,12 +32,13 @@ export async function getConversationView(conversationId: string): Promise<Conve
   const supabase = await createClient();
   const { data: conv } = await supabase
     .from('conversations')
-    .select('id, business_id, counterparty_id')
+    .select('id, business_id, counterparty_id, business_muted, counterparty_muted')
     .eq('id', conversationId)
     .maybeSingle();
   if (!conv) return null;
 
-  const otherId = conv.business_id === session.userId ? conv.counterparty_id : conv.business_id;
+  const isBusiness = conv.business_id === session.userId;
+  const otherId = isBusiness ? conv.counterparty_id : conv.business_id;
   const { data: other } = await supabase
     .from('profiles')
     .select('display_name, avatar_url, handle')
@@ -48,6 +51,7 @@ export async function getConversationView(conversationId: string): Promise<Conve
     counterpartyName: other?.display_name ?? 'Interlocuteur',
     counterpartyAvatarUrl: other?.avatar_url ?? null,
     counterpartyHandle: other?.handle ?? null,
+    muted: isBusiness ? conv.business_muted : conv.counterparty_muted,
   };
 }
 

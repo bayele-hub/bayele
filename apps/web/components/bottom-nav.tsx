@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { Home, Users, MessagesSquare, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import type { Role } from '@/lib/auth/session';
+import { useUnreadCount } from '@/components/unread-messages-provider';
 
 /** Mobile-first bottom nav (hidden ≥ sm, where the header carries navigation). Per-role last tab. */
-export function BottomNav({ role, unreadMessages = 0 }: { role: Role; unreadMessages?: number }) {
+export function BottomNav({ role }: { role: Role }) {
+  const unread = useUnreadCount();
+
   const roleTab =
     role === 'super_admin'
       ? { href: '/admin/dashboard', label: 'Modération', Icon: ShieldCheck, badge: 0 }
@@ -14,7 +19,7 @@ export function BottomNav({ role, unreadMessages = 0 }: { role: Role; unreadMess
   const items = [
     { href: '/dashboard', label: 'Accueil', Icon: Home, badge: 0 },
     { href: '/creators', label: 'Créateurs', Icon: Users, badge: 0 },
-    { href: '/messages', label: 'Messages', Icon: MessagesSquare, badge: unreadMessages },
+    { href: '/messages', label: 'Messages', Icon: MessagesSquare, badge: unread },
     roleTab,
   ];
 

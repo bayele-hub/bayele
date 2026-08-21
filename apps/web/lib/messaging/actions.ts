@@ -36,3 +36,25 @@ export async function markConversationRead(conversationId: string): Promise<void
   const supabase = await createClient();
   await supabase.rpc('mark_conversation_read', { p_conversation_id: conversationId });
 }
+
+/** Mute/unmute the caller's side of a thread (silences message_received notifications). */
+export async function setMutedAction(conversationId: string, muted: boolean): Promise<{ error: string | null }> {
+  if (!conversationId) return { error: 'Conversation manquante.' };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('set_conversation_muted', {
+    p_conversation_id: conversationId,
+    p_muted: muted,
+  });
+  return { error: error ? 'Action impossible. Réessayez.' : null };
+}
+
+/** Report a thread to the moderators for dispute review. */
+export async function reportConversationAction(conversationId: string, reason: string): Promise<{ error: string | null }> {
+  if (!conversationId) return { error: 'Conversation manquante.' };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('report_conversation', {
+    p_conversation_id: conversationId,
+    p_reason: reason.trim().slice(0, 500),
+  });
+  return { error: error ? "Le signalement a échoué. Réessayez." : null };
+}

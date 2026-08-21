@@ -253,10 +253,12 @@ export type Database = {
         Row: {
           business_id: string
           business_last_read_at: string | null
+          business_muted: boolean
           context_id: string
           context_type: Database["public"]["Enums"]["conversation_context"]
           counterparty_id: string
           counterparty_last_read_at: string | null
+          counterparty_muted: boolean
           created_at: string
           id: string
           last_message_at: string | null
@@ -264,10 +266,12 @@ export type Database = {
         Insert: {
           business_id: string
           business_last_read_at?: string | null
+          business_muted?: boolean
           context_id: string
           context_type: Database["public"]["Enums"]["conversation_context"]
           counterparty_id: string
           counterparty_last_read_at?: string | null
+          counterparty_muted?: boolean
           created_at?: string
           id?: string
           last_message_at?: string | null
@@ -275,10 +279,12 @@ export type Database = {
         Update: {
           business_id?: string
           business_last_read_at?: string | null
+          business_muted?: boolean
           context_id?: string
           context_type?: Database["public"]["Enums"]["conversation_context"]
           counterparty_id?: string
           counterparty_last_read_at?: string | null
+          counterparty_muted?: boolean
           created_at?: string
           id?: string
           last_message_at?: string | null
@@ -857,6 +863,20 @@ export type Database = {
       my_unread_conversation_count: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      set_conversation_muted: {
+        Args: {
+          p_conversation_id: string
+          p_muted: boolean
+        }
+        Returns: undefined
+      }
+      report_conversation: {
+        Args: {
+          p_conversation_id: string
+          p_reason: string
+        }
+        Returns: undefined
       }
       set_campaign_visibility: {
         Args: {

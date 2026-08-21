@@ -23,6 +23,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
       counterpartyName={view.counterpartyName}
       counterpartyAvatarUrl={view.counterpartyAvatarUrl}
       initialMessages={messages}
+      initialMuted={view.muted}
     />
   );
 }
