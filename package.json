@@ -1,6 +1,8 @@
 {
   "name": "bayele",
   "private": true,
+  "author": "MbehGil",
+  "license": "UNLICENSED",
   "packageManager": "pnpm@9.12.0",
   "engines": { "node": ">=20.11" },
   "pnpm": {
