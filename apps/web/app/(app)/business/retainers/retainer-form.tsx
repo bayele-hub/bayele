@@ -1,12 +1,37 @@
 'use client';
 
-import { useActionState, useState } from 'react';
-import { Loader2, AlertCircle, Check, ArrowRight, ExternalLink } from 'lucide-react';
-import { createRetainerAction, type RetainerState } from './actions';
+import { useActionState, useEffect, useRef, useState } from 'react';
+import { Loader2, AlertCircle, Check, ArrowRight, ExternalLink, UserCheck, UserX } from 'lucide-react';
+import { createRetainerAction, lookupConsultantAction, type RetainerState } from './actions';
 import { fmtFcfa } from '@/lib/data/campaigns';
 
 export function RetainerForm({ consultantHandle, consultantName }: { consultantHandle: string; consultantName?: string }) {
   const [state, action, pending] = useActionState<RetainerState, FormData>(createRetainerAction, { error: null });
+
+  // Live consultant resolution as the identifier is typed (debounced), so the business confirms who
+  // they're commissioning before submitting. Seeded with any name resolved server-side via ?consultant=.
+  const [handle, setHandle] = useState(consultantHandle);
+  const [lookup, setLookup] = useState<{ status: 'idle' | 'loading' | 'found' | 'missing'; name: string | null }>(
+    consultantName ? { status: 'found', name: consultantName } : { status: 'idle', name: null },
+  );
+  const reqId = useRef(0);
+
+  useEffect(() => {
+    const h = handle.trim().replace(/^@/, '');
+    if (!h) {
+      setLookup({ status: 'idle', name: null });
+      return;
+    }
+    setLookup((prev) => ({ status: 'loading', name: prev.name }));
+    const id = ++reqId.current;
+    const t = setTimeout(async () => {
+      const res = await lookupConsultantAction(h);
+      if (id !== reqId.current) return; // a newer keystroke superseded this lookup
+      setLookup(res.found ? { status: 'found', name: res.name } : { status: 'missing', name: null });
+    }, 350);
+    return () => clearTimeout(t);
+  }, [handle]);
+
   const [contract, setContract] = useState(1_000_000);
   const [cut, setCut] = useState(150_000);
   const [fee, setFee] = useState(550_000);
@@ -55,11 +80,27 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
         <input
           name="consultant"
           required
-          defaultValue={consultantHandle}
+          value={handle}
+          onChange={(e) => setHandle(e.target.value)}
           placeholder="@consultant"
+          autoComplete="off"
           className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
         />
-        {consultantName && <p className="mt-1 text-[11px] text-muted">Contrat pour {consultantName}.</p>}
+        {lookup.status === 'loading' && (
+          <p className="mt-1 flex items-center gap-1 text-[11px] text-muted">
+            <Loader2 className="h-3 w-3 animate-spin" /> Recherche du consultant…
+          </p>
+        )}
+        {lookup.status === 'found' && lookup.name && (
+          <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+            <UserCheck className="h-3 w-3" /> Contrat pour {lookup.name}.
+          </p>
+        )}
+        {lookup.status === 'missing' && (
+          <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-rose-600">
+            <UserX className="h-3 w-3" /> Aucun consultant trouvé pour cet identifiant.
+          </p>
+        )}
       </div>
 
       <NumField label="Valeur du contrat (FCFA)" name="contract" value={contract} onChange={setContract} />

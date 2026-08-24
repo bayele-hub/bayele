@@ -79,7 +79,7 @@ export default async function BusinessDashboard() {
             <Users className="h-4 w-4" /> Trouver des créateurs
           </Link>
           <Link
-            href="/business/retainers"
+            href="/business/retainers/new"
             className="inline-flex min-h-tap items-center gap-1.5 rounded-xl border border-line bg-white px-4 text-sm font-bold text-ink transition hover:border-brand hover:text-brand"
           >
             <Handshake className="h-4 w-4" /> Confier à un consultant

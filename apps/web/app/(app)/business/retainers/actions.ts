@@ -8,6 +8,29 @@ import { getSession } from '@/lib/auth/session';
 
 export type RetainerState = { error: string | null; ok?: boolean; paymentUrl?: string | null; mode?: 'sokoclick' | 'manual' };
 
+export type ConsultantLookup = { name: string | null; found: boolean };
+
+/**
+ * Resolve a consultant handle → display name for the retainer form, so the business sees who they're
+ * about to commission before submitting. Only matches an ACTIVE consultant (same filter the directory
+ * uses); RLS keeps the public directory readable. Returns found:false for anything else.
+ */
+export async function lookupConsultantAction(handleRaw: string): Promise<ConsultantLookup> {
+  const handle = handleRaw.trim().replace(/^@/, '');
+  if (!handle) return { name: null, found: false };
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('profiles')
+    .select('display_name, user_roles!inner(role)')
+    .eq('handle', handle)
+    .eq('user_roles.role', 'consultant')
+    .eq('status', 'active')
+    .maybeSingle();
+
+  return { name: data?.display_name ?? null, found: Boolean(data) };
+}
+
 /**
  * A business commissions a consultant with an agency retainer. Two DB hops, both RLS-safe:
  *   1) propose_retainer — self-scoped to the business (auth.uid()), validates the money split.
