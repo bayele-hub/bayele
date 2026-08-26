@@ -14,6 +14,7 @@ export async function SiteFooter() {
           <span className="ml-2 text-[12px] text-muted">{t.footer.rights.replace('{year}', String(year))}</span>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-[13px] text-muted">
+          <Link href="/pricing" className="inline-flex min-h-tap items-center hover:text-brand">{t.nav.pricing}</Link>
           <Link href="/legal#cgu" className="inline-flex min-h-tap items-center hover:text-brand">{t.footer.cgu}</Link>
           <Link href="/legal#privacy" className="inline-flex min-h-tap items-center hover:text-brand">{t.footer.privacy}</Link>
           <Link href="/legal#ohada" className="inline-flex min-h-tap items-center hover:text-brand">{t.footer.ohada}</Link>

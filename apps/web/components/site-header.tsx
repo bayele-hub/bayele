@@ -22,6 +22,7 @@ export async function SiteHeader() {
         <nav className="hidden items-center gap-7 text-sm font-medium text-muted md:flex">
           <Link href="/creators" className="hover:text-ink">{t.nav.creators}</Link>
           <Link href="/consultants" className="hover:text-ink">{t.nav.consultants}</Link>
+          <Link href="/pricing" className="hover:text-ink">{t.nav.pricing}</Link>
           <Link href="/#escrow" className="hover:text-ink">{t.nav.security}</Link>
           <Link href="/legal#ohada" className="hover:text-ink">{t.nav.billing}</Link>
         </nav>
@@ -49,6 +50,7 @@ export async function SiteHeader() {
         <nav className="mx-auto flex max-w-6xl items-center gap-0.5 px-2 text-xs font-semibold text-muted">
           <Link href="/creators" className="inline-flex min-h-tap items-center whitespace-nowrap rounded-lg px-2.5 hover:bg-brand-50 hover:text-brand">{t.nav.creators}</Link>
           <Link href="/consultants" className="inline-flex min-h-tap items-center whitespace-nowrap rounded-lg px-2.5 hover:bg-brand-50 hover:text-brand">{t.nav.consultants}</Link>
+          <Link href="/pricing" className="inline-flex min-h-tap items-center whitespace-nowrap rounded-lg px-2.5 hover:bg-brand-50 hover:text-brand">{t.nav.pricing}</Link>
           <Link href="/#escrow" className="inline-flex min-h-tap items-center whitespace-nowrap rounded-lg px-2.5 hover:bg-brand-50 hover:text-brand">{t.nav.security}</Link>
           <Link href="/legal#ohada" className="inline-flex min-h-tap items-center whitespace-nowrap rounded-lg px-2.5 hover:bg-brand-50 hover:text-brand">{t.nav.billing}</Link>
           {authed ? (
