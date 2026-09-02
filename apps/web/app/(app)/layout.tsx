@@ -46,8 +46,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <UnreadMessagesProvider userId={session.userId} initial={unreadMessages}>
-      <div className="flex min-h-screen flex-col bg-surface">
-        <header className="pt-safe sticky top-0 z-30 border-b border-line bg-white/85 backdrop-blur">
+      {/* Fixed app frame: the shell is pinned to the (dynamic) viewport height so the header and the
+          mobile bottom nav never scroll away and never overlap the content. Only <main> scrolls.
+          This is what keeps chat (and every long page) from being clipped under the sticky nav on
+          phones — where ~95% of our traffic is. `100dvh` tracks the browser UI collapsing on scroll. */}
+      <div className="flex h-[100dvh] flex-col overflow-hidden bg-surface">
+        <header className="pt-safe z-30 shrink-0 border-b border-line bg-white/85 backdrop-blur">
           <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
             <Link href="/dashboard" className="flex items-center gap-2">
               <Image src="/logo.jpeg" alt="Bayele" width={28} height={28} className="h-7 w-7 rounded-lg object-contain" />
@@ -67,7 +71,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 pb-24 sm:pb-8">{children}</main>
+        <main className="mx-auto w-full max-w-5xl flex-1 overflow-y-auto overscroll-contain px-4 py-6">{children}</main>
 
         {session.primary && <BottomNav role={session.primary} />}
       </div>

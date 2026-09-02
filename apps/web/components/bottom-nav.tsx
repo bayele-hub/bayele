@@ -24,7 +24,7 @@ export function BottomNav({ role }: { role: Role }) {
   ];
 
   return (
-    <nav className="pb-safe sticky bottom-0 z-30 border-t border-line bg-white/90 backdrop-blur sm:hidden">
+    <nav className="pb-safe z-30 shrink-0 border-t border-line bg-white/90 backdrop-blur sm:hidden">
       <div className="mx-auto flex max-w-5xl">
         {items.map(({ href, label, Icon, badge }) => (
           <Link

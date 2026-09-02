@@ -158,9 +158,9 @@ export function MessageThread({
   }
 
   return (
-    <section className="mx-auto flex max-w-2xl flex-col">
+    <section className="mx-auto flex h-full max-w-2xl flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-line pb-3">
+      <div className="flex shrink-0 items-center gap-3 border-b border-line pb-3 pt-1">
         <Link href="/messages" aria-label="Retour" className="grid min-h-tap min-w-tap place-items-center text-muted hover:text-ink">
           <ArrowLeft className="h-5 w-5" />
         </Link>
@@ -245,8 +245,9 @@ export function MessageThread({
         </p>
       )}
 
-      {/* Messages */}
-      <div className="flex max-h-[60vh] min-h-[40vh] flex-col gap-2 overflow-y-auto py-4">
+      {/* Messages — the only scrolling region; grows to fill the frame so the composer stays pinned
+          and visible on every phone size (no more clipping under the bottom nav). */}
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain py-4">
         {messages.length === 0 ? (
           <p className="my-auto text-center text-sm text-muted">Aucun message. Écrivez le premier.</p>
         ) : (
@@ -273,8 +274,8 @@ export function MessageThread({
         <div ref={endRef} />
       </div>
 
-      {/* Composer */}
-      <form ref={formRef} action={action} className="border-t border-line pt-3">
+      {/* Composer — pinned below the message list, always visible. */}
+      <form ref={formRef} action={action} className="shrink-0 border-t border-line pb-1 pt-3">
         <input type="hidden" name="conversation" value={conversationId} />
         {showContactNudge && (
           <p className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-700">
