@@ -85,12 +85,12 @@ export default async function HomePage() {
               {/* Depth: two creator portraits peeking behind (decorative; hidden on the smallest screens) */}
               <div aria-hidden className="absolute -left-8 top-10 hidden w-32 -rotate-6 overflow-hidden rounded-3xl border border-line bg-white shadow-card sm:block">
                 <div className="relative aspect-[3/4]">
-                  <Image src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80&auto=format&fit=crop&crop=faces" alt="" fill sizes="128px" className="object-cover" />
+                  <Image src="https://images.unsplash.com/photo-1645736353780-e70a7d508088?w=400&q=80&auto=format&fit=crop&crop=faces" alt="" fill sizes="128px" className="object-cover" />
                 </div>
               </div>
               <div aria-hidden className="absolute -right-8 top-6 hidden w-36 rotate-6 overflow-hidden rounded-3xl border border-line bg-white shadow-card sm:block">
                 <div className="relative aspect-[3/4]">
-                  <Image src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80&auto=format&fit=crop&crop=faces" alt="" fill sizes="144px" className="object-cover" />
+                  <Image src="https://images.unsplash.com/photo-1631831830728-7d33ce562387?w=400&q=80&auto=format&fit=crop&crop=faces" alt="" fill sizes="144px" className="object-cover" />
                 </div>
               </div>
 
@@ -98,7 +98,7 @@ export default async function HomePage() {
               <div className="relative z-10 overflow-hidden rounded-[1.75rem] border border-line bg-white shadow-cardHover">
                 <div className="relative aspect-[4/5]">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=640&q=80&auto=format&fit=crop&crop=faces"
+                    src="https://images.unsplash.com/photo-1610903866883-c280999dcc0e?w=640&q=80&auto=format&fit=crop&crop=faces"
                     alt={t.heroVisual.alt}
                     fill
                     priority
