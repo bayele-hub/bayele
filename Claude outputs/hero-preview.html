@@ -1,0 +1,143 @@
+<title>Bayele Hero Preview</title>
+<style>
+  :root{
+    --ink:#0B1B2B;--muted:#5A6B7B;--line:#E6EBF1;--surface:#F7F9FC;
+    --brand:#1268B8;--brand600:#0E5AA3;--brand50:#EAF2FB;--brand100:#D3E4F7;--brand700:#0B4E92;
+    --accent:#F7940A;--accentSoft:#FEF1DF;--emerald50:#ECFDF5;--emerald600:#059669;
+    --shadowCard:0 1px 2px rgba(11,27,43,.04),0 8px 24px -12px rgba(11,27,43,.12);
+    --shadowHover:0 2px 4px rgba(11,27,43,.06),0 16px 40px -16px rgba(18,104,184,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fff;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  .pill{display:inline-flex;align-items:center;gap:.5rem;border-radius:999px;font-weight:600}
+  .note{background:var(--ink);color:#fff;font-size:12px;text-align:center;padding:8px 16px}
+  .note b{color:var(--accent)}
+  .announce{background:var(--ink);color:rgba(255,255,255,.85);font-size:12px;text-align:center;padding:8px}
+  .dot{width:6px;height:6px;border-radius:999px;background:var(--accent);display:inline-block}
+  header.site{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);backdrop-filter:blur(8px)}
+  .wrap{max-width:1152px;margin:0 auto;padding:0 16px}
+  .navrow{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;max-width:1152px;margin:0 auto}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .logo .b{width:32px;height:32px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800}
+  .logo .d{color:var(--accent)}
+  .navlinks{display:none;gap:28px;font-size:14px;color:var(--muted);font-weight:500}
+  .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:0 20px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;border:0}
+  .btn-brand{background:var(--brand);color:#fff;box-shadow:var(--shadowCard)}
+  .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:600}
+  /* hero */
+  .hero{position:relative;overflow:hidden}
+  .hero .glow{position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(48rem 26rem at 15% -8%,#EAF2FB 0%,transparent 55%),radial-gradient(40rem 24rem at 100% 0%,#FEF1DF 0%,transparent 50%)}
+  .herogrid{max-width:1152px;margin:0 auto;padding:48px 16px 56px;display:grid;gap:40px;align-items:center}
+  @media(min-width:1024px){.herogrid{grid-template-columns:1fr 1fr;padding-top:80px}.navlinks{display:flex}}
+  .badge{border:1px solid var(--brand100);background:var(--brand50);color:var(--brand700);padding:5px 12px;font-size:12px}
+  h1{font-family:"Bricolage Grotesque",Inter,sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.04;margin-top:20px;font-size:2.6rem}
+  @media(min-width:640px){h1{font-size:3.4rem}}
+  .hl{color:var(--brand)} .bd{color:var(--accent)}
+  .sub{margin-top:20px;max-width:28rem;color:var(--muted);font-size:15px;line-height:1.6}
+  .ctas{margin-top:28px;display:flex;flex-direction:column;gap:12px}
+  @media(min-width:640px){.ctas{flex-direction:row}}
+  .proof{margin-top:28px;display:flex;align-items:center;gap:12px}
+  .stack{display:flex}
+  .stack span{width:32px;height:32px;border-radius:999px;border:2px solid #fff;background:var(--brand50);color:var(--brand700);display:grid;place-items:center;font-size:10px;font-weight:700;margin-left:-8px}
+  .stack span:first-child{margin-left:0}
+  .proof p{max-width:16rem;font-size:12px;line-height:1.35;color:var(--muted)}
+  .momo{margin-top:24px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;font-size:12px;font-weight:500;color:var(--muted)}
+  .momo .lab{color:rgba(11,27,43,.7)}
+  .momo .c{display:flex;align-items:center;gap:6px}
+  .cdot{width:10px;height:10px;border-radius:999px;display:inline-block}
+  /* composition */
+  .visual{position:relative}
+  .vglowA{position:absolute;right:-24px;top:-40px;z-index:-1;width:176px;height:176px;border-radius:999px;background:rgba(247,148,10,.25);filter:blur(40px)}
+  .vglowB{position:absolute;bottom:-32px;left:8px;z-index:-1;width:160px;height:160px;border-radius:999px;background:rgba(18,104,184,.15);filter:blur(40px)}
+  .comp{position:relative;margin:0 auto;width:100%;max-width:20rem}
+  .back{position:absolute;overflow:hidden;border-radius:24px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadowCard)}
+  .back img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:3/4}
+  .backL{left:-32px;top:40px;width:128px;transform:rotate(-6deg)}
+  .backR{right:-32px;top:24px;width:144px;transform:rotate(6deg)}
+  @media(max-width:639px){.back{display:none}}
+  .fg{position:relative;z-index:10;overflow:hidden;border-radius:28px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadowHover)}
+  .fg .ph{position:relative;aspect-ratio:4/5}
+  .fg .ph img{width:100%;height:100%;object-fit:cover;display:block}
+  .idband{position:absolute;inset:auto 0 0 0;padding:44px 16px 16px;background:linear-gradient(to top,rgba(11,27,43,.85),rgba(11,27,43,.25) 55%,transparent)}
+  .idband .name{display:flex;align-items:center;gap:6px;color:#fff;font-family:"Bricolage Grotesque",Inter,sans-serif;font-weight:700;font-size:16px}
+  .idband .role{color:rgba(255,255,255,.85);font-size:12px;font-weight:500;margin-top:2px}
+  .chipE{position:absolute;top:-12px;left:20px;z-index:20;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;box-shadow:var(--shadowCard);display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600}
+  .chipP{position:absolute;bottom:-16px;right:-12px;z-index:20;border:1px solid var(--line);background:#fff;border-radius:16px;padding:8px 12px;box-shadow:var(--shadowHover);display:flex;align-items:center;gap:8px}
+  @media(min-width:640px){.chipP{right:-20px}}
+  .chipP .ic{width:32px;height:32px;border-radius:12px;background:var(--emerald50);color:var(--emerald600);display:grid;place-items:center}
+  .chipP .amt{font-size:12px;font-weight:700}
+  .chipP .sub2{font-size:10px;color:var(--muted)}
+  svg{display:block}
+  .cap{font-size:11px;color:var(--muted);text-align:center;padding:10px}
+</style>
+
+<div class="note">Aperçu — <b>proposition de hero</b> (benchmark Fiverr Pro) · design non déployé</div>
+<div class="announce"><span class="dot"></span>&nbsp; Nouveau — retraits instantanés Wave désormais disponibles en Côte d'Ivoire</div>
+
+<header class="site">
+  <div class="navrow">
+    <div class="logo"><span class="b">b<span class="d">.</span></span> Bayele<span class="d">.</span></div>
+    <div class="navlinks"><span>Créateurs</span><span>Consultants</span><span>Tarifs</span><span>Sécurité</span><span>Facturation</span></div>
+    <a class="btn btn-brand" href="#">Commencer</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="glow"></div>
+  <div class="herogrid">
+    <!-- LEFT -->
+    <div>
+      <span class="pill badge"><span class="dot"></span> Marketplace d'influence · Afrique francophone</span>
+      <h1>Monétisez votre contenu.<br>Paiements <span class="hl">sécurisés</span><span class="bd">.</span></h1>
+      <p class="sub">Bayele place le budget des campagnes sous séquestre et le libère vers Mobile Money dès que la diffusion est prouvée — une collaboration plus sûre, pour les créateurs comme pour les marques.</p>
+      <div class="ctas">
+        <a class="btn btn-brand" href="#">Lancer une campagne
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#">Devenir créateur rémunéré</a>
+      </div>
+      <div class="proof">
+        <div class="stack"><span>AW</span><span>BL</span><span>AI</span><span>JU</span></div>
+        <p>Des créateurs rémunérés chaque semaine à Douala, Abidjan &amp; Libreville.</p>
+      </div>
+      <div class="momo">
+        <span class="lab">Retraits vers :</span>
+        <span class="c"><span class="cdot" style="background:#FFCC00"></span> MTN MoMo</span>
+        <span class="c"><span class="cdot" style="background:#FF6A00"></span> Orange Money</span>
+        <span class="c"><span class="cdot" style="background:#1DC6E8"></span> Wave</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: composition -->
+    <div class="visual">
+      <div class="vglowA"></div><div class="vglowB"></div>
+      <div class="comp">
+        <div class="back backL"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80&auto=format&fit=crop&crop=faces" alt=""></div>
+        <div class="back backR"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80&auto=format&fit=crop&crop=faces" alt=""></div>
+
+        <div class="fg">
+          <div class="ph">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=640&q=80&auto=format&fit=crop&crop=faces" alt="Créateur de contenu sur Bayele">
+            <div class="idband">
+              <div class="name">Yao
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F7940A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+              </div>
+              <div class="role">Créateur Tech · Abidjan</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chipE">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1268B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Séquestre sécurisé
+        </div>
+
+        <div class="chipP">
+          <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+          <div><div class="amt">Payé · 35 000 FCFA</div><div class="sub2">Versé via Mobile Money</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="cap">Portraits illustratifs (Unsplash) — à remplacer par des photos sous licence de créateurs camerounais / ivoiriens / gabonais.</div>

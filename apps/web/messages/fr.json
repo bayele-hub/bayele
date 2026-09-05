@@ -18,14 +18,21 @@
     "badge": "Marketplace d'influence · Afrique francophone",
     "titleLine1": "Monétisez votre contenu.",
     "titleLead": "Paiements ",
-    "titleHighlight": "garantis",
-    "subtitle": "Bayele met le budget des campagnes sous séquestre et le libère vers Mobile Money dès que la diffusion est prouvée. Zéro arnaque, zéro attente — pour les créateurs comme pour les marques.",
+    "titleHighlight": "sécurisés",
+    "subtitle": "Bayele place le budget des campagnes sous séquestre et le libère vers Mobile Money dès que la diffusion est prouvée — une collaboration plus sûre, pour les créateurs comme pour les marques.",
     "ctaBrand": "Lancer une campagne",
     "ctaCreator": "Devenir créateur rémunéré",
     "payoutsLabel": "Retraits vers :",
     "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville.",
     "ctaDashboard": "Aller à mon espace",
     "ctaBrowse": "Parcourir les créateurs"
+  },
+  "heroVisual": {
+    "name": "Yao",
+    "role": "Créateur Tech · Abidjan",
+    "escrowChip": "Séquestre sécurisé",
+    "payoutNote": "Versé via Mobile Money",
+    "alt": "Créateur de contenu sur Bayele"
   },
   "trust": {
     "escrowTitle": "Séquestre bloqué",
@@ -92,7 +99,7 @@
     "creatorsTitle": "Pour les créateurs",
     "creatorsDesc": "Soyez payé pour votre contenu — sans courir après l'argent.",
     "creatorsBullets": [
-      "Paiement garanti par séquestre",
+      "Paiement sécurisé par séquestre",
       "Retrait MoMo dès 1 000 FCFA",
       "Profil public qui attire les marques"
     ],

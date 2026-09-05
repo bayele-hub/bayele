@@ -17,15 +17,22 @@
   "hero": {
     "badge": "Influencer marketplace · Francophone Africa",
     "titleLine1": "Monetize your content.",
-    "titleLead": "Payments ",
-    "titleHighlight": "guaranteed",
-    "subtitle": "Bayele holds campaign budgets in escrow and releases them to Mobile Money the moment delivery is proven. No scams, no waiting — for creators and brands alike.",
+    "titleLead": "Secure ",
+    "titleHighlight": "payments",
+    "subtitle": "Bayele holds campaign budgets in escrow and releases them to Mobile Money once delivery is proven — a safer way to collaborate, for creators and brands alike.",
     "ctaBrand": "Launch a campaign",
     "ctaCreator": "Become a paid creator",
     "payoutsLabel": "Withdraw to:",
     "socialProof": "Creators paid every week across Douala, Abidjan & Libreville.",
     "ctaDashboard": "Go to my space",
     "ctaBrowse": "Browse creators"
+  },
+  "heroVisual": {
+    "name": "Yao",
+    "role": "Tech creator · Abidjan",
+    "escrowChip": "Secured escrow",
+    "payoutNote": "Paid via Mobile Money",
+    "alt": "Content creator on Bayele"
   },
   "trust": {
     "escrowTitle": "Locked escrow",
@@ -92,7 +99,7 @@
     "creatorsTitle": "For creators",
     "creatorsDesc": "Get paid for your content — without chasing the money.",
     "creatorsBullets": [
-      "Payment guaranteed by escrow",
+      "Payment secured by escrow",
       "MoMo withdrawal from 1,000 FCFA",
       "A public profile that attracts brands"
     ],

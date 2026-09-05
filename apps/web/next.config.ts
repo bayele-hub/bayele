@@ -10,7 +10,12 @@ const config: NextConfig = {
   ],
   images: {
     // Avatars come from Supabase Storage; blur-hash placeholders per mobile-first spec.
-    remotePatterns: [{ protocol: 'https', hostname: '**.supabase.co' }],
+    // images.unsplash.com serves the illustrative creator portraits in the landing hero
+    // (swap for licensed brand photography when available — see (public)/page.tsx hero).
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.supabase.co' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
   },
   experimental: { optimizePackageImports: ['lucide-react'] },
 };
