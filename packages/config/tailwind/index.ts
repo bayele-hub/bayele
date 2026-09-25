@@ -29,6 +29,8 @@ const preset = {
       fontFamily: {
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        // Apple / Google product-page headline style: SF Pro Display on Apple devices, Inter Tight elsewhere.
+        headline: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'var(--font-headline)', 'system-ui', 'sans-serif'],
       },
       spacing: { tap: '3rem' }, // 48px min tap target (invariant #10)
       boxShadow: {

@@ -92,9 +92,9 @@
     "paidMeta": "MTN MoMo · 2 min ago"
   },
   "scene": {
-    "creatorTag": "Creator · filming",
-    "creatorMeta": "Beauty & fashion",
-    "brandTag": "Brand · local business",
+    "creatorTag": "Creator · on set",
+    "creatorMeta": "Video production",
+    "brandTag": "Brand · leadership",
     "brandMeta": "Brief sent to Bayele",
     "rec": "REC",
     "briefChip": "Brief sent",
@@ -107,8 +107,8 @@
     ],
     "dealNote": "Paid via MTN MoMo once proof is approved",
     "payoutToast": "Paid",
-    "creatorAlt": "Content creator filming herself with her phone",
-    "brandAlt": "Smiling shop owner at her store counter"
+    "creatorAlt": "Content creator on set holding a clapperboard beside a camera",
+    "brandAlt": "Business executive in an orange blazer, confident gaze"
   },
   "trust": {
     "escrowTitle": "Locked escrow",
@@ -169,7 +169,15 @@
         "body": "Mobile Money payout as soon as your proof is approved — no chasing payments."
       }
     ],
-    "creatorsCta": "Create my profile"
+    "creatorsCta": "Create my profile",
+    "brandsLead": "From brief to published campaign — no searching, no risk.",
+    "creatorsLead": "Create, post, get paid: your talent, paid what it's worth.",
+    "brandsImageAlt": "Marketing team planning a campaign around a laptop",
+    "creatorsImageAlt": "Creator filming herself with her camera",
+    "brandsChip": "3 creators proposed",
+    "brandsChipMeta": "Bayele & partner shortlist",
+    "creatorsChip": "Paid",
+    "creatorsChipMeta": "MTN MoMo · proof approved"
   },
   "profileKit": {
     "heading": "Your profile is your media kit",

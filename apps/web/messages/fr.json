@@ -92,14 +92,14 @@
     "paidMeta": "MTN MoMo · il y a 2 min"
   },
   "scene": {
-    "creatorTag": "Créatrice · en tournage",
-    "creatorMeta": "Beauté & mode",
-    "brandTag": "Marque · commerce local",
+    "creatorTag": "Créateur · en tournage",
+    "creatorMeta": "Production vidéo",
+    "brandTag": "Marque · direction",
     "brandMeta": "Brief envoyé à Bayele",
     "rec": "REC",
     "briefChip": "Brief envoyé",
     "dealTitle": "Collaboration Bayele",
-    "dealSub": "Marque ↔ créatrice",
+    "dealSub": "Marque ↔ créateur",
     "steps": [
       "Brief",
       "Séquestre",
@@ -107,8 +107,8 @@
     ],
     "dealNote": "Versé via MTN MoMo dès la preuve validée",
     "payoutToast": "Payé",
-    "creatorAlt": "Créatrice de contenu qui se filme avec son téléphone",
-    "brandAlt": "Commerçante souriante au comptoir de sa boutique"
+    "creatorAlt": "Créateur de contenu sur un tournage, clap en main à côté d'une caméra",
+    "brandAlt": "Dirigeante d'entreprise en blazer orange, regard assuré"
   },
   "trust": {
     "escrowTitle": "Séquestre bloqué",
@@ -169,7 +169,15 @@
         "body": "Versement Mobile Money dès la preuve validée — sans courir après l'argent."
       }
     ],
-    "creatorsCta": "Créer mon profil"
+    "creatorsCta": "Créer mon profil",
+    "brandsLead": "De votre brief à la campagne publiée — sans chercher, sans risque.",
+    "creatorsLead": "Créez, publiez, encaissez : votre talent, payé à sa juste valeur.",
+    "brandsImageAlt": "Équipe marketing qui prépare une campagne autour d'un ordinateur",
+    "creatorsImageAlt": "Créatrice qui se filme avec son appareil photo",
+    "brandsChip": "3 créateurs proposés",
+    "brandsChipMeta": "Sélection Bayele & partenaires",
+    "creatorsChip": "Payé",
+    "creatorsChipMeta": "MTN MoMo · preuve validée"
   },
   "profileKit": {
     "heading": "Votre profil, votre media kit",
