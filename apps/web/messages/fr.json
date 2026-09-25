@@ -1,12 +1,12 @@
 {
   "meta": {
     "title": "Bayele — Influence Nano & Séquestre Mobile Money",
-    "description": "La marketplace d'escrow pour Créateurs WhatsApp, Consultants Médias et Entreprises au Cameroun, en Côte d'Ivoire et au Gabon."
+    "description": "La marketplace d'escrow où créateurs et marques grandissent ensemble au Cameroun, en Côte d'Ivoire et au Gabon."
   },
   "announce": "Nouveau — retraits instantanés Wave désormais disponibles en Côte d'Ivoire",
   "nav": {
     "creators": "Créateurs",
-    "consultants": "Consultants",
+    "consultants": "Partenaires",
     "pricing": "Tarifs",
     "security": "Sécurité",
     "billing": "Facturation",
@@ -16,16 +16,18 @@
   },
   "hero": {
     "badge": "Marketplace d'influence · Afrique francophone",
-    "titleLine1": "Monétisez votre contenu.",
-    "titleLead": "Paiements ",
-    "titleHighlight": "sécurisés",
-    "subtitle": "Bayele place le budget des campagnes sous séquestre et le libère vers Mobile Money dès que la diffusion est prouvée — une collaboration plus sûre, pour les créateurs comme pour les marques.",
-    "ctaBrand": "Lancer une campagne",
-    "ctaCreator": "Devenir créateur rémunéré",
-    "payoutsLabel": "Retraits vers :",
-    "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville.",
+    "title": "Là où créateurs et marques grandissent ensemble",
+    "subtitle": "Trouvez les influenceurs avec qui collaborer. Décrivez votre campagne : Bayele sélectionne les créateurs qui correspondent et sécurise chaque paiement par séquestre Mobile Money.",
+    "brandDoorTitle": "Construisez votre marque avec les créateurs",
+    "brandDoorBody": "Soumettez votre brief, recevez une sélection de créateurs adaptés.",
+    "brandDoorCta": "Soumettre un brief",
+    "creatorDoorTitle": "Du contenu qui construit l'influence",
+    "creatorDoorBody": "Créez votre profil, recevez des campagnes, soyez payé via Mobile Money.",
+    "creatorDoorCta": "Créer mon profil",
     "ctaDashboard": "Aller à mon espace",
-    "ctaBrowse": "Parcourir les créateurs"
+    "ctaProfile": "Compléter mon profil",
+    "payoutsLabel": "Retraits vers :",
+    "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville."
   },
   "heroVisual": {
     "name": "Yao",
@@ -59,7 +61,68 @@
       }
     ]
   },
-  "categoriesHeading": "Explorez par catégorie",
+  "howItWorks": {
+    "heading": "Comment ça marche",
+    "brandsTitle": "Pour les marques",
+    "brandsSteps": [
+      {
+        "title": "Soumettez votre brief",
+        "body": "Budget, catégorie, pays et livrables : dites-nous ce dont votre marque a besoin."
+      },
+      {
+        "title": "Bayele sélectionne les créateurs",
+        "body": "Nous et nos partenaires vous proposons les profils qui correspondent à votre campagne."
+      },
+      {
+        "title": "Payez à la preuve",
+        "body": "Le budget reste sous séquestre et n'est versé qu'une fois la diffusion prouvée."
+      }
+    ],
+    "brandsCta": "Soumettre un brief",
+    "creatorsTitle": "Pour les créateurs",
+    "creatorsSteps": [
+      {
+        "title": "Créez votre profil",
+        "body": "Vos réseaux, votre audience, vos catégories : votre vitrine auprès des marques."
+      },
+      {
+        "title": "Recevez des campagnes",
+        "body": "Postulez aux campagnes ou recevez des invitations adaptées à votre contenu."
+      },
+      {
+        "title": "Soyez payé",
+        "body": "Versement Mobile Money dès la preuve validée — sans courir après l'argent."
+      }
+    ],
+    "creatorsCta": "Créer mon profil"
+  },
+  "profileKit": {
+    "heading": "Votre profil, votre media kit",
+    "body": "Chaque profil Bayele a son propre lien. Partagez-le sur WhatsApp, TikTok ou Instagram pour montrer votre audience et vos réseaux aux marques — plus il est complet, plus vous recevez de campagnes.",
+    "bullets": [
+      "Un lien à partager, sans fichier à envoyer",
+      "Audience et réseaux à jour",
+      "Badge « Vérifié » après contrôle Bayele"
+    ],
+    "cta": "Créer mon profil",
+    "sampleName": "Votre nom",
+    "sampleMeta": "Beauté · Lifestyle · Douala",
+    "sampleSlug": "votre-nom"
+  },
+  "partner": {
+    "badge": "Programme Partenaires",
+    "heading": "Devenez Partenaire Bayele",
+    "body": "Talent managers, agences, consultants marketing : gérez vos créateurs et vos campagnes sur Bayele. Nous fournissons la plateforme, les paiements, la facturation et le suivi ; vous apportez vos relations et votre savoir-faire.",
+    "bullets": [
+      "Pilotez les campagnes de vos clients",
+      "Accédez à la base de créateurs vérifiés",
+      "Honoraires sécurisés par séquestre",
+      "Facturation OHADA incluse"
+    ],
+    "cta": "Devenir partenaire",
+    "secondary": "Voir les partenaires"
+  },
+  "categoriesHeading": "Des créateurs dans toutes les catégories",
   "viewAll": "Tout voir",
   "categories": [
     "Beauté",
@@ -77,37 +140,19 @@
   "directory": {
     "creatorsTitle": "Créateurs",
     "creatorsSubtitle": "Nano-créateurs rémunérés · audience vérifiée",
-    "consultantsTitle": "Consultants",
-    "consultantsSubtitle": "Stratèges médias pour piloter vos campagnes",
+    "consultantsTitle": "Partenaires",
+    "consultantsSubtitle": "Agences et talent managers pour piloter vos campagnes",
     "live": "En direct",
     "emptyCreators": "Aucun créateur actif pour le moment.",
-    "emptyConsultants": "Aucun consultant actif pour le moment.",
-    "roleConsultant": "Consultant stratégique",
+    "emptyConsultants": "Aucun partenaire actif pour le moment.",
+    "roleConsultant": "Partenaire Bayele",
     "view": "Voir le profil",
     "followers": "abonnés",
     "audience": "Audience totale"
   },
-  "split": {
-    "brandsTitle": "Pour les marques",
-    "brandsDesc": "Lancez, financez et suivez vos campagnes d'influence en toute sécurité.",
-    "brandsBullets": [
-      "Budget bloqué, libéré à la preuve",
-      "Créateurs vérifiés par pays",
-      "Factures OHADA déductibles"
-    ],
-    "brandsCta": "Lancer une campagne",
-    "creatorsTitle": "Pour les créateurs",
-    "creatorsDesc": "Soyez payé pour votre contenu — sans courir après l'argent.",
-    "creatorsBullets": [
-      "Paiement sécurisé par séquestre",
-      "Retrait MoMo dès 1 000 FCFA",
-      "Profil public qui attire les marques"
-    ],
-    "creatorsCta": "Créer mon profil"
-  },
   "finalCta": {
-    "title": "Prêt à lancer votre première campagne ?",
-    "subtitle": "Rejoignez les créateurs et marques qui sécurisent leurs paiements avec Bayele.",
+    "title": "Prêt à grandir avec les créateurs ?",
+    "subtitle": "Soumettez votre brief ou créez votre profil : Bayele s'occupe de la mise en relation et sécurise chaque paiement.",
     "primary": "Commencer gratuitement",
     "secondary": "Comment fonctionne le séquestre"
   },
@@ -152,14 +197,14 @@
   "directoryPage": {
     "creatorsTitle": "Créateurs",
     "creatorsLede": "Parcourez les nano-créateurs vérifiés. Filtrez par pays et par catégorie.",
-    "consultantsTitle": "Consultants",
-    "consultantsLede": "Des stratèges médias pour concevoir et piloter vos campagnes.",
+    "consultantsTitle": "Partenaires",
+    "consultantsLede": "Des agences, talent managers et stratèges médias pour concevoir et piloter vos campagnes.",
     "allCountries": "Tous les pays",
     "allCategories": "Toutes catégories",
     "country": "Pays",
     "category": "Catégorie",
     "creatorsCount": "{n} créateurs",
-    "consultantsCount": "{n} consultants",
+    "consultantsCount": "{n} partenaires",
     "noResults": "Aucun résultat pour ces filtres.",
     "reset": "Réinitialiser"
   },
@@ -175,7 +220,7 @@
     "contentHeading": "Aperçu de contenu",
     "contentSoon": "Contenu bientôt disponible",
     "visit": "Ouvrir",
-    "backConsultants": "Consultants",
+    "backConsultants": "Partenaires",
     "hire": "Démarrer une collaboration",
     "experience": "Années d'expérience",
     "managedCampaigns": "Campagnes gérées",
@@ -185,5 +230,20 @@
     "referencesSoon": "Bientôt",
     "website": "Site web",
     "agencyAccess": "Accès base créateurs"
+  },
+  "curated": {
+    "badge": "Accès sur sélection",
+    "title": "Les créateurs vous sont présentés par Bayele",
+    "body": "Pendant notre lancement, l'annuaire des créateurs n'est pas public. Décrivez votre campagne : Bayele et ses partenaires vous proposent les créateurs qui correspondent à votre brief.",
+    "brandTitle": "Vous êtes une marque ?",
+    "brandBody": "Soumettez votre brief, recevez une sélection de créateurs.",
+    "brandCta": "Soumettre un brief",
+    "creatorTitle": "Vous êtes créateur ?",
+    "creatorBody": "Créez votre profil pour être proposé aux marques.",
+    "creatorCta": "Créer mon profil",
+    "appTitle": "Trouvez des créateurs avec Bayele",
+    "appBody": "Pendant le lancement, l'annuaire des créateurs n'est pas en libre-service. Soumettez un brief de campagne : Bayele vous propose les créateurs adaptés et vous les validez avant tout paiement.",
+    "appCta": "Soumettre un brief",
+    "appSecondary": "Voir mes campagnes"
   }
 }

@@ -10,7 +10,7 @@ import { getSession } from '@/lib/auth/session';
  *   - logged-in business → an in-app action (launch a campaign for a creator, or a pre-filled retainer
  *     proposal for a consultant);
  *   - logged-out visitor → the original signup-with-intent links (unchanged funnel);
- *   - logged-in creator/consultant/admin → nothing (they aren't the ones commissioning work here).
+ *   - logged-in creator/partner/admin → nothing (they aren't the ones commissioning work here).
  *
  * getSession() is React-cached, so calling it here adds no extra round-trip on a page that already
  * resolves the session/dictionary.
@@ -28,7 +28,7 @@ export async function ProfileContactCTA({
 }) {
   const session = await getSession();
   const isBusiness = !!session.userId && session.roles.includes('business');
-  const profilePath = kind === 'creator' ? `/creators/${handle}` : `/consultants/${handle}`;
+  const profilePath = kind === 'creator' ? `/creators/${handle}` : `/partners/${handle}`;
 
   const primaryClass =
     'inline-flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 sm:w-auto';
@@ -37,7 +37,7 @@ export async function ProfileContactCTA({
 
   // Logged-in brand: real in-app action.
   if (isBusiness) {
-    const href = kind === 'creator' ? '/business/campaigns/new' : `/business/retainers/new?consultant=${handle}`;
+    const href = kind === 'creator' ? '/business/campaigns/new' : `/business/retainers/new?partner=${handle}`;
     return (
       <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
         <Link href={href} className={primaryClass}>{primaryLabel}</Link>

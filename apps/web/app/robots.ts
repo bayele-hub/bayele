@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard', '/admin', '/onboarding', '/creator/', '/consultant/', '/business/', '/profile', '/auth', '/api'],
+      disallow: ['/dashboard', '/admin', '/onboarding', '/creator/', '/partner/', '/business/', '/profile', '/auth', '/api'],
     },
     sitemap: 'https://bayele.com/sitemap.xml',
     host: 'https://bayele.com',

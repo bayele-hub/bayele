@@ -124,7 +124,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
       )}
 
       {initial.isConsultant && (
-        <Card title="Profil consultant">
+        <Card title="Profil partenaire">
           <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
           <NumberField label="Années d'expérience" name="years_experience" defaultValue={initial.yearsExperience} />
         </Card>

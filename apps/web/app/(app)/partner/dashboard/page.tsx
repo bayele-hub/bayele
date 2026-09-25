@@ -25,7 +25,7 @@ export default async function ConsultantDashboard() {
   const earned = list.filter((r) => r.status === 'completed').reduce((s, r) => s + (r.consultant_fee_fcfa ?? 0) + (r.kpi_bonus_fcfa ?? 0), 0);
   const activeCount = list.filter((r) => r.status === 'active' || r.status === 'funded').length;
   const pendingCount = list.filter((r) => r.status === 'draft' || r.status === 'invoiced').length;
-  const firstName = (session.profile?.display_name ?? '').split(' ')[0] || 'consultant';
+  const firstName = (session.profile?.display_name ?? '').split(' ')[0] || 'partenaire';
   const recent = list.slice(0, 3);
 
   return (
@@ -57,11 +57,11 @@ export default async function ConsultantDashboard() {
 
       {/* Quick actions */}
       <div className="grid grid-cols-2 gap-3">
-        <Link href="/consultant/retainers" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
+        <Link href="/partner/retainers" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand"><Handshake className="h-5 w-5" /></span>
           <div className="min-w-0"><p className="font-bold text-ink">Mes rétainers</p><p className="truncate text-[11px] text-muted">Contrats & honoraires</p></div>
         </Link>
-        <Link href="/consultant/talent-search" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
+        <Link href="/partner/talent-search" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent"><Users className="h-5 w-5" /></span>
           <div className="min-w-0"><p className="font-bold text-ink">Trouver des créateurs</p><p className="truncate text-[11px] text-muted">Annuaire talents</p></div>
         </Link>
@@ -71,7 +71,7 @@ export default async function ConsultantDashboard() {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-bold text-ink">Contrats récents</h2>
-          <Link href="/consultant/retainers" className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline">
+          <Link href="/partner/retainers" className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline">
             Tout voir <ArrowRight className="h-3 w-3" />
           </Link>
         </div>

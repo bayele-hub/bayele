@@ -9,7 +9,7 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
   const [state, action, pending] = useActionState<RetainerState, FormData>(createRetainerAction, { error: null });
 
   // Live consultant resolution as the identifier is typed (debounced), so the business confirms who
-  // they're commissioning before submitting. Seeded with any name resolved server-side via ?consultant=.
+  // they're commissioning before submitting. Seeded with any name resolved server-side via ?partner=.
   const [handle, setHandle] = useState(consultantHandle);
   const [lookup, setLookup] = useState<{ status: 'idle' | 'loading' | 'found' | 'missing'; name: string | null }>(
     consultantName ? { status: 'found', name: consultantName } : { status: 'idle', name: null },
@@ -76,19 +76,19 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
       )}
 
       <div>
-        <label className="text-xs font-semibold text-ink">Consultant (identifiant)</label>
+        <label className="text-xs font-semibold text-ink">Partenaire (identifiant)</label>
         <input
           name="consultant"
           required
           value={handle}
           onChange={(e) => setHandle(e.target.value)}
-          placeholder="@consultant"
+          placeholder="@partenaire"
           autoComplete="off"
           className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
         />
         {lookup.status === 'loading' && (
           <p className="mt-1 flex items-center gap-1 text-[11px] text-muted">
-            <Loader2 className="h-3 w-3 animate-spin" /> Recherche du consultant…
+            <Loader2 className="h-3 w-3 animate-spin" /> Recherche du partenaire…
           </p>
         )}
         {lookup.status === 'found' && lookup.name && (
@@ -98,7 +98,7 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
         )}
         {lookup.status === 'missing' && (
           <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-rose-600">
-            <UserX className="h-3 w-3" /> Aucun consultant trouvé pour cet identifiant.
+            <UserX className="h-3 w-3" /> Aucun partenaire trouvé pour cet identifiant.
           </p>
         )}
       </div>
@@ -107,7 +107,7 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <NumField label="Commission Bayele" name="cut" value={cut} onChange={setCut} />
-        <NumField label="Honoraires consultant" name="fee" value={fee} onChange={setFee} />
+        <NumField label="Honoraires partenaire" name="fee" value={fee} onChange={setFee} />
         <NumField label="Budget média" name="media" value={media} onChange={setMedia} />
       </div>
       <NumField label="Bonus KPI (versé à la clôture, en plus)" name="kpi" value={kpi} onChange={setKpi} />

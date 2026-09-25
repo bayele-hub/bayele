@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { createClient, isSupabaseConfigured } from '@bayele/database/client';
 import { Smartphone, Briefcase, Building2, ArrowRight, Loader2, AlertCircle, Info } from 'lucide-react';
 import { normalizeHandle } from '@/lib/handle';
+import { onboardingPath, roleFromSlug } from '@/lib/roles';
 
 type Mode = 'signin' | 'signup';
 type Role = 'creator' | 'consultant' | 'business';
@@ -57,7 +58,9 @@ function AuthPageInner() {
     const m = params.get('mode');
     const r = params.get('role');
     if (m === 'signin' || m === 'signup') setMode(m);
-    if (r && ['creator', 'consultant', 'business'].includes(r)) setRole(r as Role);
+    // Accepts the public slug (role=partner) as well as legacy role=consultant links.
+    const fromUrl = roleFromSlug(r);
+    if (fromUrl) setRole(fromUrl);
     const i = params.get('intent');
     if (i === 'invite' || i === 'message' || i === 'hire' || i === 'apply') setIntent(i);
     setTarget(params.get('target'));
@@ -116,7 +119,7 @@ function AuthPageInner() {
         if (!data.session) {
           setNotice("Vérifiez votre boîte mail pour confirmer votre adresse, puis connectez-vous.");
         } else {
-          router.push(`/onboarding/${role}`);
+          router.push(onboardingPath(role));
         }
       }
     } catch (err) {
@@ -128,7 +131,7 @@ function AuthPageInner() {
 
   const roles: { id: Role; label: string; Icon: typeof Smartphone }[] = [
     { id: 'creator', label: 'Créateur', Icon: Smartphone },
-    { id: 'consultant', label: 'Consultant', Icon: Briefcase },
+    { id: 'consultant', label: 'Partenaire', Icon: Briefcase },
     { id: 'business', label: 'Marque', Icon: Building2 },
   ];
 

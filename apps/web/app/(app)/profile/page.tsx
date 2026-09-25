@@ -57,7 +57,7 @@ export default async function ProfilePage() {
   const kp = consultantRes.data as { specialties: string[]; years_experience: number } | null;
   const bp = businessRes.data as { company_name: string; industry: string; billing_email: string | null; website: string | null } | null;
 
-  const backHref = isBusiness ? '/business/dashboard' : isCreator ? '/creator/dashboard' : isConsultant ? '/consultant/dashboard' : '/dashboard';
+  const backHref = isBusiness ? '/business/dashboard' : isCreator ? '/creator/dashboard' : isConsultant ? '/partner/dashboard' : '/dashboard';
 
   const initial: ProfileInitial = {
     displayName: profile.display_name,

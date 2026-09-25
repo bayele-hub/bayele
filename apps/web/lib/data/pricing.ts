@@ -28,7 +28,7 @@ export const TIER_COPY: Record<TierId, { tagline: string; features: string[]; fo
   },
   agency: {
     tagline: 'Gestion agence complète, clé en main.',
-    features: ['Tout Managed, plus :', 'Consultant dédié (rétainer)', 'Production & média gérés', 'Reporting de performance'],
+    features: ['Tout Managed, plus :', 'Partenaire dédié (rétainer)', 'Production & média gérés', 'Reporting de performance'],
     footnote: 'Contrats via rétainer agence',
   },
 };
@@ -64,8 +64,8 @@ export const PRO_PLANS: ProPlan[] = [
   },
   {
     id: 'pro_talent',
-    name: 'Pro Créateurs & Consultants',
-    audience: 'Créateurs & Consultants',
+    name: 'Pro Créateurs & Partenaires',
+    audience: 'Créateurs & Partenaires',
     blurb: "Pour se démarquer dans l'annuaire.",
     priceMonthlyFcfa: 5_000,
     priceYearlyFcfa: 50_000,

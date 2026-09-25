@@ -7,12 +7,14 @@ import { RetainerForm } from '../retainer-form';
 
 export const dynamic = 'force-dynamic';
 
-export default async function NewRetainer({ searchParams }: { searchParams: Promise<{ consultant?: string }> }) {
+export default async function NewRetainer({ searchParams }: { searchParams: Promise<{ partner?: string; consultant?: string }> }) {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
   if (!session.roles.includes('business') && session.primary !== 'super_admin') redirect('/dashboard');
 
-  const { consultant: handleRaw } = await searchParams;
+  // ?partner=@handle (legacy links used ?consultant=).
+  const sp = await searchParams;
+  const handleRaw = sp.partner ?? sp.consultant;
   const handle = (handleRaw ?? '').replace(/^@/, '');
 
   let consultantName: string | undefined;
@@ -29,7 +31,7 @@ export default async function NewRetainer({ searchParams }: { searchParams: Prom
       </Link>
       <div className="flex items-center gap-2">
         <Handshake className="h-5 w-5 text-brand" />
-        <h1 className="font-display text-2xl font-extrabold text-ink">Nouveau rétainer agence</h1>
+        <h1 className="font-display text-2xl font-extrabold text-ink">Nouveau rétainer partenaire</h1>
       </div>
       <RetainerForm consultantHandle={handle} consultantName={consultantName} />
     </section>

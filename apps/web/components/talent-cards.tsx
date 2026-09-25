@@ -64,7 +64,7 @@ export function CreatorCard({ p, t, locale }: { p: TalentSummary; t: Dictionary;
 
 export function ConsultantCard({ p, t }: { p: TalentSummary; t: Dictionary }) {
   return (
-    <Link href={`/consultants/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
+    <Link href={`/partners/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
       <CardHead p={p} />
       <Tags p={p} />
       <div className="mt-4 flex items-center justify-between border-t border-line pt-3">

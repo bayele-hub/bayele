@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Home, Users, MessagesSquare, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import type { Role } from '@/lib/auth/session';
 import { useUnreadCount } from '@/components/unread-messages-provider';
+import { roleDashboardPath } from '@/lib/roles';
 
 /** Mobile-first bottom nav (hidden ≥ sm, where the header carries navigation). Per-role last tab. */
 export function BottomNav({ role }: { role: Role }) {
@@ -14,7 +15,7 @@ export function BottomNav({ role }: { role: Role }) {
       ? { href: '/admin/dashboard', label: 'Modération', Icon: ShieldCheck, badge: 0 }
       : role === 'business'
         ? { href: '/business/dashboard', label: 'Campagnes', Icon: LayoutDashboard, badge: 0 }
-        : { href: `/${role}/dashboard`, label: 'Espace', Icon: LayoutDashboard, badge: 0 };
+        : { href: roleDashboardPath(role), label: 'Espace', Icon: LayoutDashboard, badge: 0 };
 
   const items = [
     { href: '/dashboard', label: 'Accueil', Icon: Home, badge: 0 },

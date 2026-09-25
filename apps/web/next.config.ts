@@ -18,6 +18,16 @@ const config: NextConfig = {
     ],
   },
   experimental: { optimizePackageImports: ['lucide-react'] },
+  // The Consultant role is presented as "Partner" (see lib/roles.ts). Old URLs keep working —
+  // shared profile links, bookmarks and indexed pages move permanently to the new paths.
+  async redirects() {
+    return [
+      { source: '/consultants', destination: '/partners', permanent: true },
+      { source: '/consultants/:handle', destination: '/partners/:handle', permanent: true },
+      { source: '/consultant/:path*', destination: '/partner/:path*', permanent: true },
+      { source: '/onboarding/consultant', destination: '/onboarding/partner', permanent: true },
+    ];
+  },
 };
 
 export default config;

@@ -17,12 +17,12 @@ const FLAG: Record<'CM' | 'CI' | 'GA', string> = { CM: '🇨🇲', CI: '🇨🇮
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   const c = await getConsultant(handle);
-  if (!c) return { title: 'Consultant introuvable', robots: { index: false } };
-  const path = `/consultants/${c.handle}`;
+  if (!c) return { title: 'Partenaire introuvable', robots: { index: false } };
+  const path = `/partners/${c.handle}`;
   const description =
     c.bio ||
-    `Confiez vos campagnes à ${c.displayName}, consultant média ${c.tags.slice(0, 3).join(', ')} à ${c.city} (${COUNTRY_NAME[c.country]}). Gestion et exécution sécurisées par séquestre sur ${SITE_NAME}.`;
-  const title = `${c.displayName} (@${c.handle}) — Consultant`;
+    `Confiez vos campagnes à ${c.displayName}, partenaire Bayele ${c.tags.slice(0, 3).join(', ')} à ${c.city} (${COUNTRY_NAME[c.country]}). Gestion et exécution sécurisées par séquestre sur ${SITE_NAME}.`;
+  const title = `${c.displayName} (@${c.handle}) — Partenaire`;
   return {
     title,
     description,
@@ -54,18 +54,18 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
             country: c.country,
             role: 'consultant',
             tags: c.tags,
-            path: `/consultants/${c.handle}`,
+            path: `/partners/${c.handle}`,
           }),
           breadcrumbLd([
             { name: 'Accueil', path: '/' },
-            { name: 'Consultants', path: '/consultants' },
-            { name: c.displayName, path: `/consultants/${c.handle}` },
+            { name: 'Partenaires', path: '/partners' },
+            { name: c.displayName, path: `/partners/${c.handle}` },
           ]),
         ]}
       />
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <Link href="/consultants" className="inline-flex min-h-tap items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
+        <Link href="/partners" className="inline-flex min-h-tap items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
           <ArrowLeft className="h-4 w-4" /> {t.profile.backConsultants}
         </Link>
 

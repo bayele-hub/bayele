@@ -50,7 +50,7 @@ export async function createRetainerAction(_prev: RetainerState, formData: FormD
   const media = Math.round(Number(formData.get('media') ?? 0));
   const kpi = Math.round(Number(formData.get('kpi') ?? 0));
 
-  if (!handle) return { error: 'Indiquez le consultant (son identifiant @).' };
+  if (!handle) return { error: 'Indiquez le partenaire (son identifiant @).' };
   if (contract <= 0) return { error: 'La valeur du contrat doit être positive.' };
   if (cut + fee + media !== contract) return { error: 'La répartition doit être égale à la valeur du contrat (commission + honoraires + média).' };
 
@@ -58,7 +58,7 @@ export async function createRetainerAction(_prev: RetainerState, formData: FormD
 
   // Resolve the consultant handle → id (public directory is readable under RLS).
   const { data: consultant } = await supabase.from('profiles').select('id').eq('handle', handle).maybeSingle();
-  if (!consultant) return { error: 'Consultant introuvable. Vérifiez son identifiant.' };
+  if (!consultant) return { error: 'Partenaire introuvable. Vérifiez son identifiant.' };
 
   const { data: retainerId, error: proposeErr } = await supabase.rpc('propose_retainer', {
     p_consultant_id: consultant.id,
@@ -73,7 +73,7 @@ export async function createRetainerAction(_prev: RetainerState, formData: FormD
     const msg = (proposeErr.message ?? '').trim();
     if (msg === 'not_a_business') return { error: 'Seules les marques peuvent lancer un rétainer.' };
     if (msg === 'profile_not_active') return { error: 'Votre profil doit être validé.' };
-    if (msg === 'consultant_not_found') return { error: "Ce consultant n'est pas disponible." };
+    if (msg === 'consultant_not_found') return { error: "Ce partenaire n'est pas disponible." };
     if (msg === 'invalid_split') return { error: 'La répartition ne correspond pas à la valeur du contrat.' };
     if (msg === 'cannot_retain_self') return { error: 'Vous ne pouvez pas vous engager vous-même.' };
     return { error: 'La création a échoué. Réessayez.' };
