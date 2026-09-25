@@ -31,7 +31,7 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
 
   const { data: ccRows } = await supabase
     .from('campaign_creators')
-    .select('id, status, agreed_payout_fcfa, creator:profiles!campaign_creators_creator_id_fkey(display_name, handle, city, country, status)')
+    .select('id, status, agreed_payout_fcfa, creator_id, applied_by, creator:profiles!campaign_creators_creator_id_fkey(display_name, handle, city, country, status), proposer:profiles!campaign_creators_applied_by_fkey(display_name), partner:profiles!campaign_creators_partner_id_fkey(display_name)')
     .eq('campaign_id', id)
     .order('created_at', { ascending: true });
 
@@ -53,6 +53,7 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
     }),
   );
 
+  const one = <T,>(v: T | T[] | null | undefined): T | undefined => (Array.isArray(v) ? v[0] : (v ?? undefined));
   type CreatorEmbed = { display_name: string; handle: string; city: string; country: string; status: string };
   const applicants: Applicant[] = rows.map((r) => {
     const c = r.creator as CreatorEmbed | CreatorEmbed[] | null;
@@ -66,6 +67,8 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
       payout: r.agreed_payout_fcfa,
       status: r.status,
       verified: cr?.status === 'active',
+      // Managed creator: who represents them (frozen at approval) or which partner proposed them.
+      representedBy: one(r.partner)?.display_name ?? (r.applied_by && r.applied_by !== r.creator_id ? one(r.proposer)?.display_name : undefined),
     };
   });
 

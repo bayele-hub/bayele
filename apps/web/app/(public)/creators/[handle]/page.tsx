@@ -8,6 +8,8 @@ import { SmartAvatar } from '@/components/smart-avatar';
 import { SocialIcon, SOCIAL_META } from '@/components/social-icons';
 import { JsonLd } from '@/components/json-ld';
 import { ProfileContactCTA } from '@/components/profile-contact-cta';
+import { FounderBadge } from '@/components/founder-badge';
+import { formatFounderNumber } from '@/lib/founder';
 import { getCreator } from '@/lib/data/talent';
 import { getCreatorDirectoryGate } from '@/lib/data/launch-gate';
 import { getDictionary, formatFollowers } from '@/i18n/dictionaries';
@@ -78,11 +80,14 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
                 <SmartAvatar src={creator.photoUrl} name={creator.displayName} className="h-24 w-24 text-2xl sm:h-28 sm:w-28" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{creator.displayName}</h1>
                   <span title={t.profile.verified} className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-700">
                     <BadgeCheck className="h-3.5 w-3.5" /> {t.profile.verified}
                   </span>
+                  {creator.founderNumber !== null && (
+                    <FounderBadge label={t.founder.label} number={formatFounderNumber(creator.founderNumber, locale)} title={t.founder.title} />
+                  )}
                 </div>
                 <p className="text-sm text-muted">@{creator.handle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">

@@ -2,66 +2,61 @@
 
 import { useActionState } from 'react';
 import { Loader2, Send } from 'lucide-react';
-import { payoutAction, type PayoutState } from './payout-actions';
+import { commissionPayoutAction, type PayoutState } from './payout-actions';
 import { fmtFcfa, PROVIDERS } from '@/lib/data/campaigns';
 
-export interface PayoutRow {
-  id: string; // campaign_creator_id
+export interface CommissionRow {
+  id: string;
+  partnerName: string;
+  partnerPhone: string | null;
   creatorName: string;
   campaignTitle: string;
-  /** What to send the creator (net of any partner commission). */
   amount: number;
-  gross?: number;
-  partnerName?: string;
-  partnerCommission?: number;
+  rate: number;
+  gross: number;
 }
 
-export function PayoutQueue({ rows }: { rows: PayoutRow[] }) {
+export function CommissionQueue({ rows }: { rows: CommissionRow[] }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-2xl border border-line bg-white p-6 text-center text-sm text-muted">
-        Aucun paiement prêt à décaisser.
+        Aucune commission à verser.
       </div>
     );
   }
   return (
     <ul className="grid gap-3">
       {rows.map((r) => (
-        <PayoutCard key={r.id} row={r} />
+        <CommissionCard key={r.id} row={r} />
       ))}
     </ul>
   );
 }
 
-function PayoutCard({ row }: { row: PayoutRow }) {
-  const [state, action, pending] = useActionState<PayoutState, FormData>(payoutAction, { error: null });
+function CommissionCard({ row }: { row: CommissionRow }) {
+  const [state, action, pending] = useActionState<PayoutState, FormData>(commissionPayoutAction, { error: null });
+  const pct = Math.round(row.rate * 1000) / 10;
 
   return (
     <li className="rounded-2xl border border-line bg-white p-4 shadow-card">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-bold text-ink">{row.creatorName}</p>
-          <p className="mt-0.5 text-xs text-muted">{row.campaignTitle}</p>
+          <p className="font-bold text-ink">{row.partnerName}</p>
+          <p className="mt-0.5 text-xs text-muted">
+            {row.creatorName} · {row.campaignTitle}
+            {row.partnerPhone && <> · {row.partnerPhone}</>}
+          </p>
         </div>
         <div className="text-right">
           <span className="font-display font-extrabold text-ink">{fmtFcfa(row.amount)}</span>
-          {row.partnerName && row.partnerCommission ? (
-            <p className="text-[10px] text-muted">
-              sur {fmtFcfa(row.gross ?? row.amount)} · {fmtFcfa(row.partnerCommission)} à {row.partnerName}
-            </p>
-          ) : null}
+          <p className="text-[10px] text-muted">{pct}&nbsp;% de {fmtFcfa(row.gross)}</p>
         </div>
       </div>
-      {row.partnerName && row.partnerCommission ? (
-        <p className="mt-2 rounded-lg bg-brand-50 px-3 py-2 text-[11px] text-brand-700">
-          Créateur représenté : envoyez {fmtFcfa(row.amount)} au créateur. La commission de {row.partnerName} est enregistrée à la confirmation, à verser séparément ci-dessous.
-        </p>
-      ) : null}
 
       <form action={action} className="mt-3 flex flex-wrap items-end gap-2">
-        <input type="hidden" name="cc" value={row.id} />
+        <input type="hidden" name="commission" value={row.id} />
         <div className="min-w-0 flex-1">
-          <label className="text-[11px] font-semibold text-muted">Réf. décaissement MoMo</label>
+          <label className="text-[11px] font-semibold text-muted">Réf. décaissement</label>
           <input
             name="ref"
             required
@@ -79,11 +74,11 @@ function PayoutCard({ row }: { row: PayoutRow }) {
           disabled={pending}
           className="inline-flex min-h-tap items-center gap-1.5 rounded-lg bg-brand px-3 text-xs font-bold text-white transition hover:bg-brand-600 active:scale-95 disabled:opacity-50"
         >
-          {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Confirmer le paiement
+          {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Confirmer le versement
         </button>
       </form>
       {state.error && <p className="mt-2 text-xs text-rose-600">{state.error}</p>}
-      {state.ok && <p className="mt-2 text-xs text-emerald-600">Paiement confirmé — le créateur est notifié.</p>}
+      {state.ok && <p className="mt-2 text-xs text-emerald-600">Commission versée — le partenaire est notifié.</p>}
     </li>
   );
 }

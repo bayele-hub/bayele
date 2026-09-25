@@ -6,6 +6,9 @@ import { getSession } from '@/lib/auth/session';
 import type { Platform } from '@/components/social-icons';
 import { ProfileForm, type ProfileInitial, type SocialsMap } from './profile-form';
 import { AvatarUploader } from '@/components/avatar-uploader';
+import { FounderBadge } from '@/components/founder-badge';
+import { formatFounderNumber } from '@/lib/founder';
+import { getFounderNumber } from '@/lib/data/founder';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +30,7 @@ export default async function ProfilePage() {
   const isBusiness = session.roles.includes('business');
 
   const supabase = await createClient();
-  const [creatorRes, payoutRes, consultantRes, businessRes] = await Promise.all([
+  const [creatorRes, payoutRes, consultantRes, businessRes, founderNumber] = await Promise.all([
     isCreator
       ? supabase.from('creator_profiles').select('categories, audience_size, platforms').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -39,6 +42,7 @@ export default async function ProfilePage() {
     isBusiness
       ? supabase.from('business_profiles').select('company_name, industry, billing_email, website').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
+    isCreator ? getFounderNumber(session.userId) : Promise.resolve(null),
   ]);
 
   const cp = creatorRes.data as
@@ -96,6 +100,11 @@ export default async function ProfilePage() {
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate font-bold text-ink">@{profile.handle}</p>
+            {founderNumber !== null && (
+              <div className="mt-1">
+                <FounderBadge label="Créateur fondateur" number={formatFounderNumber(founderNumber, 'fr')} title="Parmi les 10 000 premiers créateurs de Bayele — gratuit et permanent" />
+              </div>
+            )}
             <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted">
               <Phone className="h-3 w-3" /> {profile.phone_e164 ?? 'Téléphone non renseigné'}
             </p>

@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Handshake, Users, UserCircle } from 'lucide-react';
+import { Home, Handshake, Users, Megaphone, Search, UserCircle } from 'lucide-react';
 
 const TABS = [
   { href: '/partner/dashboard', label: 'Accueil', Icon: Home },
+  { href: '/partner/creators', label: 'Portefeuille', Icon: Users },
+  { href: '/partner/campaigns', label: 'Campagnes', Icon: Megaphone },
   { href: '/partner/retainers', label: 'Rétainers', Icon: Handshake },
-  { href: '/partner/talent-search', label: 'Créateurs', Icon: Users },
+  { href: '/partner/talent-search', label: 'Annuaire', Icon: Search },
   { href: '/profile', label: 'Profil', Icon: UserCircle },
 ] as const;
 
