@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { CSSProperties } from 'react';
 import {
   ShieldCheck, Smartphone, BadgeCheck, ArrowRight, Lock, MapPin, Receipt, Megaphone, UserPlus, Link2, Handshake,
   Users, Wallet, Check,
 } from 'lucide-react';
-import { getDictionary } from '@/i18n/dictionaries';
+import { getDictionary, formatFcfa } from '@/i18n/dictionaries';
+import { HOME_PHOTOS } from '@/lib/home-photos';
 import { getSession } from '@/lib/auth/session';
 import { landingCtaHrefs, homeContinueCtas, type HomeRole } from '@/lib/auth/landing-ctas';
 import { SiteHeader } from '@/components/site-header';
@@ -68,7 +70,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               </span>
 
               {/* Masked line reveal; the real heading text is in the sr-only span */}
-              <h1 id="home-title" className="mt-4 font-display text-[2.15rem] font-extrabold leading-[1.05] tracking-tight text-ink sm:text-[2.7rem] lg:text-[clamp(2.5rem,3.25vw,3rem)]">
+              <h1 id="home-title" className="mt-4 font-headline text-[2.3rem] font-bold leading-[1.04] tracking-[-0.035em] text-ink antialiased sm:text-[2.9rem] lg:text-[clamp(2.75rem,3.6vw,3.35rem)]">
                 <span className="sr-only">{h.title}</span>
                 <span aria-hidden>
                   {h.titleLines.map((line, i) => (
@@ -164,47 +166,86 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           </div>
         </section>
 
-        {/* ───────── How it works ───────── */}
+        {/* ───────── How it works — two sections, one photograph each (depth: 0 panel · 3 photo · 4 proof chip · 4 content) ───────── */}
         <section className="mx-auto max-w-6xl px-4 pt-16" aria-labelledby="home-how">
-          <h2 id="home-how" data-reveal="up" className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">{t.howItWorks.heading}</h2>
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <div data-reveal="left" className="flex flex-col rounded-3xl border border-line bg-white p-6 shadow-card sm:p-7">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand"><Megaphone className="h-5 w-5" aria-hidden /></span>
-              <h3 className="mt-4 font-display text-xl font-bold text-ink">{t.howItWorks.brandsTitle}</h3>
-              <ol className="relative mt-5 flex-1 space-y-5">
+          <h2 id="home-how" data-reveal="up" className="font-headline text-3xl font-bold tracking-[-0.03em] text-ink sm:text-4xl">{t.howItWorks.heading}</h2>
+
+          {/* For brands — photo left, steps right */}
+          <div className="mt-8 grid items-center gap-8 overflow-hidden rounded-[2rem] border border-line bg-white p-5 shadow-card sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10">
+            <div data-reveal="left" className="relative">
+              <div className="relative aspect-[5/4] overflow-hidden rounded-3xl bg-brand-50 shadow-cardHover">
+                <Image src={HOME_PHOTOS.howBrand.src} alt={t.howItWorks.brandsImageAlt} fill sizes="(max-width: 1024px) 92vw, 520px" className="object-cover" />
+                <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent" />
+              </div>
+              <div aria-hidden className="absolute -bottom-4 right-4 flex items-center gap-2.5 rounded-2xl border border-line bg-white px-3.5 py-2.5 shadow-cardHover sm:right-6">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-brand-50 text-brand"><Users className="h-4 w-4" /></span>
+                <div>
+                  <p className="text-[12px] font-bold text-ink">{t.howItWorks.brandsChip}</p>
+                  <p className="text-[10px] text-muted">{t.howItWorks.brandsChipMeta}</p>
+                </div>
+                <span className="ml-1 rounded-full border border-line px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-muted">{t.orbit.example}</span>
+              </div>
+            </div>
+            <div>
+              <span data-reveal="up" className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-[12px] font-bold uppercase tracking-wide text-brand-700">
+                <Megaphone className="h-3.5 w-3.5" aria-hidden /> {t.howItWorks.brandsTitle}
+              </span>
+              <h3 data-reveal="up" style={d(60)} className="mt-3 text-balance font-headline text-2xl font-bold tracking-[-0.02em] text-ink sm:text-[1.75rem]">{t.howItWorks.brandsLead}</h3>
+              <ol className="relative mt-6 space-y-5">
                 <span aria-hidden className="absolute bottom-3 left-[13px] top-3 w-0.5 rounded-full bg-brand-100" />
-                {t.howItWorks.brandsSteps.map((s, i) => (
-                  <li key={s.title} data-reveal="up" style={d(120 + i * 90)} className="relative flex gap-3">
+                {t.howItWorks.brandsSteps.map((st, i) => (
+                  <li key={st.title} data-reveal="up" style={d(120 + i * 90)} className="relative flex gap-3">
                     <span className="relative grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-brand font-display text-sm font-extrabold text-white">{i + 1}</span>
                     <div>
-                      <p className="text-sm font-bold text-ink">{s.title}</p>
-                      <p className="mt-0.5 text-[14px] leading-relaxed text-muted">{s.body}</p>
+                      <p className="text-[15px] font-bold text-ink">{st.title}</p>
+                      <p className="mt-0.5 text-[14px] leading-relaxed text-muted">{st.body}</p>
                     </div>
                   </li>
                 ))}
               </ol>
-              <Link href={cta.brief} className="mt-6 inline-flex min-h-tap items-center gap-2 self-start rounded-xl bg-brand px-5 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95">
+              <Link href={cta.brief} className="mt-7 inline-flex min-h-tap items-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95">
                 {h.brand.cta} <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
-            <div data-reveal="right" className="flex flex-col rounded-3xl border border-line bg-ink p-6 text-white shadow-card sm:p-7">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-accent"><UserPlus className="h-5 w-5" aria-hidden /></span>
-              <h3 className="mt-4 font-display text-xl font-bold">{t.howItWorks.creatorsTitle}</h3>
-              <ol className="relative mt-5 flex-1 space-y-5">
+          </div>
+
+          {/* For creators — steps left, photo right */}
+          <div className="relative mt-6 grid items-center gap-8 overflow-hidden rounded-[2rem] bg-ink p-5 text-white shadow-card sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10">
+            <div aria-hidden className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+            <div className="relative order-2 lg:order-1">
+              <span data-reveal="up" className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[12px] font-bold uppercase tracking-wide text-accent">
+                <UserPlus className="h-3.5 w-3.5" aria-hidden /> {t.howItWorks.creatorsTitle}
+              </span>
+              <h3 data-reveal="up" style={d(60)} className="mt-3 text-balance font-headline text-2xl font-bold tracking-[-0.02em] sm:text-[1.75rem]">{t.howItWorks.creatorsLead}</h3>
+              <ol className="relative mt-6 space-y-5">
                 <span aria-hidden className="absolute bottom-3 left-[13px] top-3 w-0.5 rounded-full bg-white/15" />
-                {t.howItWorks.creatorsSteps.map((s, i) => (
-                  <li key={s.title} data-reveal="up" style={d(120 + i * 90)} className="relative flex gap-3">
+                {t.howItWorks.creatorsSteps.map((st, i) => (
+                  <li key={st.title} data-reveal="up" style={d(120 + i * 90)} className="relative flex gap-3">
                     <span className="relative grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-accent font-display text-sm font-extrabold text-ink">{i + 1}</span>
                     <div>
-                      <p className="text-sm font-bold">{s.title}</p>
-                      <p className="mt-0.5 text-[14px] leading-relaxed text-white/75">{s.body}</p>
+                      <p className="text-[15px] font-bold">{st.title}</p>
+                      <p className="mt-0.5 text-[14px] leading-relaxed text-white/75">{st.body}</p>
                     </div>
                   </li>
                 ))}
               </ol>
-              <Link href={cta.heroSecondary} className="mt-6 inline-flex min-h-tap items-center gap-2 self-start rounded-xl bg-accent px-5 text-sm font-bold text-ink transition hover:brightness-105 active:scale-95">
+              <Link href={cta.heroSecondary} className="mt-7 inline-flex min-h-tap items-center gap-2 rounded-xl bg-accent px-6 text-sm font-bold text-ink transition hover:brightness-105 active:scale-95">
                 {authed ? h.ctaProfile : h.creator.cta} <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
+            </div>
+            <div data-reveal="right" className="relative order-1 lg:order-2">
+              <div className="relative aspect-[5/4] overflow-hidden rounded-3xl bg-white/5 ring-1 ring-white/10">
+                <Image src={HOME_PHOTOS.howCreator.src} alt={t.howItWorks.creatorsImageAlt} fill sizes="(max-width: 1024px) 92vw, 520px" className="object-cover" />
+                <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
+              </div>
+              <div aria-hidden className="absolute -bottom-4 left-4 flex items-center gap-2.5 rounded-2xl border border-line bg-white px-3.5 py-2.5 text-ink shadow-cardHover sm:left-6">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><BadgeCheck className="h-4 w-4" /></span>
+                <div>
+                  <p className="whitespace-nowrap text-[12px] font-bold tabular-nums">{t.howItWorks.creatorsChip} · {formatFcfa(35000, locale)}</p>
+                  <p className="text-[10px] text-muted">{t.howItWorks.creatorsChipMeta}</p>
+                </div>
+                <span className="ml-1 rounded-full border border-line px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-muted">{t.orbit.example}</span>
+              </div>
             </div>
           </div>
         </section>

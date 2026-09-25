@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Inter } from 'next/font/google';
+import { Bricolage_Grotesque, Inter, Inter_Tight } from 'next/font/google';
 import './globals.css';
 import { getDictionary, getLocale } from '@/i18n/dictionaries';
 import { JsonLd } from '@/components/json-ld';
@@ -7,6 +7,9 @@ import { organizationLd, websiteLd } from '@/lib/seo';
 
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
+// Headline face: Apple devices render the system SF Pro Display (see the `headline` stack in the
+// Tailwind preset); everywhere else falls back to Inter Tight, the open face closest to it.
+const headline = Inter_Tight({ subsets: ['latin'], weight: ['600', '700', '800'], variable: '--font-headline', display: 'swap' });
 
 // Per-locale SEO metadata (fixes i18n audit F4). Canonical domain is bayele.com (matches the
 // Supabase auth site_url + Terraform production_url). OG/Twitter cards make WhatsApp + social
@@ -47,7 +50,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale(); // drives <html lang> (fixes audit F3)
   return (
-    <html lang={locale} className={`${display.variable} ${sans.variable}`}>
+    <html lang={locale} className={`${display.variable} ${sans.variable} ${headline.variable}`}>
       <body className="bg-white text-ink antialiased">
         {/* Site-wide structured data: knowledge-panel identity + sitelinks search box. */}
         <JsonLd data={[organizationLd(), websiteLd()]} />

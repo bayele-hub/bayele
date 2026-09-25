@@ -4,18 +4,18 @@ import { BadgeCheck, Check, Handshake, Lock, Send } from 'lucide-react';
 import type { Dictionary } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
 import { formatFcfa } from '@/i18n/format';
+import { HOME_PHOTOS } from '@/lib/home-photos';
 
 const d = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
 const fd = (s: number) => ({ '--fd': `${s}s` }) as CSSProperties;
 
-// Unsplash License (free for commercial use). Illustrative until licensed local shoots replace them.
-// Creator: Ahmed Nasiru — unsplash.com/photos/hia6L60e0VA · Brand: Ali Mkumbwa — unsplash.com/photos/EOkN2pRjFsg
-const CREATOR_SRC = 'https://images.unsplash.com/photo-1680878790148-18c83f270499?w=560&h=700&q=70&auto=format&fit=crop&crop=faces';
-const BRAND_SRC = 'https://images.unsplash.com/photo-1687422808311-a776f467a468?w=520&h=650&q=70&auto=format&fit=crop&crop=faces';
+// Photos (and their credits) live in lib/home-photos.ts — swap them there.
+const CREATOR_SRC = HOME_PHOTOS.heroCreator.src;
+const BRAND_SRC = HOME_PHOTOS.heroBrand.src;
 
 /**
- * Hero visual — "two sides, one deal". A creator at work (filming, REC) and a brand at work (at its
- * counter, brief sent), joined by the Bayele deal card: brief → escrow → paid. It answers the switch
+ * Hero visual — "two sides, one deal". A creator at work (on set, REC) and a brand's leadership
+ * (brief sent), joined by the Bayele deal card: brief → escrow → paid. It answers the switch
  * next to it: the section's data-audience ("creator" | "brand") brings the matching scene forward
  * via Tailwind group-data variants — pure CSS, no client state here.
  *
