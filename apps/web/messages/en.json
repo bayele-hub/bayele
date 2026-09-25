@@ -200,11 +200,11 @@
   "partner": {
     "badge": "Partner program",
     "heading": "Become a Bayele Partner",
-    "body": "Talent managers, agencies, marketing consultants: manage your creators and campaigns on Bayele. We provide the platform, payments, invoicing and tracking; you bring the relationships and the know-how.",
+    "body": "Talent managers, agencies, marketing consultants: represent your creators on Bayele. They accept your representation, you apply to campaigns for them, and your commission is calculated on every payout. We provide the platform, escrow, contracts and tracking.",
     "bullets": [
-      "Run your clients' campaigns",
-      "Access the verified creator base",
-      "Fees secured by escrow",
+      "Represent your creator portfolio",
+      "Apply to campaigns on their behalf",
+      "Your commission, calculated on every payout",
       "OHADA invoicing included"
     ],
     "cta": "Become a partner",
@@ -333,5 +333,13 @@
     "appBody": "During launch, the creator directory isn't self-serve. Submit a campaign brief: Bayele proposes matching creators and you approve them before any payment.",
     "appCta": "Submit a brief",
     "appSecondary": "See my campaigns"
+  },
+  "founder": {
+    "label": "Founding creator",
+    "title": "Among Bayele's first 10,000 creators",
+    "announce": "Free Founding Creator badge for the first 10,000 creators — {n} spots left.",
+    "announceNoCount": "Free Founding Creator badge for the first 10,000 creators to join.",
+    "heroNote": "Free founder badge · {n} spots left",
+    "heroNoteNoCount": "Free founder badge for the first 10,000"
   }
 }

@@ -127,28 +127,37 @@ export type Database = {
       campaign_creators: {
         Row: {
           agreed_payout_fcfa: number
+          applied_by: string | null
           campaign_id: string
           created_at: string
           creator_id: string
           id: string
+          partner_commission_rate: number | null
+          partner_id: string | null
           status: Database["public"]["Enums"]["creator_campaign_status"]
           updated_at: string
         }
         Insert: {
           agreed_payout_fcfa: number
+          applied_by?: string | null
           campaign_id: string
           created_at?: string
           creator_id: string
           id?: string
+          partner_commission_rate?: number | null
+          partner_id?: string | null
           status?: Database["public"]["Enums"]["creator_campaign_status"]
           updated_at?: string
         }
         Update: {
           agreed_payout_fcfa?: number
+          applied_by?: string | null
           campaign_id?: string
           created_at?: string
           creator_id?: string
           id?: string
+          partner_commission_rate?: number | null
+          partner_id?: string | null
           status?: Database["public"]["Enums"]["creator_campaign_status"]
           updated_at?: string
         }
@@ -163,6 +172,20 @@ export type Database = {
           {
             foreignKeyName: "campaign_creators_creator_id_fkey"
             columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_creators_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_creators_applied_by_fkey"
+            columns: ["applied_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -421,6 +444,32 @@ export type Database = {
           },
         ]
       }
+      founder_creators: {
+        Row: {
+          awarded_at: string
+          founder_number: number
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          founder_number: number
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          founder_number?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "founder_creators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_audit_log: {
         Row: {
           actor_id: string
@@ -624,6 +673,134 @@ export type Database = {
           },
         ]
       }
+      partner_commissions: {
+        Row: {
+          campaign_creator_id: string
+          commission_fcfa: number
+          commission_rate: number
+          created_at: string
+          creator_id: string
+          disbursement_ref: string | null
+          gross_payout_fcfa: number
+          id: string
+          paid_at: string | null
+          partner_id: string
+          provider: Database["public"]["Enums"]["payment_provider"] | null
+          status: string
+        }
+        Insert: {
+          campaign_creator_id: string
+          commission_fcfa: number
+          commission_rate: number
+          created_at?: string
+          creator_id: string
+          disbursement_ref?: string | null
+          gross_payout_fcfa: number
+          id?: string
+          paid_at?: string | null
+          partner_id: string
+          provider?: Database["public"]["Enums"]["payment_provider"] | null
+          status?: string
+        }
+        Update: {
+          campaign_creator_id?: string
+          commission_fcfa?: number
+          commission_rate?: number
+          created_at?: string
+          creator_id?: string
+          disbursement_ref?: string | null
+          gross_payout_fcfa?: number
+          id?: string
+          paid_at?: string | null
+          partner_id?: string
+          provider?: Database["public"]["Enums"]["payment_provider"] | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_commissions_campaign_creator_id_fkey"
+            columns: ["campaign_creator_id"]
+            isOneToOne: true
+            referencedRelation: "campaign_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_commissions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_commissions_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_creator_links: {
+        Row: {
+          commission_rate: number
+          creator_id: string
+          ended_at: string | null
+          ended_by: string | null
+          id: string
+          invited_at: string
+          message: string | null
+          partner_id: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["representation_status"]
+        }
+        Insert: {
+          commission_rate: number
+          creator_id: string
+          ended_at?: string | null
+          ended_by?: string | null
+          id?: string
+          invited_at?: string
+          message?: string | null
+          partner_id: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["representation_status"]
+        }
+        Update: {
+          commission_rate?: number
+          creator_id?: string
+          ended_at?: string | null
+          ended_by?: string | null
+          id?: string
+          invited_at?: string
+          message?: string | null
+          partner_id?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["representation_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_creator_links_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_creator_links_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_creator_links_ended_by_fkey"
+            columns: ["ended_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -773,6 +950,89 @@ export type Database = {
           p_provider?: Database["public"]["Enums"]["payment_provider"]
         }
         Returns: string
+      }
+      founder_badge_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          awarded: number
+          remaining: number
+        }[]
+      }
+      partner_invite_creator: {
+        Args: {
+          p_commission_rate: number
+          p_creator_handle: string
+          p_message?: string
+        }
+        Returns: string
+      }
+      respond_representation: {
+        Args: {
+          p_accept: boolean
+          p_link_id: string
+        }
+        Returns: undefined
+      }
+      end_representation: {
+        Args: {
+          p_link_id: string
+        }
+        Returns: undefined
+      }
+      partner_apply_for_creator: {
+        Args: {
+          p_campaign_id: string
+          p_creator_id: string
+        }
+        Returns: string
+      }
+      my_partner_links: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          my_side: string
+          counterpart_id: string
+          counterpart_handle: string
+          counterpart_name: string
+          counterpart_avatar: string | null
+          counterpart_status: Database["public"]["Enums"]["account_status"]
+          commission_rate: number
+          status: Database["public"]["Enums"]["representation_status"]
+          message: string | null
+          invited_at: string
+          responded_at: string | null
+          ended_at: string | null
+          deals_in_flight: number
+          deals_paid: number
+          commission_owed_fcfa: number
+          commission_paid_fcfa: number
+        }[]
+      }
+      partner_deals: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          campaign_creator_id: string
+          campaign_id: string
+          campaign_title: string
+          creator_id: string
+          creator_handle: string
+          creator_name: string
+          status: Database["public"]["Enums"]["creator_campaign_status"]
+          agreed_payout_fcfa: number
+          commission_rate: number | null
+          commission_fcfa: number
+          commission_status: string
+          applied_by_me: boolean
+          updated_at: string
+        }[]
+      }
+      admin_confirm_partner_commission: {
+        Args: {
+          p_commission_id: string
+          p_disbursement_ref?: string
+          p_provider?: Database["public"]["Enums"]["payment_provider"]
+        }
+        Returns: undefined
       }
       admin_confirm_retainer_funding: {
         Args: {
@@ -1044,6 +1304,7 @@ export type Database = {
         | "wave"
         | "airtel_money"
         | "bank_wire"
+      representation_status: "pending" | "active" | "declined" | "ended"
       retainer_status:
         | "draft"
         | "invoiced"
@@ -1225,6 +1486,7 @@ export const Constants = {
         "airtel_money",
         "bank_wire",
       ],
+      representation_status: ["pending", "active", "declined", "ended"],
       retainer_status: [
         "draft",
         "invoiced",

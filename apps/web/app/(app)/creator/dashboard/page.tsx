@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight, MessageCircle } from 'lucide-react';
+import { Coins, Clock, CheckCircle2, Megaphone, Wallet, BadgeCheck, ArrowRight, MessageCircle, Handshake } from 'lucide-react';
+import { FounderBadge } from '@/components/founder-badge';
+import { formatFounderNumber, formatPct, splitPayout } from '@/lib/founder';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
@@ -16,20 +18,29 @@ export default async function CreatorDashboard() {
   if (!session.userId) redirect('/auth?mode=signin');
 
   const supabase = await createClient();
-  const [{ data: assignments }, { data: creatorProfile }] = await Promise.all([
+  const [{ data: assignments }, { data: creatorProfile }, { data: founder }, { data: links }] = await Promise.all([
     supabase
       .from('campaign_creators')
-      .select('id, status, agreed_payout_fcfa, created_at, campaign:campaigns(id, title, category, target_country, status)')
+      .select('id, status, agreed_payout_fcfa, partner_id, partner_commission_rate, applied_by, created_at, campaign:campaigns(id, title, category, target_country, status)')
       .eq('creator_id', session.userId)
       .order('created_at', { ascending: false }),
     // payout settings via the definer RPC (is_pro + own momo — momo columns are not directly selectable, 0018).
     supabase.rpc('get_my_payout_settings').maybeSingle(),
+    supabase.from('founder_creators').select('founder_number').eq('user_id', session.userId).maybeSingle(),
+    supabase.rpc('my_partner_links'),
   ]);
+  const pendingOffers = (links ?? []).filter((l) => l.my_side === 'creator' && l.status === 'pending');
+  const activePartner = (links ?? []).find((l) => l.my_side === 'creator' && l.status === 'active') ?? null;
   const payoutConfigured = !!creatorProfile?.momo_payout_phone_e164;
 
   const list = assignments ?? [];
-  const earned = list.filter((a) => a.status === 'paid').reduce((s, a) => s + (a.agreed_payout_fcfa ?? 0), 0);
-  const pendingPay = list.filter((a) => a.status === 'verified').reduce((s, a) => s + (a.agreed_payout_fcfa ?? 0), 0);
+  // What the creator actually receives: the payout minus the partner's commission on managed deals.
+  // Approved deals carry a frozen rate; an application still pending will take the active partner's.
+  const rateOf = (a: (typeof list)[number]) =>
+    a.partner_commission_rate ?? (activePartner && (a.status === 'applied' || a.status === 'invited') ? activePartner.commission_rate : null);
+  const net = (a: (typeof list)[number]) => splitPayout(a.agreed_payout_fcfa ?? 0, rateOf(a)).creator;
+  const earned = list.filter((a) => a.status === 'paid').reduce((s, a) => s + net(a), 0);
+  const pendingPay = list.filter((a) => a.status === 'verified').reduce((s, a) => s + net(a), 0);
   const activeCount = list.filter((a) => ['applied', 'approved', 'content_submitted', 'verified'].includes(a.status)).length;
   const toDo = list.filter((a) => a.status === 'approved').length;
   const firstName = (session.profile?.display_name ?? '').split(' ')[0] || 'créateur';
@@ -47,6 +58,18 @@ export default async function CreatorDashboard() {
             </span>
           )}
         </div>
+        {(founder?.founder_number || activePartner) && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {founder?.founder_number ? (
+              <FounderBadge label="Créateur fondateur" number={formatFounderNumber(founder.founder_number, 'fr')} title="Parmi les 10 000 premiers créateurs de Bayele — gratuit et permanent" />
+            ) : null}
+            {activePartner && (
+              <Link href="/creator/partner" className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-brand-700 ring-1 ring-brand-100 hover:ring-brand">
+                <Handshake className="h-3.5 w-3.5" /> Représenté par {activePartner.counterpart_name}
+              </Link>
+            )}
+          </div>
+        )}
         <p className="mt-1 text-xs text-muted">
           {toDo > 0
             ? `Vous avez ${toDo} mission${toDo > 1 ? 's' : ''} à publier — soumettez votre preuve pour être payé.`
@@ -59,6 +82,29 @@ export default async function CreatorDashboard() {
           {toDo > 0 ? 'Mes missions' : (<>Voir les campagnes <ArrowRight className="h-3.5 w-3.5" /></>)}
         </Link>
       </div>
+
+      {/* Representation offers waiting for an answer */}
+      {pendingOffers.length > 0 && (
+        <Link
+          href="/creator/partner"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-brand-100 bg-brand-50 p-4 transition hover:border-brand"
+        >
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-brand">
+              <Handshake className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-sm font-bold text-ink">
+                {pendingOffers.length > 1
+                  ? `${pendingOffers.length} propositions de représentation`
+                  : `${pendingOffers[0]!.counterpart_name} propose de vous représenter`}
+              </p>
+              <p className="text-[11px] text-muted">Consultez les conditions, puis acceptez ou refusez.</p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-brand" />
+        </Link>
+      )}
 
       {/* Payout nudge — a creator who hasn't set a Mobile Money number can't be paid. */}
       {!payoutConfigured && (
@@ -117,7 +163,7 @@ export default async function CreatorDashboard() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="font-display font-extrabold text-ink">{fmtFcfa(a.agreed_payout_fcfa)}</span>
+                      <span className="font-display font-extrabold text-ink">{fmtFcfa(net(a))}</span>
                       <div
                         className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
                           paid
@@ -134,6 +180,18 @@ export default async function CreatorDashboard() {
                       </div>
                     </div>
                   </div>
+
+                  {(rateOf(a) || (a.applied_by && a.applied_by !== session.userId)) && (
+                    <p className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
+                      <Handshake className="h-3.5 w-3.5 text-brand" />
+                      {a.applied_by && a.applied_by !== session.userId && <span>Proposé par votre partenaire.</span>}
+                      {rateOf(a) ? (
+                        <span>
+                          Mission {fmtFcfa(a.agreed_payout_fcfa)} · commission partenaire {formatPct(rateOf(a)!, 'fr')} ({fmtFcfa(splitPayout(a.agreed_payout_fcfa, rateOf(a)).partner)}) · vous recevez {fmtFcfa(net(a))}
+                        </span>
+                      ) : null}
+                    </p>
+                  )}
 
                   <Link
                     href={`/messages/open?ctx=campaign_creator&id=${a.id}`}

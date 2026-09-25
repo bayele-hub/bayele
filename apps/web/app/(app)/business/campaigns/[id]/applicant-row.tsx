@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import Link from 'next/link';
-import { Check, X, Loader2, MapPin, ShieldQuestion, MessageCircle } from 'lucide-react';
+import { Check, X, Loader2, MapPin, ShieldQuestion, MessageCircle, Handshake } from 'lucide-react';
 import { decideAction, type DecideState } from './review-actions';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 
@@ -15,6 +15,8 @@ export interface Applicant {
   payout: number;
   status: string;
   verified: boolean;
+  /** Partner representing this creator (managed creator), if any. */
+  representedBy?: string;
 }
 
 export function ApplicantRow({ a }: { a: Applicant }) {
@@ -30,6 +32,11 @@ export function ApplicantRow({ a }: { a: Applicant }) {
             <span className="truncate">@{a.handle}</span>
             <span className="inline-flex shrink-0 items-center gap-1"><MapPin className="h-3 w-3" /> {a.city} · {a.country}</span>
           </div>
+          {a.representedBy && (
+            <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-brand-700">
+              <Handshake className="h-3 w-3" /> Représenté par {a.representedBy}
+            </p>
+          )}
           <Link
             href={`/messages/open?ctx=campaign_creator&id=${a.id}`}
             className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-brand hover:underline"

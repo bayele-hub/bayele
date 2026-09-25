@@ -14,10 +14,12 @@ import { SiteFooter } from '@/components/site-footer';
 import { AudienceSwitch, type Audience } from '@/components/home/audience-switch';
 import { HeroScene } from '@/components/home/hero-scene';
 import { RevealRoot } from '@/components/home/reveal-root';
+import { getFounderRemaining } from '@/lib/data/founder';
+import { remainingToShow, founderOfferOpen, withCount } from '@/lib/founder';
 
 const STAT_ICONS = [Lock, MapPin, Smartphone, Receipt] as const;
 const ESCROW_ICONS = [Lock, Megaphone, Wallet] as const;
-const PARTNER_ICONS = [Megaphone, Users, Lock, Receipt] as const;
+const PARTNER_ICONS = [Users, Megaphone, Wallet, Receipt] as const;
 
 /** Stagger helper for [data-reveal] / .anim-* delays. */
 const d = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
@@ -32,7 +34,9 @@ const d = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
  * proof. Motion follows the epic-design system adapted to CSS (see app/globals.css).
  */
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ for?: string; pour?: string }> }) {
-  const [{ locale, t }, session, sp] = await Promise.all([getDictionary(), getSession(), searchParams]);
+  const [{ locale, t }, session, sp, founderRemaining] = await Promise.all([
+    getDictionary(), getSession(), searchParams, getFounderRemaining(),
+  ]);
   const authed = !!session.userId;
   // All auth-dependent hrefs resolve here so a logged-in visitor is never sent into the signup funnel.
   const cta = landingCtaHrefs(authed);
@@ -44,6 +48,16 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   // Which scene the hero visual brings forward: the switch updates this attribute client-side;
   // signed-in brands see their own side.
   const heroAudience: Audience = authed ? (cont.key === 'business' ? 'brand' : 'creator') : initialAudience;
+  // Founder badge offer (first 10 000 creators, free): a live count when known, never an invented one;
+  // once the cohort is full the offer simply stops being promoted.
+  const spots = remainingToShow(founderRemaining);
+  const founderOpen = founderOfferOpen(founderRemaining);
+  const announce = !founderOpen
+    ? t.announce
+    : spots !== null ? withCount(t.founder.announce, spots, locale) : t.founder.announceNoCount;
+  const founderNote = !founderOpen
+    ? undefined
+    : spots !== null ? withCount(t.founder.heroNote, spots, locale) : t.founder.heroNoteNoCount;
 
   return (
     <div className="bg-white">
@@ -51,7 +65,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       <div className="hidden bg-ink text-white sm:block">
         <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-4 py-2 text-center text-[12px]">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-          <span className="text-white/85">{t.announce}</span>
+          <span className="text-white/85">{announce}</span>
         </div>
       </div>
 
@@ -109,7 +123,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                       label={h.tabsLabel}
                       tabs={{ creator: h.tabCreator, brand: h.tabBrand }}
                       panels={{
-                        creator: { ...h.creator, href: cta.heroSecondary },
+                        creator: { ...h.creator, href: cta.heroSecondary, note: founderNote },
                         brand: { ...h.brand, href: cta.brief },
                       }}
                     />

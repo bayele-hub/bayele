@@ -28,6 +28,8 @@ export interface CreatorProfile extends TalentSummary {
   photoUrl: string | null;
   socials: SocialLink[];
   completedCampaigns: number;
+  /** "Créateur fondateur" number (1–10 000), or null. */
+  founderNumber: number | null;
 }
 
 export type ConsultantLinkKind = 'linkedin' | 'x' | 'whatsapp' | 'website';
@@ -127,7 +129,7 @@ export async function getCreator(handle: string): Promise<CreatorProfile | null>
   try {
     const supabase = await createClient();
     const { data, error } = await supabase.from('profiles')
-      .select(`id, handle, display_name, avatar_url, bio, city, country, user_roles!inner(role), creator_profiles(categories, rating_avg, audience_size, platforms)`)
+      .select(`id, handle, display_name, avatar_url, bio, city, country, user_roles!inner(role), creator_profiles(categories, rating_avg, audience_size, platforms), founder_creators(founder_number)`)
       .eq('handle', handle).eq('user_roles.role', 'creator').eq('status', 'active').maybeSingle();
     if (error || !data) return null;
     const base = mapRow('creator')(data);
@@ -138,10 +140,18 @@ export async function getCreator(handle: string): Promise<CreatorProfile | null>
       socials: platformsToSocials((data as any).creator_profiles?.platforms),
       // Real metric: number of campaigns paid out to this creator (0 until campaigns complete).
       completedCampaigns: 0,
+      founderNumber: pickFounder((data as any).founder_creators),
     };
   } catch {
     return null;
   }
+}
+
+// founder_creators is one-to-one with profiles; PostgREST may still hand back an array.
+function pickFounder(v: unknown): number | null {
+  const row = Array.isArray(v) ? v[0] : v;
+  const n = (row as { founder_number?: unknown } | null | undefined)?.founder_number;
+  return typeof n === 'number' ? n : null;
 }
 
 /** Full consultant profile by handle. Returns null when not found. Purely DB-backed. */

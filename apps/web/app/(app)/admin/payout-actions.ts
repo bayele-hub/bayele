@@ -43,3 +43,35 @@ export async function payoutAction(_prev: PayoutState, formData: FormData): Prom
   revalidatePath('/admin/payouts'); // clear the paid-out row from its own queue
   return { error: null, ok: true };
 }
+
+/**
+ * Admin confirms a partner commission was disbursed (managed creators, migration 0027). Authorization,
+ * the required reference and idempotency live in admin_confirm_partner_commission.
+ */
+export async function commissionPayoutAction(_prev: PayoutState, formData: FormData): Promise<PayoutState> {
+  const id = String(formData.get('commission') ?? '');
+  const ref = String(formData.get('ref') ?? '').trim();
+  const providerRaw = String(formData.get('provider') ?? 'mtn_momo') as Provider;
+  const provider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+
+  if (!id) return { error: 'Commission manquante.' };
+  if (!ref) return { error: 'Référence de décaissement requise.' };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('admin_confirm_partner_commission', {
+    p_commission_id: id,
+    p_provider: provider,
+    p_disbursement_ref: ref,
+  });
+
+  if (error) {
+    const msg = (error.message ?? '').trim();
+    if (msg === 'not_authorized') return { error: "Vous n'êtes pas autorisé." };
+    if (msg === 'commission_not_found') return { error: 'Commission introuvable.' };
+    if (msg === 'ref_required') return { error: 'Référence de décaissement requise.' };
+    return { error: 'La confirmation a échoué. Réessayez.' };
+  }
+
+  revalidatePath('/admin/payouts');
+  return { error: null, ok: true };
+}

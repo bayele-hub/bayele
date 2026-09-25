@@ -200,11 +200,11 @@
   "partner": {
     "badge": "Programme Partenaires",
     "heading": "Devenez Partenaire Bayele",
-    "body": "Talent managers, agences, consultants marketing : gérez vos créateurs et vos campagnes sur Bayele. Nous fournissons la plateforme, les paiements, la facturation et le suivi ; vous apportez vos relations et votre savoir-faire.",
+    "body": "Talent managers, agences, consultants marketing : représentez vos créateurs sur Bayele. Ils acceptent votre représentation, vous postulez aux campagnes pour eux, et votre commission est calculée à chaque paiement. Nous fournissons la plateforme, le séquestre, les contrats et le suivi.",
     "bullets": [
-      "Pilotez les campagnes de vos clients",
-      "Accédez à la base de créateurs vérifiés",
-      "Honoraires sécurisés par séquestre",
+      "Représentez votre portefeuille de créateurs",
+      "Postulez aux campagnes pour eux",
+      "Votre commission, calculée à chaque paiement",
       "Facturation OHADA incluse"
     ],
     "cta": "Devenir partenaire",
@@ -333,5 +333,13 @@
     "appBody": "Pendant le lancement, l'annuaire des créateurs n'est pas en libre-service. Soumettez un brief de campagne : Bayele vous propose les créateurs adaptés et vous les validez avant tout paiement.",
     "appCta": "Soumettre un brief",
     "appSecondary": "Voir mes campagnes"
+  },
+  "founder": {
+    "label": "Créateur fondateur",
+    "title": "Parmi les 10 000 premiers créateurs de Bayele",
+    "announce": "Badge Créateur fondateur offert aux 10 000 premiers créateurs — {n} places restantes.",
+    "announceNoCount": "Badge Créateur fondateur offert aux 10 000 premiers créateurs inscrits.",
+    "heroNote": "Badge fondateur gratuit · {n} places restantes",
+    "heroNoteNoCount": "Badge fondateur gratuit pour les 10 000 premiers"
   }
 }
