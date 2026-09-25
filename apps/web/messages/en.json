@@ -3,7 +3,7 @@
     "title": "Bayele — Nano-influence & Mobile Money Escrow",
     "description": "The escrow marketplace where creators and brands grow together in Cameroon, Côte d'Ivoire and Gabon."
   },
-  "announce": "New — instant Wave withdrawals now available in Côte d'Ivoire",
+  "announce": "Launch — create your free creator profile and be among the first proposed to brands.",
   "nav": {
     "creators": "Creators",
     "consultants": "Partners",
@@ -15,19 +15,64 @@
     "dashboard": "My space"
   },
   "hero": {
-    "badge": "Influence marketplace · Francophone Africa",
+    "badge": "Cameroon · Côte d'Ivoire · Gabon",
     "title": "Where creators and brands grow together",
-    "subtitle": "Find influencers to collaborate with. Describe your campaign: Bayele selects the creators who fit and secures every payment with Mobile Money escrow.",
-    "brandDoorTitle": "Build your brand with creators",
-    "brandDoorBody": "Submit your brief, get a shortlist of matching creators.",
-    "brandDoorCta": "Submit a brief",
-    "creatorDoorTitle": "Content that builds influence",
-    "creatorDoorBody": "Create your profile, get campaigns, get paid via Mobile Money.",
-    "creatorDoorCta": "Create my profile",
+    "titleLines": [
+      "Where creators and brands",
+      "grow together"
+    ],
+    "subtitle": "Brands submit a brief and pay only on proof. Creators post and get paid via Mobile Money.",
+    "tabsLabel": "Choose your profile",
+    "tabCreator": "I'm a creator",
+    "tabBrand": "I'm a brand",
+    "creator": {
+      "title": "Your audience is worth money",
+      "body": "Even your WhatsApp status counts. Create a free profile, get campaigns, withdraw from 1,000 FCFA.",
+      "cta": "Create my free profile",
+      "micro": "The campaign money is locked before you post."
+    },
+    "brand": {
+      "title": "A brief, not a search",
+      "body": "Budget, country, deliverables: describe your campaign, and Bayele and its partners propose the right creators.",
+      "cta": "Describe my campaign",
+      "micro": "Held in escrow: you pay only on proof."
+    },
+    "partnerLink": "Agency or talent manager? Become a partner",
+    "trust": [
+      "Escrow-protected payments",
+      "MTN MoMo · Orange Money · Wave",
+      "OHADA invoices"
+    ],
+    "welcome": "Welcome back, {name}",
+    "continue": {
+      "creator": {
+        "title": "Keep building your media kit",
+        "body": "The more complete your profile, the more Bayele puts you forward to brands.",
+        "primary": "Complete my profile",
+        "secondary": "See campaigns"
+      },
+      "business": {
+        "title": "Ready for your next campaign?",
+        "body": "Describe your brief: we propose matching creators, held in escrow.",
+        "primary": "New brief",
+        "secondary": "My campaigns"
+      },
+      "partner": {
+        "title": "Your partner space",
+        "body": "Run your retainers and your clients' campaigns.",
+        "primary": "My partner space",
+        "secondary": "My retainers"
+      },
+      "admin": {
+        "title": "Bayele console",
+        "body": "Moderation, escrow and payouts.",
+        "primary": "Open the console",
+        "secondary": "Moderation"
+      }
+    },
     "ctaDashboard": "Go to my space",
     "ctaProfile": "Complete my profile",
-    "payoutsLabel": "Withdraw to:",
-    "socialProof": "Creators paid every week in Douala, Abidjan & Libreville."
+    "payoutsLabel": "Withdraw to:"
   },
   "heroVisual": {
     "name": "Yao",
@@ -35,6 +80,16 @@
     "escrowChip": "Secured escrow",
     "payoutNote": "Paid via Mobile Money",
     "alt": "Content creator on Bayele"
+  },
+  "orbit": {
+    "example": "Example",
+    "briefTitle": "Brief matched",
+    "briefMeta": "Tech launch · 3 creators",
+    "escrowTitle": "Budget in escrow",
+    "escrowNote": "Locked until proof",
+    "growthTitle": "Audience",
+    "growthMeta": "+2.4k followers · 30 days",
+    "paidMeta": "MTN MoMo · 2 min ago"
   },
   "trust": {
     "escrowTitle": "Locked escrow",
@@ -59,7 +114,8 @@
         "title": "Instant payout",
         "body": "Once validated, funds are released to MTN, Orange Money or Wave."
       }
-    ]
+    ],
+    "railLabel": "How the money moves"
   },
   "howItWorks": {
     "heading": "How it works",
@@ -107,7 +163,12 @@
     "cta": "Create my profile",
     "sampleName": "Your name",
     "sampleMeta": "Beauty · Lifestyle · Douala",
-    "sampleSlug": "your-name"
+    "sampleSlug": "your-name",
+    "sampleFollowers": [
+      "12k",
+      "8.4k",
+      "2.1k"
+    ]
   },
   "partner": {
     "badge": "Partner program",
@@ -174,19 +235,19 @@
   "stats": [
     {
       "k": "100%",
-      "label": "of budgets held in escrow"
-    },
-    {
-      "k": "< 60s",
-      "label": "MoMo payout after validation"
+      "label": "of budgets locked in escrow"
     },
     {
       "k": "3 countries",
       "label": "Cameroon · Côte d'Ivoire · Gabon"
     },
     {
-      "k": "30M+",
-      "label": "Combined followers across platforms"
+      "k": "1,000 FCFA",
+      "label": "minimum Mobile Money withdrawal"
+    },
+    {
+      "k": "OHADA",
+      "label": "compliant invoices for every campaign"
     }
   ],
   "countries": {

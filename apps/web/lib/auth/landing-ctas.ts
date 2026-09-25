@@ -70,3 +70,33 @@ export function landingCtaHrefs(authed: boolean): LandingCtaHrefs {
     partnerJoin: '/auth?mode=signup&role=partner',
   };
 }
+
+/** Roles as stored in the database (see lib/roles.ts for their public names). */
+export type HomeRole = 'creator' | 'business' | 'consultant' | 'super_admin';
+
+export interface HomeContinue {
+  /** Copy key under `hero.continue` in the message catalogue. */
+  key: 'creator' | 'business' | 'partner' | 'admin';
+  primary: string;
+  secondary: string;
+}
+
+/**
+ * A signed-in visitor on the home page gets ONE "continue" card for their own role instead of the
+ * brand/creator switch — a brand is never told to complete a creator profile, and vice versa.
+ * `null` = signed in but not onboarded yet: the dispatcher routes them to onboarding.
+ */
+export function homeContinueCtas(role: HomeRole | null): HomeContinue {
+  switch (role) {
+    case 'business':
+      return { key: 'business', primary: '/business/campaigns/new', secondary: '/business/campaigns' };
+    case 'consultant':
+      return { key: 'partner', primary: '/partner/dashboard', secondary: '/partner/retainers' };
+    case 'super_admin':
+      return { key: 'admin', primary: '/admin/dashboard', secondary: '/admin/moderation' };
+    case 'creator':
+      return { key: 'creator', primary: '/profile', secondary: '/creator/campaigns' };
+    default:
+      return { key: 'creator', primary: '/dashboard', secondary: '/dashboard' };
+  }
+}
