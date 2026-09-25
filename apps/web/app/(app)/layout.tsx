@@ -17,7 +17,7 @@ type Role = Database['public']['Enums']['user_role'];
 const ROLE_FR: Record<Role, string> = {
   super_admin: 'Admin',
   business: 'Marque',
-  consultant: 'Consultant',
+  consultant: 'Partenaire',
   creator: 'Créateur',
 };
 

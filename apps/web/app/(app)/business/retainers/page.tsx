@@ -38,8 +38,8 @@ export default async function BusinessRetainers() {
       {list.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
           <p className="text-sm text-muted">Aucun rétainer pour le moment.</p>
-          <Link href="/consultants" className="mt-3 inline-block text-sm font-bold text-brand hover:underline">
-            Trouver un consultant dans l'annuaire →
+          <Link href="/partners" className="mt-3 inline-block text-sm font-bold text-brand hover:underline">
+            Trouver un partenaire dans l'annuaire →
           </Link>
         </div>
       ) : (
@@ -53,7 +53,7 @@ export default async function BusinessRetainers() {
               <li key={r.id} className="rounded-2xl border border-line bg-white p-4 shadow-card">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-bold text-ink">{c?.display_name ?? 'Consultant'}</p>
+                    <p className="font-bold text-ink">{c?.display_name ?? 'Partenaire'}</p>
                     <p className="mt-0.5 text-xs text-muted">
                       @{c?.handle} · honoraires {fmtFcfa(r.consultant_fee_fcfa)} · média {fmtFcfa(r.media_budget_fcfa)}
                     </p>
@@ -79,7 +79,7 @@ export default async function BusinessRetainers() {
                   href={`/messages/open?ctx=retainer&id=${r.id}`}
                   className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
                 >
-                  <MessageCircle className="h-3.5 w-3.5" /> Contacter le consultant
+                  <MessageCircle className="h-3.5 w-3.5" /> Contacter le partenaire
                 </Link>
               </li>
             );

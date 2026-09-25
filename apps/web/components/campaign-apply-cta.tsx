@@ -10,7 +10,7 @@ import { ApplyButton } from '@/app/(app)/creator/campaigns/apply-button';
  *   - logged-out            → sign up as a creator, returning to this campaign afterwards;
  *   - active creator        → apply right here (or a badge if they already applied);
  *   - not-yet-active creator → must be approved first (product decision: approval-gated apply);
- *   - brand/consultant/admin → a note that only creator accounts apply.
+ *   - brand/partner/admin → a note that only creator accounts apply.
  * Real authorization stays in apply_to_campaign; this only decides which affordance to show.
  */
 export async function CampaignApplyCTA({ campaignId }: { campaignId: string }) {

@@ -100,7 +100,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
         years_experience: Math.max(0, Math.round(Number(formData.get('years_experience') ?? 0))),
       })
       .eq('user_id', session.userId);
-    if (error) return { error: 'Profil consultant : mise à jour impossible.' };
+    if (error) return { error: 'Profil partenaire : mise à jour impossible.' };
   }
 
   if (session.roles.includes('business')) {
@@ -123,7 +123,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   revalidatePath('/profile');
   revalidatePath('/creator/dashboard');
   revalidatePath('/creator/wallet');
-  revalidatePath('/consultant/dashboard');
+  revalidatePath('/partner/dashboard');
   revalidatePath('/business/dashboard');
   return { error: null, ok: true };
 }

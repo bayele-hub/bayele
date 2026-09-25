@@ -63,7 +63,7 @@ export default async function BusinessDashboard() {
         <p className="mt-1 text-xs text-muted">
           {draftCount > 0
             ? `${draftCount} campagne${draftCount > 1 ? 's' : ''} en attente de financement.`
-            : 'Lancez une campagne ou confiez la gestion à un consultant.'}
+            : 'Lancez une campagne ou confiez la gestion à un partenaire.'}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
@@ -82,7 +82,7 @@ export default async function BusinessDashboard() {
             href="/business/retainers/new"
             className="inline-flex min-h-tap items-center gap-1.5 rounded-xl border border-line bg-white px-4 text-sm font-bold text-ink transition hover:border-brand hover:text-brand"
           >
-            <Handshake className="h-4 w-4" /> Confier à un consultant
+            <Handshake className="h-4 w-4" /> Confier à un partenaire
           </Link>
         </div>
       </div>

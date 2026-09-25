@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 import { getConsultant } from '@/lib/data/talent';
 
 // Per-consultant social share card. See creators/[handle]/opengraph-image for the shared approach.
-export const alt = 'Profil consultant — Bayele';
+export const alt = 'Profil partenaire — Bayele';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -11,7 +11,7 @@ const FLAG: Record<string, string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬
 export default async function Image({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
   const c = await getConsultant(handle).catch(() => null);
-  const name = c?.displayName ?? 'Consultant';
+  const name = c?.displayName ?? 'Partenaire';
   const at = c?.handle ?? handle;
   const city = c?.city ?? '';
   const country = c?.country ?? '';
@@ -54,7 +54,7 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '26px', fontWeight: 700 }}>
-            <span style={{ color: '#F5A524' }}>◆</span> Consultant média{years ? ` · ${years} ans d'expérience` : ''}
+            <span style={{ color: '#F5A524' }}>◆</span> Partenaire Bayele{years ? ` · ${years} ans d'expérience` : ''}
           </div>
           <div style={{ display: 'flex', padding: '12px 24px', borderRadius: '999px', background: '#F5A524', color: '#0B1B2B', fontSize: '24px', fontWeight: 800 }}>Campagnes sous séquestre</div>
         </div>

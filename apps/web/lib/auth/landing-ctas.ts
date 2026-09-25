@@ -18,9 +18,9 @@ export function isAuthFunnel(href: string): boolean {
 }
 
 export interface LandingCtaHrefs {
-  /** Hero primary button. */
+  /** Hero primary button — the brand door ("Soumettre un brief"). */
   heroPrimary: string;
-  /** Hero secondary button. */
+  /** Hero secondary button — the creator door ("Créer mon profil" / "Compléter mon profil"). */
   heroSecondary: string;
   /** "For brands" split-card CTA. */
   splitBrand: string;
@@ -32,22 +32,30 @@ export interface LandingCtaHrefs {
   headerPrimary: string;
   /** Header secondary sign-in link — null when authed (nothing to render). */
   headerSignin: string | null;
+  /** "Soumettre un brief" — brands get creators through Bayele until the directory opens. */
+  brief: string;
+  /** "Devenir partenaire" — Partner program signup. */
+  partnerJoin: string;
 }
 
 /**
  * Resolve every landing CTA href for the given auth state. When authed, all of them stay inside the
- * app (dashboard / directory); none point at `/auth`.
+ * app (dashboard / profile / brief); none point at `/auth`.
  */
 export function landingCtaHrefs(authed: boolean): LandingCtaHrefs {
   if (authed) {
     return {
       heroPrimary: '/dashboard',
-      heroSecondary: '/creators',
+      // The creator directory is unlisted until launch, so the secondary door completes the profile.
+      heroSecondary: '/profile',
       splitBrand: '/dashboard',
       splitCreator: '/dashboard',
       finalPrimary: '/dashboard',
       headerPrimary: '/dashboard',
       headerSignin: null,
+      // Non-business accounts are bounced to /dashboard by the business layout — safe for everyone.
+      brief: '/business/campaigns/new',
+      partnerJoin: '/dashboard',
     };
   }
   return {
@@ -58,5 +66,7 @@ export function landingCtaHrefs(authed: boolean): LandingCtaHrefs {
     finalPrimary: '/auth?mode=signup',
     headerPrimary: '/auth?mode=signup',
     headerSignin: '/auth?mode=signin',
+    brief: '/auth?mode=signup&role=business',
+    partnerJoin: '/auth?mode=signup&role=partner',
   };
 }

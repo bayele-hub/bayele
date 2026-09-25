@@ -29,7 +29,7 @@ export async function updateAvatarAction(avatarUrl: string | null): Promise<Avat
 
   revalidatePath('/profile');
   revalidatePath('/creator/dashboard');
-  revalidatePath('/consultant/dashboard');
+  revalidatePath('/partner/dashboard');
   revalidatePath('/business/dashboard');
   return { error: null, ok: true };
 }

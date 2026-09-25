@@ -32,7 +32,7 @@ export default function LegalPage() {
         </div>
         <section id="cgu" className="mt-8 space-y-3 text-sm leading-relaxed text-ink/80">
           <h2 className="flex items-center gap-2 text-base font-bold text-ink"><FileText className="h-4 w-4 text-brand" /> 1. Conditions Générales d'Utilisation</h2>
-          <p>Bayele opère comme infrastructure de mise en relation et de sécurisation financière entre Annonceurs, Consultants et Créateurs. Contenu complet à finaliser avec conseil juridique.</p>
+          <p>Bayele opère comme infrastructure de mise en relation et de sécurisation financière entre Annonceurs, Partenaires et Créateurs. Contenu complet à finaliser avec conseil juridique.</p>
         </section>
         <section id="escrow" className="mt-10 space-y-3 border-t border-line pt-8 text-sm leading-relaxed text-ink/80">
           <h2 className="flex items-center gap-2 text-base font-bold text-ink"><Shield className="h-4 w-4 text-brand" /> 2. Protocole de Séquestre (Escrow)</h2>

@@ -29,7 +29,7 @@ const STATUS_CLASS: Record<string, string> = {
 };
 const ROLE_FR: Record<string, string> = {
   creator: 'Créateur',
-  consultant: 'Consultant',
+  consultant: 'Partenaire',
   business: 'Marque',
   super_admin: 'Admin',
 };
@@ -44,7 +44,7 @@ const STATUS_FILTERS = [
 const ROLE_FILTERS = [
   { id: 'all', label: 'Tous les rôles' },
   { id: 'creator', label: 'Créateurs' },
-  { id: 'consultant', label: 'Consultants' },
+  { id: 'consultant', label: 'Partenaires' },
   { id: 'business', label: 'Marques' },
 ] as const;
 

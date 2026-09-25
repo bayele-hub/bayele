@@ -3,12 +3,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getSession } from '@/lib/auth/session';
 import { OnboardingForm } from './onboarding-form';
+import { onboardingPath, roleFromSlug, roleSlug } from '@/lib/roles';
 
 const VALID = ['creator', 'consultant', 'business'] as const;
 type Role = (typeof VALID)[number];
 
 export default async function OnboardingPage({ params }: { params: Promise<{ role: string }> }) {
-  const { role } = await params;
+  // The URL carries the public slug (/onboarding/partner); resolve it to the internal role.
+  const { role: slug } = await params;
+  const role = roleFromSlug(slug);
 
   // Resolve the session first, so a mistyped role URL never bounces a signed-in user to signup.
   const session = await getSession();
@@ -21,8 +24,10 @@ export default async function OnboardingPage({ params }: { params: Promise<{ rol
   // signup captured no role, the URL role is honored.
   const metaRole = session.metadata.role as string | undefined;
   const intendedRole = VALID.includes(metaRole as Role) ? (metaRole as Role) : null;
-  if (!VALID.includes(role as Role)) redirect(intendedRole ? `/onboarding/${intendedRole}` : '/dashboard');
-  if (intendedRole && intendedRole !== role) redirect(`/onboarding/${intendedRole}`);
+  if (!role) redirect(intendedRole ? onboardingPath(intendedRole) : '/dashboard');
+  if (intendedRole && intendedRole !== role) redirect(onboardingPath(intendedRole));
+  // Normalize to the canonical public slug (e.g. a stray /onboarding/Creator).
+  if (slug !== roleSlug(role)) redirect(onboardingPath(role));
 
   const meta = session.metadata;
   const defaults = {
@@ -48,7 +53,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ rol
       </div>
 
       <div className="mx-auto mt-2 w-full max-w-lg rounded-2xl border border-line bg-white p-5 shadow-card sm:p-6">
-        <OnboardingForm role={role as Role} userId={session.userId} defaults={defaults} />
+        <OnboardingForm role={role} userId={session.userId} defaults={defaults} />
       </div>
     </div>
   );

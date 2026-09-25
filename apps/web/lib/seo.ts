@@ -7,7 +7,7 @@ export const SITE_URL = 'https://bayele.com';
 export const SITE_NAME = 'Bayele';
 export const SITE_SLOGAN = "L'influence marketing, sécurisée par séquestre.";
 export const SITE_DESC =
-  "La marketplace d'escrow pour Créateurs WhatsApp, Consultants Médias et Entreprises au Cameroun, en Côte d'Ivoire et au Gabon. Paiements Mobile Money, facturation OHADA.";
+  "La marketplace d'escrow où créateurs, partenaires et marques grandissent ensemble au Cameroun, en Côte d'Ivoire et au Gabon. Paiements Mobile Money, facturation OHADA.";
 
 export const COUNTRY_NAME: Record<'CM' | 'CI' | 'GA', string> = {
   CM: 'Cameroun',
@@ -158,7 +158,7 @@ export function personLd(p: PersonLdInput): Json {
     url: `${SITE_URL}${p.path}`,
     name: p.displayName,
     alternateName: `@${p.handle}`,
-    jobTitle: p.role === 'creator' ? 'Créateur de contenu' : 'Consultant média',
+    jobTitle: p.role === 'creator' ? 'Créateur de contenu' : 'Partenaire Bayele',
     ...(p.bio ? { description: p.bio } : {}),
     ...(p.avatarUrl ? { image: p.avatarUrl } : {}),
     ...(p.city

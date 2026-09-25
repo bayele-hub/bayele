@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
+import { onboardingPath, roleDashboardPath, roleFromSlug } from '@/lib/roles';
 
 /**
  * Post-auth dispatcher. Not a page a user lingers on — it routes by state:
@@ -15,8 +16,7 @@ export default async function DashboardDispatch() {
 
   if (!session.profile) {
     const metaRole = session.metadata.role as string | undefined;
-    const role = ['creator', 'consultant', 'business'].includes(metaRole ?? '') ? metaRole : 'creator';
-    redirect(`/onboarding/${role}`);
+    redirect(onboardingPath(roleFromSlug(metaRole) ?? 'creator'));
   }
 
   // Only an active profile reaches a role dashboard. Every role layout also redirects a non-active
@@ -30,8 +30,8 @@ export default async function DashboardDispatch() {
       : session.primary === 'business'
         ? '/business/dashboard'
         : session.primary === 'consultant'
-          ? '/consultant/dashboard'
-          : '/creator/dashboard';
+          ? roleDashboardPath('consultant')
+          : roleDashboardPath('creator');
 
   redirect(dest);
 }

@@ -50,7 +50,7 @@ export default function Image() {
             L'influence marketing, sécurisée par séquestre.
           </div>
           <div style={{ display: 'flex', fontSize: '30px', color: 'rgba(255,255,255,0.82)', maxWidth: '820px' }}>
-            Marques, créateurs & consultants — Cameroun · Côte d'Ivoire · Gabon. Paiements Mobile Money.
+            Marques, créateurs & partenaires — Cameroun · Côte d'Ivoire · Gabon. Paiements Mobile Money.
           </div>
         </div>
 

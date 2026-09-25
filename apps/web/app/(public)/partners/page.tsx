@@ -21,8 +21,8 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: '/consultants' },
-    openGraph: { type: 'website', title: `${title} · ${SITE_NAME}`, description, url: '/consultants' },
+    alternates: { canonical: '/partners' },
+    openGraph: { type: 'website', title: `${title} · ${SITE_NAME}`, description, url: '/partners' },
   };
 }
 
@@ -43,15 +43,15 @@ export default async function ConsultantsPage({
     <div className="min-h-screen bg-white">
       <JsonLd
         data={[
-          itemListLd(people.map((p) => ({ name: p.displayName, path: `/consultants/${p.handle}` }))),
+          itemListLd(people.map((p) => ({ name: p.displayName, path: `/partners/${p.handle}` }))),
           breadcrumbLd([
             { name: 'Accueil', path: '/' },
-            { name: 'Consultants', path: '/consultants' },
+            { name: 'Partenaires', path: '/partners' },
           ]),
         ]}
       />
       <SiteHeader />
-      <DirectoryView role="consultant" basePath="/consultants" title={t.directoryPage.consultantsTitle} lede={t.directoryPage.consultantsLede}
+      <DirectoryView role="consultant" basePath="/partners" title={t.directoryPage.consultantsTitle} lede={t.directoryPage.consultantsLede}
         people={people} t={t} locale={locale} activeCountry={country} />
       <SiteFooter />
     </div>

@@ -36,10 +36,10 @@ export default function NotFound() {
           <Users className="h-4 w-4" /> Créateurs
         </Link>
         <Link
-          href="/consultants"
+          href="/partners"
           className="inline-flex min-h-tap items-center justify-center gap-2 rounded-xl border border-line bg-white px-5 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand"
         >
-          <Briefcase className="h-4 w-4" /> Consultants
+          <Briefcase className="h-4 w-4" /> Partenaires
         </Link>
       </div>
     </main>

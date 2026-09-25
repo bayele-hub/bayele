@@ -27,7 +27,7 @@ const CATEGORIES = [
 
 const ROLE_COPY: Record<Role, { title: string; blurb: string }> = {
   creator: { title: 'Profil créateur', blurb: 'Votre vitrine pour les marques. Vous êtes payé par campagne, via séquestre.' },
-  consultant: { title: 'Profil consultant', blurb: 'Pilotez les campagnes et accédez à la base de créateurs vérifiés.' },
+  consultant: { title: 'Profil partenaire', blurb: 'Pilotez les campagnes et accédez à la base de créateurs vérifiés.' },
   business: { title: 'Profil marque', blurb: 'Lancez des campagnes sous séquestre. Facturation OHADA incluse.' },
 };
 

@@ -10,7 +10,7 @@ describe('AUTH_FUNNEL matcher', () => {
     }
   });
   it('does not match app or lookalike hrefs', () => {
-    for (const h of ['/dashboard', '/creators', '/consultants', '/authentic', '/legal', 'https://x/auth']) {
+    for (const h of ['/dashboard', '/creators', '/partners', '/authentic', '/legal', 'https://x/auth']) {
       expect(isAuthFunnel(h)).toBe(false);
     }
     // sanity: the exported regex is anchored at the start
@@ -33,13 +33,15 @@ describe('landingCtaHrefs — logged-in visitors are never sent into the signup/
     expect(authed.headerSignin).toBeNull();
   });
 
-  it('points the primary CTAs at the dashboard, and hero browse at the directory', () => {
+  it('points the primary CTAs at the dashboard, and the creator door at the profile', () => {
     expect(authed.heroPrimary).toBe('/dashboard');
     expect(authed.splitBrand).toBe('/dashboard');
     expect(authed.splitCreator).toBe('/dashboard');
     expect(authed.finalPrimary).toBe('/dashboard');
     expect(authed.headerPrimary).toBe('/dashboard');
-    expect(authed.heroSecondary).toBe('/creators');
+    expect(authed.heroSecondary).toBe('/profile');
+    expect(authed.brief).toBe('/business/campaigns/new');
+    expect(authed.partnerJoin).toBe('/dashboard');
   });
 });
 
@@ -47,7 +49,7 @@ describe('landingCtaHrefs — logged-out visitors still get the signup funnel', 
   const anon = landingCtaHrefs(false);
 
   it('routes the primary conversion CTAs into the signup funnel', () => {
-    for (const slot of ['heroPrimary', 'splitBrand', 'splitCreator', 'finalPrimary', 'headerPrimary'] as const) {
+    for (const slot of ['heroPrimary', 'heroSecondary', 'splitBrand', 'splitCreator', 'finalPrimary', 'headerPrimary', 'brief', 'partnerJoin'] as const) {
       expect(isAuthFunnel(anon[slot]), `anon CTA "${slot}" should enter the funnel`).toBe(true);
     }
     expect(anon.headerSignin).toBe('/auth?mode=signin');
@@ -56,6 +58,14 @@ describe('landingCtaHrefs — logged-out visitors still get the signup funnel', 
   it('preserves role intent on the role-specific CTAs', () => {
     expect(anon.heroPrimary).toContain('role=business');
     expect(anon.splitCreator).toContain('role=creator');
+    expect(anon.brief).toContain('role=business');
+  });
+
+  it('uses the public partner slug, never the internal consultant name', () => {
+    expect(anon.partnerJoin).toContain('role=partner');
+    for (const href of Object.values(anon)) {
+      if (href) expect(href).not.toContain('consultant');
+    }
   });
 });
 

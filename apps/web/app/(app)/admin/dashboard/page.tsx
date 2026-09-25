@@ -95,7 +95,7 @@ export default async function AdminOverview() {
         </div>
         <div className="space-y-2.5">
           <Bar label="Créateurs" value={roles.creator} total={roleTotal} className="bg-brand" />
-          <Bar label="Consultants" value={roles.consultant} total={roleTotal} className="bg-accent" />
+          <Bar label="Partenaires" value={roles.consultant} total={roleTotal} className="bg-accent" />
           <Bar label="Marques" value={roles.business} total={roleTotal} className="bg-emerald-500" />
           <Bar label="Admins" value={roles.super_admin} total={roleTotal} className="bg-ink" />
         </div>

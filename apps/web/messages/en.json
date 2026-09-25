@@ -1,12 +1,12 @@
 {
   "meta": {
     "title": "Bayele — Nano-influence & Mobile Money Escrow",
-    "description": "The escrow marketplace for WhatsApp creators, media consultants and brands in Cameroon, Côte d'Ivoire and Gabon."
+    "description": "The escrow marketplace where creators and brands grow together in Cameroon, Côte d'Ivoire and Gabon."
   },
   "announce": "New — instant Wave withdrawals now available in Côte d'Ivoire",
   "nav": {
     "creators": "Creators",
-    "consultants": "Consultants",
+    "consultants": "Partners",
     "pricing": "Pricing",
     "security": "Security",
     "billing": "Billing",
@@ -15,17 +15,19 @@
     "dashboard": "My space"
   },
   "hero": {
-    "badge": "Influencer marketplace · Francophone Africa",
-    "titleLine1": "Monetize your content.",
-    "titleLead": "Secure ",
-    "titleHighlight": "payments",
-    "subtitle": "Bayele holds campaign budgets in escrow and releases them to Mobile Money once delivery is proven — a safer way to collaborate, for creators and brands alike.",
-    "ctaBrand": "Launch a campaign",
-    "ctaCreator": "Become a paid creator",
-    "payoutsLabel": "Withdraw to:",
-    "socialProof": "Creators paid every week across Douala, Abidjan & Libreville.",
+    "badge": "Influence marketplace · Francophone Africa",
+    "title": "Where creators and brands grow together",
+    "subtitle": "Find influencers to collaborate with. Describe your campaign: Bayele selects the creators who fit and secures every payment with Mobile Money escrow.",
+    "brandDoorTitle": "Build your brand with creators",
+    "brandDoorBody": "Submit your brief, get a shortlist of matching creators.",
+    "brandDoorCta": "Submit a brief",
+    "creatorDoorTitle": "Content that builds influence",
+    "creatorDoorBody": "Create your profile, get campaigns, get paid via Mobile Money.",
+    "creatorDoorCta": "Create my profile",
     "ctaDashboard": "Go to my space",
-    "ctaBrowse": "Browse creators"
+    "ctaProfile": "Complete my profile",
+    "payoutsLabel": "Withdraw to:",
+    "socialProof": "Creators paid every week in Douala, Abidjan & Libreville."
   },
   "heroVisual": {
     "name": "Yao",
@@ -59,7 +61,68 @@
       }
     ]
   },
-  "categoriesHeading": "Explore by category",
+  "howItWorks": {
+    "heading": "How it works",
+    "brandsTitle": "For brands",
+    "brandsSteps": [
+      {
+        "title": "Submit your brief",
+        "body": "Budget, category, country and deliverables: tell us what your brand needs."
+      },
+      {
+        "title": "Bayele selects the creators",
+        "body": "We and our partners propose the profiles that fit your campaign."
+      },
+      {
+        "title": "Pay on proof",
+        "body": "The budget stays in escrow and is only released once the post is proven."
+      }
+    ],
+    "brandsCta": "Submit a brief",
+    "creatorsTitle": "For creators",
+    "creatorsSteps": [
+      {
+        "title": "Create your profile",
+        "body": "Your networks, audience and categories: your showcase for brands."
+      },
+      {
+        "title": "Get campaigns",
+        "body": "Apply to campaigns or receive invitations that match your content."
+      },
+      {
+        "title": "Get paid",
+        "body": "Mobile Money payout as soon as your proof is approved — no chasing payments."
+      }
+    ],
+    "creatorsCta": "Create my profile"
+  },
+  "profileKit": {
+    "heading": "Your profile is your media kit",
+    "body": "Every Bayele profile has its own link. Share it on WhatsApp, TikTok or Instagram to show brands your audience and networks — the more complete it is, the more campaigns you get.",
+    "bullets": [
+      "One link to share, no file to send",
+      "Audience and networks kept up to date",
+      "“Verified” badge after Bayele review"
+    ],
+    "cta": "Create my profile",
+    "sampleName": "Your name",
+    "sampleMeta": "Beauty · Lifestyle · Douala",
+    "sampleSlug": "your-name"
+  },
+  "partner": {
+    "badge": "Partner program",
+    "heading": "Become a Bayele Partner",
+    "body": "Talent managers, agencies, marketing consultants: manage your creators and campaigns on Bayele. We provide the platform, payments, invoicing and tracking; you bring the relationships and the know-how.",
+    "bullets": [
+      "Run your clients' campaigns",
+      "Access the verified creator base",
+      "Fees secured by escrow",
+      "OHADA invoicing included"
+    ],
+    "cta": "Become a partner",
+    "secondary": "See partners"
+  },
+  "categoriesHeading": "Creators in every category",
   "viewAll": "View all",
   "categories": [
     "Beauty",
@@ -77,37 +140,19 @@
   "directory": {
     "creatorsTitle": "Creators",
     "creatorsSubtitle": "Paid nano-creators · verified audience",
-    "consultantsTitle": "Consultants",
-    "consultantsSubtitle": "Media strategists to run your campaigns",
+    "consultantsTitle": "Partners",
+    "consultantsSubtitle": "Agencies and talent managers to run your campaigns",
     "live": "Live",
     "emptyCreators": "No active creators yet.",
-    "emptyConsultants": "No active consultants yet.",
-    "roleConsultant": "Strategic consultant",
+    "emptyConsultants": "No active partners yet.",
+    "roleConsultant": "Bayele Partner",
     "view": "View profile",
     "followers": "followers",
     "audience": "Total following"
   },
-  "split": {
-    "brandsTitle": "For brands",
-    "brandsDesc": "Launch, fund and track your influencer campaigns with full security.",
-    "brandsBullets": [
-      "Budget locked, released on proof",
-      "Creators verified by country",
-      "Deductible OHADA invoices"
-    ],
-    "brandsCta": "Launch a campaign",
-    "creatorsTitle": "For creators",
-    "creatorsDesc": "Get paid for your content — without chasing the money.",
-    "creatorsBullets": [
-      "Payment secured by escrow",
-      "MoMo withdrawal from 1,000 FCFA",
-      "A public profile that attracts brands"
-    ],
-    "creatorsCta": "Create my profile"
-  },
   "finalCta": {
-    "title": "Ready to launch your first campaign?",
-    "subtitle": "Join the creators and brands securing their payments with Bayele.",
+    "title": "Ready to grow with creators?",
+    "subtitle": "Submit your brief or create your profile: Bayele handles the matching and secures every payment.",
     "primary": "Get started free",
     "secondary": "How escrow works"
   },
@@ -152,14 +197,14 @@
   "directoryPage": {
     "creatorsTitle": "Creators",
     "creatorsLede": "Browse verified nano-creators. Filter by country and category.",
-    "consultantsTitle": "Consultants",
-    "consultantsLede": "Media strategists to design and run your campaigns.",
+    "consultantsTitle": "Partners",
+    "consultantsLede": "Agencies, talent managers and media strategists to design and run your campaigns.",
     "allCountries": "All countries",
     "allCategories": "All categories",
     "country": "Country",
     "category": "Category",
     "creatorsCount": "{n} creators",
-    "consultantsCount": "{n} consultants",
+    "consultantsCount": "{n} partners",
     "noResults": "No results for these filters.",
     "reset": "Reset"
   },
@@ -175,7 +220,7 @@
     "contentHeading": "Content preview",
     "contentSoon": "Content coming soon",
     "visit": "Open",
-    "backConsultants": "Consultants",
+    "backConsultants": "Partners",
     "hire": "Start a collaboration",
     "experience": "Years of experience",
     "managedCampaigns": "Campaigns managed",
@@ -185,5 +230,20 @@
     "referencesSoon": "Soon",
     "website": "Website",
     "agencyAccess": "Creator database access"
+  },
+  "curated": {
+    "badge": "Curated access",
+    "title": "Bayele introduces you to creators",
+    "body": "During our launch, the creator directory isn't public. Describe your campaign: Bayele and its partners propose the creators who fit your brief.",
+    "brandTitle": "Are you a brand?",
+    "brandBody": "Submit your brief, get a shortlist of creators.",
+    "brandCta": "Submit a brief",
+    "creatorTitle": "Are you a creator?",
+    "creatorBody": "Create your profile to be proposed to brands.",
+    "creatorCta": "Create my profile",
+    "appTitle": "Find creators with Bayele",
+    "appBody": "During launch, the creator directory isn't self-serve. Submit a campaign brief: Bayele proposes matching creators and you approve them before any payment.",
+    "appCta": "Submit a brief",
+    "appSecondary": "See my campaigns"
   }
 }

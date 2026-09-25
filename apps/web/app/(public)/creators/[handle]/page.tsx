@@ -9,6 +9,7 @@ import { SocialIcon, SOCIAL_META } from '@/components/social-icons';
 import { JsonLd } from '@/components/json-ld';
 import { ProfileContactCTA } from '@/components/profile-contact-cta';
 import { getCreator } from '@/lib/data/talent';
+import { getCreatorDirectoryGate } from '@/lib/data/launch-gate';
 import { getDictionary, formatFollowers } from '@/i18n/dictionaries';
 import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
 
@@ -16,7 +17,7 @@ const FLAG: Record<'CM' | 'CI' | 'GA', string> = { CM: '🇨🇲', CI: '🇨🇮
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
-  const creator = await getCreator(handle);
+  const [creator, gate] = await Promise.all([getCreator(handle), getCreatorDirectoryGate()]);
   if (!creator) return { title: 'Créateur introuvable', robots: { index: false } };
   const path = `/creators/${creator.handle}`;
   const description =
@@ -27,6 +28,9 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     title,
     description,
     alternates: { canonical: path },
+    // Unlisted until launch: the page works for anyone with the link (a shareable media kit), but
+    // it stays out of search results and the sitemap.
+    ...(gate.open ? {} : { robots: { index: false, follow: false } }),
     openGraph: { type: 'profile', title: `${creator.displayName} · ${SITE_NAME}`, description, url: path },
     twitter: { card: 'summary_large_image', title: `${creator.displayName} · ${SITE_NAME}`, description },
   };

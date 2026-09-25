@@ -5,13 +5,13 @@ import { usePathname } from 'next/navigation';
 import { Home, Handshake, Users, UserCircle } from 'lucide-react';
 
 const TABS = [
-  { href: '/consultant/dashboard', label: 'Accueil', Icon: Home },
-  { href: '/consultant/retainers', label: 'Rétainers', Icon: Handshake },
-  { href: '/consultant/talent-search', label: 'Créateurs', Icon: Users },
+  { href: '/partner/dashboard', label: 'Accueil', Icon: Home },
+  { href: '/partner/retainers', label: 'Rétainers', Icon: Handshake },
+  { href: '/partner/talent-search', label: 'Créateurs', Icon: Users },
   { href: '/profile', label: 'Profil', Icon: UserCircle },
 ] as const;
 
-export function ConsultantNav() {
+export function PartnerNav() {
   const pathname = usePathname();
   return (
     <nav className="no-scrollbar -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
