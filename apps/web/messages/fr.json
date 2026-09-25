@@ -91,6 +91,25 @@
     "growthMeta": "+2,4 k abonnés · 30 jours",
     "paidMeta": "MTN MoMo · il y a 2 min"
   },
+  "scene": {
+    "creatorTag": "Créatrice · en tournage",
+    "creatorMeta": "Beauté & mode",
+    "brandTag": "Marque · commerce local",
+    "brandMeta": "Brief envoyé à Bayele",
+    "rec": "REC",
+    "briefChip": "Brief envoyé",
+    "dealTitle": "Collaboration Bayele",
+    "dealSub": "Marque ↔ créatrice",
+    "steps": [
+      "Brief",
+      "Séquestre",
+      "Payé"
+    ],
+    "dealNote": "Versé via MTN MoMo dès la preuve validée",
+    "payoutToast": "Payé",
+    "creatorAlt": "Créatrice de contenu qui se filme avec son téléphone",
+    "brandAlt": "Commerçante souriante au comptoir de sa boutique"
+  },
   "trust": {
     "escrowTitle": "Séquestre bloqué",
     "escrowBody": "Le budget est bloqué au lancement. Le créateur est payé dès validation de la preuve de diffusion.",

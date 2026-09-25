@@ -10,7 +10,7 @@ import { landingCtaHrefs, homeContinueCtas, type HomeRole } from '@/lib/auth/lan
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { AudienceSwitch, type Audience } from '@/components/home/audience-switch';
-import { ProofOrbit } from '@/components/home/proof-orbit';
+import { HeroScene } from '@/components/home/hero-scene';
 import { RevealRoot } from '@/components/home/reveal-root';
 
 const STAT_ICONS = [Lock, MapPin, Smartphone, Receipt] as const;
@@ -39,6 +39,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const firstName = (session.profile?.display_name ?? '').trim().split(/\s+/)[0] ?? '';
   const h = t.hero;
   const contCopy = h.continue[cont.key];
+  // Which scene the hero visual brings forward: the switch updates this attribute client-side;
+  // signed-in brands see their own side.
+  const heroAudience: Audience = authed ? (cont.key === 'business' ? 'brand' : 'creator') : initialAudience;
 
   return (
     <div className="bg-white">
@@ -54,7 +57,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
       <main>
         {/* ───────── Hero ───────── */}
-        <section className="relative overflow-hidden" aria-labelledby="home-title">
+        <section id="home-hero" data-audience={heroAudience} className="group/hero relative overflow-hidden" aria-labelledby="home-title">
           {/* depth 0 — atmosphere */}
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10"
             style={{ background: 'radial-gradient(52rem 28rem at 12% -12%, #EAF2FB 0%, transparent 58%), radial-gradient(42rem 26rem at 100% 0%, #FEF1DF 0%, transparent 52%)' }} />
@@ -100,6 +103,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                   <>
                     <AudienceSwitch
                       initial={initialAudience}
+                      sceneId="home-hero"
                       label={h.tabsLabel}
                       tabs={{ creator: h.tabCreator, brand: h.tabBrand }}
                       panels={{
@@ -125,7 +129,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               </ul>
             </div>
 
-            <ProofOrbit t={t} locale={locale} />
+            <HeroScene t={t} locale={locale} />
           </div>
         </section>
 

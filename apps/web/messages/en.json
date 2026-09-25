@@ -91,6 +91,25 @@
     "growthMeta": "+2.4k followers · 30 days",
     "paidMeta": "MTN MoMo · 2 min ago"
   },
+  "scene": {
+    "creatorTag": "Creator · filming",
+    "creatorMeta": "Beauty & fashion",
+    "brandTag": "Brand · local business",
+    "brandMeta": "Brief sent to Bayele",
+    "rec": "REC",
+    "briefChip": "Brief sent",
+    "dealTitle": "Bayele collaboration",
+    "dealSub": "Brand ↔ creator",
+    "steps": [
+      "Brief",
+      "Escrow",
+      "Paid"
+    ],
+    "dealNote": "Paid via MTN MoMo once proof is approved",
+    "payoutToast": "Paid",
+    "creatorAlt": "Content creator filming herself with her phone",
+    "brandAlt": "Smiling shop owner at her store counter"
+  },
   "trust": {
     "escrowTitle": "Locked escrow",
     "escrowBody": "The budget is locked at launch. The creator is paid as soon as proof of delivery is validated.",
