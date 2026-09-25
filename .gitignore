@@ -28,3 +28,6 @@ supabase/.temp/
 .DS_Store
 .vercel/
 *.log
+
+Claude outputs/
+epic-design/
