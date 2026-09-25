@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { landingCtaHrefs, isAuthFunnel, AUTH_FUNNEL } from './landing-ctas';
+import { landingCtaHrefs, isAuthFunnel, AUTH_FUNNEL, homeContinueCtas } from './landing-ctas';
 
 describe('AUTH_FUNNEL matcher', () => {
   it('matches auth-funnel hrefs', () => {
@@ -66,6 +66,27 @@ describe('landingCtaHrefs — logged-out visitors still get the signup funnel', 
     for (const href of Object.values(anon)) {
       if (href) expect(href).not.toContain('consultant');
     }
+  });
+});
+
+describe('homeContinueCtas — signed-in visitors get their own role, inside the app', () => {
+  it('routes each role to its own workspace, never to /auth', () => {
+    for (const role of ['creator', 'business', 'consultant', 'super_admin', null] as const) {
+      const c = homeContinueCtas(role);
+      expect(isAuthFunnel(c.primary)).toBe(false);
+      expect(isAuthFunnel(c.secondary)).toBe(false);
+    }
+  });
+  it('never offers a brand the creator profile, and uses the partner URL for consultants', () => {
+    expect(homeContinueCtas('business').primary).toBe('/business/campaigns/new');
+    expect(homeContinueCtas('creator').primary).toBe('/profile');
+    const partner = homeContinueCtas('consultant');
+    expect(partner.key).toBe('partner');
+    expect(partner.primary.startsWith('/partner/')).toBe(true);
+    expect(partner.primary).not.toContain('consultant');
+  });
+  it('sends a not-yet-onboarded visitor to the dispatcher', () => {
+    expect(homeContinueCtas(null).primary).toBe('/dashboard');
   });
 });
 

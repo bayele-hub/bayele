@@ -3,7 +3,7 @@
     "title": "Bayele — Influence Nano & Séquestre Mobile Money",
     "description": "La marketplace d'escrow où créateurs et marques grandissent ensemble au Cameroun, en Côte d'Ivoire et au Gabon."
   },
-  "announce": "Nouveau — retraits instantanés Wave désormais disponibles en Côte d'Ivoire",
+  "announce": "Lancement — créez votre profil créateur gratuitement et soyez parmi les premiers proposés aux marques.",
   "nav": {
     "creators": "Créateurs",
     "consultants": "Partenaires",
@@ -15,19 +15,64 @@
     "dashboard": "Mon espace"
   },
   "hero": {
-    "badge": "Marketplace d'influence · Afrique francophone",
+    "badge": "Cameroun · Côte d'Ivoire · Gabon",
     "title": "Là où créateurs et marques grandissent ensemble",
-    "subtitle": "Trouvez les influenceurs avec qui collaborer. Décrivez votre campagne : Bayele sélectionne les créateurs qui correspondent et sécurise chaque paiement par séquestre Mobile Money.",
-    "brandDoorTitle": "Construisez votre marque avec les créateurs",
-    "brandDoorBody": "Soumettez votre brief, recevez une sélection de créateurs adaptés.",
-    "brandDoorCta": "Soumettre un brief",
-    "creatorDoorTitle": "Du contenu qui construit l'influence",
-    "creatorDoorBody": "Créez votre profil, recevez des campagnes, soyez payé via Mobile Money.",
-    "creatorDoorCta": "Créer mon profil",
+    "titleLines": [
+      "Là où créateurs et marques",
+      "grandissent ensemble"
+    ],
+    "subtitle": "Les marques soumettent un brief et ne paient qu'à la preuve. Les créateurs publient et sont payés par Mobile Money.",
+    "tabsLabel": "Choisissez votre profil",
+    "tabCreator": "Je suis créateur",
+    "tabBrand": "Je suis une marque",
+    "creator": {
+      "title": "Votre audience vaut de l'argent",
+      "body": "Même votre statut WhatsApp compte. Créez votre profil gratuit, recevez des campagnes, retirez dès 1 000 FCFA.",
+      "cta": "Créer mon profil gratuit",
+      "micro": "L'argent de la campagne est bloqué avant votre publication."
+    },
+    "brand": {
+      "title": "Un brief, pas une recherche",
+      "body": "Budget, pays, livrables : décrivez votre campagne, Bayele et ses partenaires vous proposent les bons créateurs.",
+      "cta": "Décrire ma campagne",
+      "micro": "Sous séquestre : vous ne payez qu'à la preuve."
+    },
+    "partnerLink": "Agence ou talent manager ? Devenir partenaire",
+    "trust": [
+      "Paiements sous séquestre",
+      "MTN MoMo · Orange Money · Wave",
+      "Factures OHADA"
+    ],
+    "welcome": "Bon retour, {name}",
+    "continue": {
+      "creator": {
+        "title": "Continuez à bâtir votre media kit",
+        "body": "Plus votre profil est complet, plus Bayele vous propose aux marques.",
+        "primary": "Compléter mon profil",
+        "secondary": "Voir les campagnes"
+      },
+      "business": {
+        "title": "Prêt pour votre prochaine campagne ?",
+        "body": "Décrivez votre brief : nous vous proposons les créateurs adaptés, sous séquestre.",
+        "primary": "Nouveau brief",
+        "secondary": "Mes campagnes"
+      },
+      "partner": {
+        "title": "Votre espace partenaire",
+        "body": "Pilotez vos rétainers et les campagnes de vos clients.",
+        "primary": "Mon espace partenaire",
+        "secondary": "Mes rétainers"
+      },
+      "admin": {
+        "title": "Console Bayele",
+        "body": "Modération, séquestre et paiements.",
+        "primary": "Ouvrir la console",
+        "secondary": "Modération"
+      }
+    },
     "ctaDashboard": "Aller à mon espace",
     "ctaProfile": "Compléter mon profil",
-    "payoutsLabel": "Retraits vers :",
-    "socialProof": "Des créateurs rémunérés chaque semaine à Douala, Abidjan & Libreville."
+    "payoutsLabel": "Retraits vers :"
   },
   "heroVisual": {
     "name": "Yao",
@@ -35,6 +80,16 @@
     "escrowChip": "Séquestre sécurisé",
     "payoutNote": "Versé via Mobile Money",
     "alt": "Créateur de contenu sur Bayele"
+  },
+  "orbit": {
+    "example": "Exemple",
+    "briefTitle": "Brief attribué",
+    "briefMeta": "Lancement tech · 3 créateurs",
+    "escrowTitle": "Budget sous séquestre",
+    "escrowNote": "Bloqué jusqu'à la preuve",
+    "growthTitle": "Audience",
+    "growthMeta": "+2,4 k abonnés · 30 jours",
+    "paidMeta": "MTN MoMo · il y a 2 min"
   },
   "trust": {
     "escrowTitle": "Séquestre bloqué",
@@ -59,7 +114,8 @@
         "title": "Versement instantané",
         "body": "Après validation, les fonds sont libérés vers MTN, Orange Money ou Wave."
       }
-    ]
+    ],
+    "railLabel": "Le parcours de l'argent"
   },
   "howItWorks": {
     "heading": "Comment ça marche",
@@ -107,7 +163,12 @@
     "cta": "Créer mon profil",
     "sampleName": "Votre nom",
     "sampleMeta": "Beauté · Lifestyle · Douala",
-    "sampleSlug": "votre-nom"
+    "sampleSlug": "votre-nom",
+    "sampleFollowers": [
+      "12 k",
+      "8,4 k",
+      "2,1 k"
+    ]
   },
   "partner": {
     "badge": "Programme Partenaires",
@@ -173,20 +234,20 @@
   },
   "stats": [
     {
-      "k": "100%",
-      "label": "des budgets séquestrés"
-    },
-    {
-      "k": "< 60s",
-      "label": "versement MoMo après validation"
+      "k": "100 %",
+      "label": "des budgets bloqués sous séquestre"
     },
     {
       "k": "3 pays",
       "label": "Cameroun · Côte d'Ivoire · Gabon"
     },
     {
-      "k": "30M+",
-      "label": "Abonnés cumulés toutes plateformes"
+      "k": "1 000 FCFA",
+      "label": "retrait minimum vers Mobile Money"
+    },
+    {
+      "k": "OHADA",
+      "label": "factures conformes pour chaque campagne"
     }
   ],
   "countries": {
