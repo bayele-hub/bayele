@@ -336,10 +336,6 @@
   },
   "founder": {
     "label": "Créateur fondateur",
-    "title": "Parmi les 10 000 premiers créateurs de Bayele",
-    "announce": "Badge Créateur fondateur offert aux 10 000 premiers créateurs — {n} places restantes.",
-    "announceNoCount": "Badge Créateur fondateur offert aux 10 000 premiers créateurs inscrits.",
-    "heroNote": "Badge fondateur gratuit · {n} places restantes",
-    "heroNoteNoCount": "Badge fondateur gratuit pour les 10 000 premiers"
+    "title": "Parmi les 10 000 premiers créateurs de Bayele"
   }
 }

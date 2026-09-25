@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Lock, UserPlus, Megaphone, Award } from 'lucide-react';
+import { ArrowRight, Lock, UserPlus, Megaphone } from 'lucide-react';
 
 export type Audience = 'creator' | 'brand';
 
@@ -12,8 +12,6 @@ interface Panel {
   cta: string;
   micro: string;
   href: string;
-  /** Optional highlight above the title (the creator side shows the founder-badge offer). */
-  note?: string;
 }
 
 /**
@@ -85,11 +83,6 @@ export function AudienceSwitch({
       <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${active}`} className="px-4 pb-4 pt-5 sm:px-5">
         {/* key forces a soft re-entrance when switching sides */}
         <div key={active} className="anim-fade">
-          {p.note && (
-            <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FDE7B0] to-[#F9D27A] px-2.5 py-1 text-[12px] font-bold text-[#6B4300] ring-1 ring-[#E9B949]/60">
-              <Award className="h-3.5 w-3.5" aria-hidden /> {p.note}
-            </p>
-          )}
           <p className="flex items-center gap-2 font-display text-xl font-extrabold leading-tight text-ink sm:text-[1.35rem]">
             <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${active === 'creator' ? 'bg-accent-soft text-[#9A5A05]' : 'bg-brand-50 text-brand'}`}>
               <Icon className="h-4 w-4" aria-hidden />
