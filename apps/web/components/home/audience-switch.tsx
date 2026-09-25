@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Lock, UserPlus, Megaphone } from 'lucide-react';
 
@@ -21,11 +21,14 @@ interface Panel {
  */
 export function AudienceSwitch({
   initial,
+  sceneId,
   label,
   tabs,
   panels,
 }: {
   initial: Audience;
+  /** id of the element whose data-audience drives the hero visual (brings that side forward). */
+  sceneId?: string;
   label: string;
   tabs: Record<Audience, string>;
   panels: Record<Audience, Panel>;
@@ -34,6 +37,10 @@ export function AudienceSwitch({
   const id = useId();
   const refs = { creator: useRef<HTMLButtonElement>(null), brand: useRef<HTMLButtonElement>(null) };
   const order: Audience[] = ['creator', 'brand'];
+
+  useEffect(() => {
+    if (sceneId) document.getElementById(sceneId)?.setAttribute('data-audience', active);
+  }, [active, sceneId]);
 
   function onKey(e: KeyboardEvent<HTMLButtonElement>) {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
