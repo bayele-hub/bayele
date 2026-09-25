@@ -336,10 +336,6 @@
   },
   "founder": {
     "label": "Founding creator",
-    "title": "Among Bayele's first 10,000 creators",
-    "announce": "Free Founding Creator badge for the first 10,000 creators — {n} spots left.",
-    "announceNoCount": "Free Founding Creator badge for the first 10,000 creators to join.",
-    "heroNote": "Free founder badge · {n} spots left",
-    "heroNoteNoCount": "Free founder badge for the first 10,000"
+    "title": "Among Bayele's first 10,000 creators"
   }
 }
