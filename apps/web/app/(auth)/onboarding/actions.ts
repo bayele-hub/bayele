@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@bayele/database';
 import { parseCountry } from '@/lib/countries';
+import { parseRefHandle, parseSignupSource, effectiveSource } from '@/lib/attribution';
+import { withNext } from '@/lib/auth/return-path';
 
 type Role = Database['public']['Enums']['user_role'];
 type Country = Database['public']['Enums']['country_code'];
@@ -93,5 +95,18 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     return { error: ERR_FR[key] ?? 'Une erreur est survenue. Vérifiez vos informations et réessayez.' };
   }
 
-  redirect('/onboarding/done');
+  // Sign-up attribution (plan §4.7): record once where this account came from — the source and
+  // referrer handle /auth stored in the sign-up metadata (URL-only, council C4). Best-effort by
+  // design: insert-once, lenient server-side, and its errors never block onboarding.
+  try {
+    const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+    const ref = parseRefHandle(meta.ref);
+    const source = effectiveSource(parseSignupSource(meta.signup_source), ref) ?? 'direct';
+    await supabase.rpc('record_signup_attribution', { p_source: source, p_referrer_handle: ref ?? undefined });
+  } catch {
+    /* ignored on purpose */
+  }
+
+  // Keep the sign-up return path: /onboarding/done turns it into « Continuer » (re-validated there).
+  redirect(withNext('/onboarding/done', formData.get('next')));
 }

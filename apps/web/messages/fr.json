@@ -12,7 +12,8 @@
     "billing": "Facturation",
     "login": "Connexion",
     "start": "Commencer",
-    "dashboard": "Mon espace"
+    "dashboard": "Mon espace",
+    "campaigns": "Campagnes"
   },
   "hero": {
     "badge": "Présent dans 6 pays d'Afrique",
@@ -340,5 +341,173 @@
   "founder": {
     "label": "Créateur fondateur",
     "title": "Parmi les 10 000 premiers créateurs de Bayele"
+  },
+  "campaignBoard": {
+    "meta": {
+      "title": "Campagnes ouvertes pour créateurs",
+      "description": "Des marques paient des créateurs au Cameroun, en Côte d'Ivoire, au Gabon, au Nigeria, au Kenya et en Afrique du Sud. Budget bloqué sous séquestre, paiement par Mobile Money."
+    },
+    "title": "Campagnes ouvertes",
+    "titleLines": [
+      "Campagnes",
+      "ouvertes"
+    ],
+    "eyebrowOne": "1 offre ouverte",
+    "eyebrowMany": "{n} offres ouvertes",
+    "subtitle": "Des marques paient des créateurs comme vous — le budget est déjà bloqué sous séquestre.",
+    "trust": [
+      "Budget bloqué sous séquestre",
+      "Payé par Mobile Money"
+    ],
+    "filters": {
+      "country": "Filtrer par pays",
+      "category": "Filtrer par catégorie",
+      "allCountries": "Tous les pays",
+      "allCategories": "Toutes les catégories",
+      "reset": "Effacer les filtres"
+    },
+    "listLabel": "Campagnes classées par rémunération",
+    "featured": {
+      "label": "Offre la mieux payée",
+      "youReceive": "Vous recevez"
+    },
+    "card": {
+      "by": "par {brand}",
+      "perCreator": "par créateur",
+      "perCreatorShort": "/ créateur",
+      "escrow": "Budget bloqué sous séquestre",
+      "cta": "Voir l'offre",
+      "platforms": "Plateformes",
+      "placesLeftOne": "1 place restante",
+      "placesLeftMany": "{n} places restantes",
+      "placesOf": "sur {total}",
+      "placesTotal": "{n} places",
+      "closesToday": "Clôture aujourd'hui",
+      "closesTomorrow": "Clôture demain",
+      "closesIn": "Clôture dans {n} jours",
+      "appliedOne": "1 créateur a postulé",
+      "appliedMany": "{n} créateurs ont postulé",
+      "pillNew": "Nouveau",
+      "pillAlmostFull": "Bientôt complet",
+      "pillFull": "Complet",
+      "fullApply": "Complet — plus de place disponible"
+    },
+    "cta": {
+      "guest": {
+        "heading": "Toutes les offres sont dans votre espace créateur",
+        "label": "Voir toutes les campagnes",
+        "helper": "Inscription gratuite : créez votre profil créateur pour tout voir et postuler en un clic.",
+        "signinPrefix": "Déjà membre ?",
+        "signin": "Se connecter"
+      },
+      "creator": {
+        "heading": "Prêt à postuler ?",
+        "label": "Voir toutes les campagnes",
+        "helper": "Postulez depuis votre espace créateur."
+      },
+      "partner": {
+        "heading": "Vos créateurs peuvent postuler",
+        "label": "Postuler pour mes créateurs",
+        "helper": "Proposez vos talents depuis votre espace partenaire."
+      },
+      "brand": {
+        "heading": "Votre offre peut être ici",
+        "label": "Lancer une campagne",
+        "helper": "Votre campagne apparaît sur cette page dès que son budget est sous séquestre."
+      },
+      "admin": {
+        "heading": "Vue admin",
+        "label": "Ouvrir le tableau de bord",
+        "helper": "Campagnes, financements et inscriptions."
+      }
+    },
+    "empty": {
+      "title": "Aucune campagne ouverte pour l'instant",
+      "body": "Les marques publient ici leurs offres dès que le budget est bloqué sous séquestre. Activez une alerte : nous vous prévenons dans l'application dès qu'une campagne correspond à votre pays.",
+      "brandPrefix": "Vous êtes une marque ?",
+      "brandLink": "Lancer une campagne"
+    },
+    "emptyFiltered": {
+      "title": "Aucune campagne ne correspond à ces filtres pour l'instant",
+      "showAll": "Voir toutes les campagnes ouvertes"
+    },
+    "thin": {
+      "title": "Soyez prévenu des prochaines campagnes",
+      "body": "Choisissez votre pays et votre catégorie : nous vous prévenons dans l'application dès qu'une nouvelle offre est publiée."
+    },
+    "wall": {
+      "back": "Toutes les campagnes",
+      "title": "Le brief complet est réservé aux créateurs inscrits",
+      "body": "Inscription gratuite : créez votre compte pour lire le brief, voir les livrables attendus et postuler.",
+      "items": [
+        "Le brief de la marque",
+        "Les livrables attendus",
+        "Les éléments obligatoires"
+      ],
+      "cta": "Créer mon compte pour postuler",
+      "signinPrefix": "Déjà membre ?",
+      "signin": "Se connecter",
+      "seoTeaser": "{brand} recrute des créateurs pour une campagne {category} {countryIn}. {pay} par créateur, paiement sécurisé par séquestre sur Bayele."
+    },
+    "home": {
+      "heading": "Campagnes ouvertes",
+      "seeAll": "Tout voir"
+    },
+    "page": {
+      "pay": "Rémunération",
+      "wanted": "Créateurs recherchés",
+      "placesUnit": "places",
+      "proposedBy": "Proposée par {brand}",
+      "guarantee": "Paiement garanti : les fonds sont déjà sous séquestre. Vous êtes payé dès la validation de votre publication.",
+      "footer": "Bayele — la marketplace d'influence sécurisée par séquestre.",
+      "learnMore": "En savoir plus",
+      "metaTitle": "{title} — Campagne {category} · {pay}/créateur",
+      "notFound": "Campagne introuvable",
+      "breadcrumbHome": "Accueil",
+      "breadcrumbCampaigns": "Campagnes"
+    }
+  },
+  "share": {
+    "whatsapp": "Partager sur WhatsApp",
+    "whatsappAria": "Partager « {title} » sur WhatsApp",
+    "message": "Offre pour créateurs sur Bayele : « {title} » — {pay} par créateur, budget déjà bloqué sous séquestre. Voir l'offre : {url}",
+    "refNote": "Votre lien de partage contient votre identifiant : les créateurs qui s'inscrivent grâce à vous vous sont attribués.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "referralCountOne": "1 inscription via vos liens de partage",
+    "referralCountMany": "{n} inscriptions via vos liens de partage"
+  },
+  "alerts": {
+    "title": "Prévenez-moi des nouvelles campagnes",
+    "country": "Pays",
+    "category": "Catégorie",
+    "allCountries": "Tous les pays",
+    "allCategories": "Toutes les catégories",
+    "submit": "M'alerter",
+    "guestHint": "Inscription gratuite. Créez votre compte créateur pour activer l'alerte.",
+    "confirmTitle": "Activez votre alerte",
+    "confirm": "Activer l'alerte",
+    "success": "Alerte activée",
+    "successBody": "Nous vous prévenons dans l'application dès qu'une campagne correspondante est publiée.",
+    "duplicate": "Vous avez déjà cette alerte.",
+    "limit": "Limite atteinte : {n} alertes maximum. Supprimez-en une pour en ajouter une autre.",
+    "manage": "Gérer mes alertes",
+    "listTitle": "Mes alertes",
+    "listEmpty": "Aucune alerte pour l'instant.",
+    "add": "Ajouter une alerte",
+    "remove": "Supprimer l'alerte {label}",
+    "invalid": "Choisissez un pays et une catégorie valides.",
+    "inApp": "Nous vous prévenons dans l'application.",
+    "remainingOne": "1 alerte restante",
+    "remainingMany": "{n} alertes restantes",
+    "limitTitle": "Limite atteinte",
+    "profileRequired": "Terminez votre inscription pour activer une alerte.",
+    "error": "L'alerte n'a pas pu être enregistrée. Réessayez.",
+    "removeError": "L'alerte n'a pas pu être supprimée. Réessayez.",
+    "removed": "Alerte supprimée.",
+    "fullCardLink": "M'alerter des prochaines offres"
+  },
+  "common": {
+    "loading": "Chargement…"
   }
 }

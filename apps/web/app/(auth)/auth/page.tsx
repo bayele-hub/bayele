@@ -9,6 +9,8 @@ import { Smartphone, Briefcase, Building2, ArrowRight, Loader2, AlertCircle, Inf
 import { normalizeHandle } from '@/lib/handle';
 import { onboardingPath, roleFromSlug } from '@/lib/roles';
 import { countryOptions, type CountryCode } from '@/lib/countries';
+import { withNext } from '@/lib/auth/return-path';
+import { effectiveSource, parseRefHandle, parseSignupSource, safeNextPath, type SignupSource } from '@/lib/attribution';
 
 type Mode = 'signin' | 'signup';
 type Role = 'creator' | 'consultant' | 'business';
@@ -49,6 +51,11 @@ function AuthPageInner() {
   const [intent, setIntent] = useState<string | null>(null);
   const [target, setTarget] = useState<string | null>(null);
   const [next, setNext] = useState<string | null>(null);
+  // Sign-up attribution (URL-only, council C4): an allow-listed `source` and a validated referrer
+  // `ref` handle, stored in the sign-up metadata so they survive the email round-trip and are
+  // recorded once at onboarding (record_signup_attribution).
+  const [source, setSource] = useState<SignupSource | null>(null);
+  const [refHandle, setRefHandle] = useState<string | null>(null);
 
   useEffect(() => {
     setConfigured(isSupabaseConfigured());
@@ -59,11 +66,13 @@ function AuthPageInner() {
     const fromUrl = roleFromSlug(r);
     if (fromUrl) setRole(fromUrl);
     const i = params.get('intent');
-    if (i === 'invite' || i === 'message' || i === 'hire' || i === 'apply') setIntent(i);
+    if (i === 'invite' || i === 'message' || i === 'hire' || i === 'apply' || i === 'campaigns' || i === 'alerts') setIntent(i);
     setTarget(params.get('target'));
     // Only accept a same-origin internal path (leading single slash) to avoid open-redirects.
-    const n = params.get('next');
-    setNext(n && /^\/(?!\/)/.test(n) ? n : null);
+    setNext(safeNextPath(params.get('next')));
+    const ref = parseRefHandle(params.get('ref'));
+    setRefHandle(ref);
+    setSource(effectiveSource(parseSignupSource(params.get('source')), ref));
   }, [params]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -80,8 +89,9 @@ function AuthPageInner() {
       if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
-        // Honor a validated internal return path (e.g. back to a shared campaign), else the dispatcher.
-        router.push(next ?? '/dashboard');
+        // Through the dispatcher with the validated return path: it resumes `next` for usable accounts
+        // and sends a not-yet-onboarded one to onboarding first, still carrying `next`.
+        router.push(withNext('/dashboard', next));
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -95,6 +105,8 @@ function AuthPageInner() {
               country,
               handle: handle.toLowerCase(),
               company_name: role === 'business' ? companyName : undefined,
+              signup_source: source ?? undefined,
+              ref: refHandle ?? undefined,
             },
           },
         });
@@ -116,7 +128,7 @@ function AuthPageInner() {
         if (!data.session) {
           setNotice("Vérifiez votre boîte mail pour confirmer votre adresse, puis connectez-vous.");
         } else {
-          router.push(onboardingPath(role));
+          router.push(withNext(onboardingPath(role), next));
         }
       }
     } catch (err) {
@@ -150,7 +162,18 @@ function AuthPageInner() {
           </div>
         )}
 
-        {intent && target && mode === 'signup' && (
+        {(intent === 'campaigns' || intent === 'alerts') && mode === 'signup' && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              {intent === 'campaigns'
+                ? <>Créez votre compte créateur pour voir toutes les campagnes ouvertes et postuler.</>
+                : <>Créez votre compte créateur{'\u00a0'}: votre alerte campagne sera prête à activer.</>}
+            </span>
+          </div>
+        )}
+
+        {intent && target && intent !== 'campaigns' && intent !== 'alerts' && mode === 'signup' && (
           <div className="mb-4 flex items-start gap-2 rounded-xl border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
@@ -240,8 +263,8 @@ function AuthPageInner() {
           </div>
 
           {mode === 'signup' && (
-            <label className="flex items-start gap-2 pt-1 text-[11px] text-muted">
-              <input type="checkbox" required className="mt-0.5 accent-brand" />
+            <label className="flex min-h-[44px] cursor-pointer items-center gap-2.5 py-1 text-[11px] text-muted">
+              <input type="checkbox" required className="h-5 w-5 shrink-0 accent-brand" />
               <span>J'accepte les <Link href="/legal#cgu" className="font-semibold text-brand underline">CGU</Link> et les conditions du <Link href="/legal#escrow" className="font-semibold text-brand underline">Séquestre</Link>.</span>
             </label>
           )}
@@ -254,7 +277,7 @@ function AuthPageInner() {
       </div>
 
       <div className="py-4 text-center">
-        <Link href="/" className="text-xs text-muted hover:text-ink">← Retour à l'accueil</Link>
+        <Link href="/" className="inline-flex min-h-[44px] items-center px-3 text-xs text-muted hover:text-ink">← Retour à l'accueil</Link>
       </div>
     </div>
   );

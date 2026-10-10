@@ -26,7 +26,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
           onClick={() => choose(l)}
           disabled={pending}
           aria-pressed={locale === l}
-          className={`grid min-h-tap min-w-[40px] place-items-center rounded-md px-1 transition ${
+          className={`grid min-h-tap min-w-[44px] place-items-center rounded-md px-1 transition ${
             locale === l ? 'bg-brand text-white' : 'text-muted hover:text-ink'
           }`}
         >

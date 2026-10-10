@@ -167,28 +167,29 @@ les campagnes ».
 - [ ] D3 release scope
 
 ### Phase 1
-- [ ] Migration `0030_public_campaign_board` + rollback + local DB tests
-- [ ] Apply 0030 to production (after review)
-- [ ] `types.gen.ts` updated
-- [ ] `listCampaignBoard()` data helper
-- [ ] `lib/auth/campaign-ctas.ts` + unit tests
-- [ ] `/campaigns` page (featured card, grid, filters, empty/thin states)
-- [ ] `/campagnes` redirect
-- [ ] Soft wall on `/campaigns/[id]` (per D1)
-- [ ] Header *Campagnes* link, sitemap, FR/EN copy
-- [ ] `ItemList` JSON-LD + metadata/OG
-- [ ] Screenshots: mobile + desktop, FR + EN
-- [ ] QA gates §8 (Phase 1 rows)
+- [x] Migration `0030_public_campaign_board` + rollback + local DB tests
+- [x] Migration 0032 anon column lockdown on campaigns + tests
+- [!] Apply 0030 to production (after review) — blocked 2026-10-10: pre-checks pass (prod at 0029, 0 mixed-case handles), but `apply_migration` timed out twice with no change (needs owner approval); run per RELEASE-RUNBOOK §3. 0031 same; 0032 only after the production web deploy
+- [x] `types.gen.ts` updated
+- [x] `listCampaignBoard()` data helper (+ `getCampaignStats`, `getPublicCampaign` anon-safe columns only, `getCampaignBriefForMember` for signed-in viewers — 0032-ready)
+- [x] `lib/auth/campaign-ctas.ts` + unit tests
+- [x] `/campaigns` page (featured card, grid, filters, empty/thin states)
+- [x] `/campagnes` redirect
+- [x] Soft wall on `/campaigns/[id]` (per D1)
+- [x] Header *Campagnes* link, sitemap, FR/EN copy
+- [x] `ItemList` JSON-LD + metadata/OG
+- [x] Screenshots: mobile + desktop, FR + EN (QA: $S/qa/shots, empty-DB states only)
+- [x] QA gates §8 (Phase 1 rows): QA round 2 PASS; staging smoke test after deploy listed in $S/qa/QA-REPORT.md
 - [ ] PR merged + Vercel production check
 
 ### Phase 2
-- [ ] Migration `0031_signup_attribution` + rollback + tests
-- [ ] Auth: `ref` / `source` captured into sign-up metadata
-- [ ] WhatsApp share (cards + campaign page)
-- [ ] Campaign alerts (table, opt-in UI, notify on publish)
-- [ ] Home "Campagnes ouvertes" strip
-- [ ] Admin attribution counts
-- [ ] QA gates §8 (Phase 2 rows)
+- [x] Migration `0031_signup_attribution` + rollback + tests (attribution in separate owner/admin-only table `signup_attribution`, written via `record_signup_attribution()` after onboarding; includes alerts + admin stats RPCs)
+- [x] Auth: `ref` / `source` captured into sign-up metadata (+ `record_signup_attribution` after onboarding)
+- [x] WhatsApp share (cards + campaign page)
+- [x] Campaign alerts (table, opt-in UI, notify on publish) — web: opt-in (no-JS form), « Mes alertes » on /creator/campaigns, 5-alert limit UI
+- [x] Home "Campagnes ouvertes" strip
+- [x] Admin attribution counts
+- [x] QA gates §8 (Phase 2 rows): QA round 2 PASS; alert/attribution writes = staging smoke test after deploy
 - [ ] PR merged + production check
 
 ## 10. Risks & open questions
@@ -207,3 +208,5 @@ les campagnes ».
 | Date | Change |
 |---|---|
 | 2026-10-10 | Plan created from the council review; decisions D1–D3 pending. |
+| 2026-10-10 | Backend: migration 0032 (anon column lockdown on `campaigns`: no brief/budget/fee/tags for anon, anon writes revoked); business council decisions C1–C6 applied (full campaigns ranked last, in-app alerts only, no referral rewards, URL-only first-touch attribution ≤ 7 days, max 5 alerts, « inscription gratuite » wording). |
+| 2026-10-10 | UI/UX design spec added: docs/CAMPAIGNS-PUBLIC-PAGE-DESIGN.md |

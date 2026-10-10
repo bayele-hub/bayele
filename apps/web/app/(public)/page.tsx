@@ -14,6 +14,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { AudienceSwitch, type Audience } from '@/components/home/audience-switch';
 import { HeroScene } from '@/components/home/hero-scene';
 import { RevealRoot } from '@/components/home/reveal-root';
+import { HomeCampaignsStrip } from '@/components/campaigns/home-campaigns-strip';
 
 const STAT_ICONS = [Lock, MapPin, Smartphone, Receipt] as const;
 const ESCROW_ICONS = [Lock, Megaphone, Wallet] as const;
@@ -150,6 +151,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             })}
           </div>
         </section>
+
+        {/* ───────── Open campaigns (top 3 of the public board; renders nothing when there are none) ───────── */}
+        <HomeCampaignsStrip t={t} locale={locale} />
 
         {/* ───────── Categories marquee ───────── */}
         <section className="mx-auto max-w-6xl px-4 pt-14" aria-labelledby="home-cats">

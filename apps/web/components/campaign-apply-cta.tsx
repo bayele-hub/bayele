@@ -10,10 +10,11 @@ import { ApplyButton } from '@/app/(app)/creator/campaigns/apply-button';
  *   - logged-out            → sign up as a creator, returning to this campaign afterwards;
  *   - active creator        → apply right here (or a badge if they already applied);
  *   - not-yet-active creator → must be approved first (product decision: approval-gated apply);
- *   - brand/partner/admin → a note that only creator accounts apply.
+ *   - brand/partner/admin → a note that only creator accounts apply;
+ *   - full campaign (no places left, council C1) → apply disabled (an existing application still shows).
  * Real authorization stays in apply_to_campaign; this only decides which affordance to show.
  */
-export async function CampaignApplyCTA({ campaignId }: { campaignId: string }) {
+export async function CampaignApplyCTA({ campaignId, full = false, fullLabel = 'Complet — plus de place disponible' }: { campaignId: string; full?: boolean; fullLabel?: string }) {
   const session = await getSession();
   const next = encodeURIComponent(`/campaigns/${campaignId}`);
 
@@ -86,6 +87,16 @@ export async function CampaignApplyCTA({ campaignId }: { campaignId: string }) {
       <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
         <CheckCircle2 className="h-4 w-4" /> {CREATOR_STATUS_FR[existing.status] ?? 'Candidature envoyée'}
       </span>
+    );
+  }
+
+  // No places left (council C1): the campaign stays visible but applying is disabled.
+  if (full) {
+    return (
+      <button type="button" disabled aria-disabled="true"
+        className="inline-flex min-h-tap w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-muted sm:w-auto">
+        {fullLabel}
+      </button>
     );
   }
 

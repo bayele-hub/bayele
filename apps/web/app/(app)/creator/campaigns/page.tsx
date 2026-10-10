@@ -1,16 +1,20 @@
 import { redirect } from 'next/navigation';
-import { Megaphone, MapPin, Coins } from 'lucide-react';
+import { Megaphone, MapPin, Coins, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { ApplyButton } from './apply-button';
 import { countryLabel } from '@/lib/countries';
+import { AlertsSection } from './alerts-section';
 
 export const dynamic = 'force-dynamic';
 
 
-export default async function CreatorCampaigns() {
+type SP = { alert_country?: string; alert_cat?: string; alerts_msg?: string };
+
+export default async function CreatorCampaigns({ searchParams }: { searchParams: Promise<SP> }) {
+  const sp = await searchParams;
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
   if (!session.roles.includes('creator') && session.primary !== 'super_admin') redirect('/dashboard');
@@ -36,6 +40,19 @@ export default async function CreatorCampaigns() {
         <Megaphone className="h-5 w-5 text-brand" />
         <h1 className="font-display text-2xl font-extrabold text-ink">Campagnes ouvertes</h1>
       </div>
+
+      {/* pending_review creators can already browse, apply and set alerts (migration 0021). Copy reused
+          from the campaign apply CTA. */}
+      {session.profile?.status === 'pending_review' && (
+        <p role="status" className="flex items-start gap-2 rounded-2xl border border-accent-soft bg-accent-soft/60 px-3 py-2.5 text-[13px] text-ink">
+          <Clock className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+          <span>
+            Votre profil est en cours de validation par Bayele — vous pouvez déjà postuler. Les marques ne retiennent que des profils vérifiés.
+          </span>
+        </p>
+      )}
+
+      <AlertsSection alertCountry={sp.alert_country} alertCat={sp.alert_cat} msg={sp.alerts_msg} defaultCountry={session.profile?.country ?? null} />
 
       {open.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted">

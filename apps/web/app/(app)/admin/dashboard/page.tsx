@@ -4,6 +4,7 @@ import { Clock, Users, Megaphone, Lock, Coins, Wallet, Send, Handshake, ArrowRig
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa } from '@/lib/data/campaigns';
+import { listCampaignBoard } from '@/lib/data/public-campaigns';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,11 +16,13 @@ export default async function AdminOverview() {
 
   // Admin RLS (private.is_admin) lets these read the whole tables. At current scale we pull rows and
   // aggregate in-process; move to SQL aggregates / a materialized view when volume warrants it.
-  const [{ data: profiles }, { data: campaigns }, { data: escrow }, { data: retainers }] = await Promise.all([
+  const [{ data: profiles }, { data: campaigns }, { data: escrow }, { data: retainers }, { data: attribution, error: attributionError }, publicBoard] = await Promise.all([
     supabase.from('profiles').select('status, user_roles(role)').limit(2000),
     supabase.from('campaigns').select('status').limit(2000),
     supabase.from('escrow_transactions').select('status, direction, amount_fcfa, fee_fcfa, net_amount_fcfa').limit(5000),
     supabase.from('agency_retainers').select('status').limit(2000),
+    supabase.rpc('admin_signup_attribution_stats'),
+    listCampaignBoard({ limit: 50 }),
   ]);
 
   const P = profiles ?? [];
@@ -104,7 +107,84 @@ export default async function AdminOverview() {
           <span>{completedCampaigns} campagnes terminées</span>
         </div>
       </div>
+
+      {!attributionError && attribution && <AttributionCard rows={attribution} publicOpen={publicBoard.length} />}
     </section>
+  );
+}
+
+const SOURCE_UI: Record<string, { label: string; bar: string }> = {
+  campaigns_list: { label: 'Page Campagnes', bar: 'bg-brand' },
+  campaign_page: { label: "Page d'une campagne", bar: 'bg-brand-700' },
+  referral: { label: 'Lien de parrainage', bar: 'bg-accent' },
+  home: { label: 'Accueil', bar: 'bg-emerald-500' },
+  direct: { label: 'Direct', bar: 'bg-ink' },
+};
+
+type AttributionRow = { kind: string; signup_source: string | null; referrer_handle: string | null; referrer_display_name: string | null; signups: number };
+
+/**
+ * Sign-up attribution (design §6, admin_signup_attribution_stats): sign-ups per source and the top
+ * referrers, plus the public-open campaign count (thin-inventory risk). Pure CSS bars, no motion.
+ */
+function AttributionCard({ rows, publicOpen }: { rows: AttributionRow[]; publicOpen: number }) {
+  const sources = rows
+    .filter((r) => r.kind === 'source' && r.signup_source)
+    .map((r) => ({ key: r.signup_source as string, n: Number(r.signups) || 0 }))
+    .sort((a, b) => b.n - a.n);
+  const referrers = rows.filter((r) => r.kind === 'referrer' && r.referrer_handle).slice(0, 5);
+  const total = sources.reduce((t, s) => t + s.n, 0);
+  const pct = (n: number) => `${total ? Math.round((n / total) * 100) : 0}\u202f%`;
+
+  return (
+    <div className="rounded-2xl border border-line bg-white p-4 shadow-card">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-bold text-ink">Origine des inscriptions</h2>
+        <Link href="/campaigns" className="text-xs text-muted hover:text-brand">
+          Campagnes publiques ouvertes&nbsp;: <span className="font-bold text-ink">{publicOpen >= 50 ? '50+' : publicOpen}</span>
+        </Link>
+      </div>
+      {total === 0 ? (
+        <p className="text-[13px] text-muted">Aucune inscription attribuée pour l&apos;instant.</p>
+      ) : (
+        <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
+          <div className="space-y-2.5">
+            {sources.map((s) => {
+              const ui = SOURCE_UI[s.key] ?? { label: s.key, bar: 'bg-ink' };
+              return (
+                <div key={s.key}>
+                  <div className="mb-1 flex items-center justify-between text-[11px]">
+                    <span className="font-semibold text-ink">{ui.label}</span>
+                    <span className="text-muted">{s.n} · {pct(s.n)}</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-surface">
+                    <div className={`h-full rounded-full ${ui.bar}`} style={{ width: `${total ? Math.round((s.n / total) * 100) : 0}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div>
+            <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted">Meilleurs parrains</h3>
+            {referrers.length === 0 ? (
+              <p className="text-[12px] text-muted">Aucun parrainage pour l&apos;instant.</p>
+            ) : (
+              <ol className="space-y-1.5 text-[13px]">
+                {referrers.map((r) => (
+                  <li key={r.referrer_handle} className="flex items-center justify-between gap-2">
+                    <span className="truncate font-semibold text-ink" title={r.referrer_display_name ?? undefined}>@{r.referrer_handle}</span>
+                    <span className="shrink-0 text-muted">{r.signups} inscription{Number(r.signups) > 1 ? 's' : ''}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      )}
+      <p className="mt-3 border-t border-line pt-3 text-[11px] text-muted">
+        Suivi depuis la mise en service de l&apos;attribution. Les inscriptions antérieures ne sont pas attribuées.
+      </p>
+    </div>
   );
 }
 
