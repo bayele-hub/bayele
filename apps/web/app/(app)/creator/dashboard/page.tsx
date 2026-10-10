@@ -9,7 +9,7 @@ import { getSession } from '@/lib/auth/session';
 import { creatorAllowed } from '@/lib/auth/creator-gate';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 import { ProofForm } from './proof-form';
-import { countryFlag } from '@/lib/countries';
+import { countryName } from '@/lib/countries';
 
 export const dynamic = 'force-dynamic';
 
@@ -162,7 +162,7 @@ export default async function CreatorDashboard() {
                     <div className="min-w-0">
                       <p className="font-bold text-ink">{camp?.title ?? 'Campagne'}</p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {camp?.category} · {countryFlag(camp?.target_country ?? '')}
+                        {camp?.category} · {countryName(camp?.target_country ?? '')}
                       </p>
                     </div>
                     <div className="text-right">

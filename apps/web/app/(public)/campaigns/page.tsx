@@ -31,6 +31,8 @@ import { COUNTRY_CODES, countryLabel, isCountryCode, type CountryCode } from '@/
 import { CAMPAIGN_CATEGORIES, categoryValue, parseCategorySlug, type CategorySlug } from '@/lib/campaign-categories';
 import { fill, type BoardCampaign } from '@/lib/campaign-board';
 import { breadcrumbLd, itemListLd } from '@/lib/seo';
+import { PublishWhatsAppCta } from '@/components/publish-whatsapp-cta';
+import { publishMessage } from '@/lib/whatsapp';
 
 type SP = { country?: string; cat?: string; ref?: string };
 
@@ -209,6 +211,20 @@ export default async function CampaignBoardPage({ searchParams }: { searchParams
               <div id={ALERT_ANCHOR} data-reveal="up" className="mt-10 border-t border-line pt-8">
                 <AlertOptIn variant="band" heading={t.alerts.title} {...alertProps} />
               </div>
+            )}
+
+            {/* Council R6: brands get ONE small footer link here — never a primary button, never
+                styled like a listing. Hidden for signed-in creators and admins (not brands), and
+                absent when NEXT_PUBLIC_BAYELE_WHATSAPP is unset (K5). */}
+            {(pageCta.key === 'guest' || pageCta.key === 'brand' || pageCta.key === 'partner') && (
+              <p className="mt-8 text-center">
+                <PublishWhatsAppCta
+                  variant="link"
+                  label={t.publishWhatsapp.campaignsLink}
+                  ariaSuffix={t.publishWhatsapp.ariaSuffix}
+                  message={publishMessage(t.publishWhatsapp.message, {}, 'campaigns')}
+                />
+              </p>
             )}
           </div>
         </section>

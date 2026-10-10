@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState } from 'react';
+import Link from 'next/link';
+import { useActionState, useEffect, useRef } from 'react';
 import { Loader2, Lock } from 'lucide-react';
 import { fundCampaignAction, type FundState } from './funding-actions';
 import { fmtFcfa } from '@/lib/data/campaigns';
@@ -11,9 +12,20 @@ export interface FundingRow {
   company: string;
   budget: number;
   country: string;
+  /** Managed campaign (« Géré par Bayele »): company = public label · city. */
+  managed?: boolean;
+  briefId?: string | null;
 }
 
-export function FundingQueue({ rows }: { rows: FundingRow[] }) {
+export interface FundingLabels {
+  managedChip: string;
+  briefLink: string;
+  viewPublic: string;
+  backToBrief: string;
+  highlight: string;
+}
+
+export function FundingQueue({ rows, highlight = null, labels }: { rows: FundingRow[]; highlight?: string | null; labels?: FundingLabels }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-2xl border border-line bg-white p-6 text-center text-sm text-muted">
@@ -24,21 +36,36 @@ export function FundingQueue({ rows }: { rows: FundingRow[] }) {
   return (
     <ul className="grid gap-3">
       {rows.map((r) => (
-        <FundingCard key={r.id} row={r} />
+        <FundingCard key={r.id} row={r} highlighted={r.id === highlight} labels={labels} />
       ))}
     </ul>
   );
 }
 
-function FundingCard({ row }: { row: FundingRow }) {
+function FundingCard({ row, highlighted, labels }: { row: FundingRow; highlighted: boolean; labels?: FundingLabels }) {
   const [state, action, pending] = useActionState<FundState, FormData>(fundCampaignAction, { error: null });
+  const ref = useRef<HTMLLIElement>(null);
+  useEffect(() => {
+    if (highlighted) ref.current?.scrollIntoView({ block: 'center' });
+  }, [highlighted]);
 
   return (
-    <li className="rounded-2xl border border-line bg-white p-4 shadow-card">
+    <li ref={ref} className={`rounded-2xl border border-line bg-white p-4 shadow-card ${highlighted ? 'ring-2 ring-brand' : ''}`}>
+      {highlighted && labels && <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-brand-700">{labels.highlight}</p>}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-bold text-ink">{row.title}</p>
-          <p className="mt-0.5 text-xs text-muted">{row.company} · {row.country}</p>
+          <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            {row.company} · {row.country}
+            {row.managed && labels && (
+              <>
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">{labels.managedChip}</span>
+                {row.briefId && (
+                  <Link href={`/admin/briefs/${row.briefId}`} className="inline-flex min-h-[32px] items-center font-semibold text-brand-700 hover:text-brand">{labels.briefLink}</Link>
+                )}
+              </>
+            )}
+          </p>
         </div>
         <span className="font-display font-extrabold text-ink">{fmtFcfa(row.budget)}</span>
       </div>
@@ -70,6 +97,14 @@ function FundingCard({ row }: { row: FundingRow }) {
       </form>
       {state.error && <p className="mt-2 text-xs text-rose-600">{state.error}</p>}
       {state.ok && <p className="mt-2 text-xs text-emerald-600">Séquestre activé — la campagne est publiée.</p>}
+      {state.ok && row.managed && labels && (
+        <p className="mt-1 flex flex-wrap gap-3 text-xs">
+          <Link href={`/campaigns/${row.id}`} className="inline-flex min-h-[44px] items-center font-semibold text-brand-700 hover:text-brand">{labels.viewPublic}</Link>
+          {row.briefId && (
+            <Link href={`/admin/briefs/${row.briefId}`} className="inline-flex min-h-[44px] items-center font-semibold text-brand-700 hover:text-brand">{labels.backToBrief}</Link>
+          )}
+        </p>
+      )}
     </li>
   );
 }

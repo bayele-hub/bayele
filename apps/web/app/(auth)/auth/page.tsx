@@ -10,6 +10,8 @@ import { normalizeHandle } from '@/lib/handle';
 import { onboardingPath, roleFromSlug } from '@/lib/roles';
 import { countryOptions, type CountryCode } from '@/lib/countries';
 import { withNext } from '@/lib/auth/return-path';
+import { PublishWhatsAppCta } from '@/components/publish-whatsapp-cta';
+import { publishMessage } from '@/lib/whatsapp';
 import { effectiveSource, parseRefHandle, parseSignupSource, safeNextPath, type SignupSource } from '@/lib/attribution';
 
 type Mode = 'signin' | 'signup';
@@ -19,6 +21,10 @@ type CC = CountryCode;
 // Country is kept as a profile attribute (market + future MoMo payout). Phone-based
 // auth arrives in v2; email/password is the primary method today.
 const COUNTRIES = countryOptions('fr');
+
+// Same text as publishWhatsapp.message (fr.json), kept inline so this client page doesn't bundle the dictionary.
+const WA_MESSAGE_FR =
+  'Bonjour Bayele, je souhaite publier une campagne gérée par Bayele.\n1. Ce que je veux (vidéos, photos…)\u00a0: {what}\n2. Combien de contenus et de créateurs\u00a0: {howMany}\n3. Ville et pays\u00a0: {where}\n4. Date limite\u00a0: {deadline}\n5. Budget total (FCFA)\u00a0: {budget}\n6. Droits d\'utilisation (réseaux, durée)\u00a0: {rights}\nRéf.\u00a0: {source}';
 
 // useSearchParams() forces client rendering; Next 15 requires it under a Suspense boundary, and the
 // fallback avoids a signup→signin flash for users arriving via ?mode=signin.
@@ -273,6 +279,18 @@ function AuthPageInner() {
             className="mt-2 flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 disabled:opacity-50">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>{mode === 'signup' ? 'Valider mon inscription' : 'Se connecter'} <ArrowRight className="h-3.5 w-3.5" /></>)}
           </button>
+          {/* K5 « Publiez par WhatsApp » for brands (hidden when NEXT_PUBLIC_BAYELE_WHATSAPP is unset).
+              This page is French-only today; the strings mirror publishWhatsapp.* in messages/fr.json. */}
+          {mode === 'signup' && role === 'business' && (
+            <div className="text-center">
+              <PublishWhatsAppCta
+                variant="link"
+                label={'Pas le temps de créer un compte\u202f? Publiez par WhatsApp'}
+                ariaSuffix="(ouvre WhatsApp)"
+                message={publishMessage(WA_MESSAGE_FR, {}, 'signup')}
+              />
+            </div>
+          )}
         </form>
       </div>
 

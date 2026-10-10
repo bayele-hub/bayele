@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Bell, CalendarClock, Check, Coins, Lock, MapPin, Megaphone, ShieldCheck, Users } from 'lucide-react';
+import { ArrowLeft, Bell, Camera, CalendarClock, Check, ClipboardCheck, Coins, FileCheck2, Languages, Lock, MapPin, Megaphone, Package, ShieldCheck, UserCheck, Users } from 'lucide-react';
 import { getDictionary, type Dictionary } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
 import { formatFcfa } from '@/i18n/format';
@@ -10,23 +10,35 @@ import { SiteFooter } from '@/components/site-footer';
 import { JsonLd } from '@/components/json-ld';
 import { CampaignApplyCTA } from '@/components/campaign-apply-cta';
 import { CampaignBriefDetails } from '@/components/campaign-brief-details';
-import { PlatformTiles, WhatsAppTile } from '@/components/campaigns/card-parts';
+import { BrandLine, PlatformTiles, WhatsAppTile } from '@/components/campaigns/card-parts';
+import { ManagedBadge } from '@/components/campaigns/managed-badge';
 import { shareMessage } from '@/components/campaigns/campaign-card';
 import { CopyLinkButton } from '@/components/campaigns/copy-link-button';
 import { getPublicCampaign, getCampaignBriefForMember, getCampaignStats, type PublicCampaign } from '@/lib/data/public-campaigns';
 import { getCampaignViewer } from '@/lib/auth/campaign-viewer';
 import { alertSignupHref, campaignShareUrl, campaignWallHrefs, sharesWithRef, whatsappHref } from '@/lib/auth/campaign-ctas';
 import { parseRefHandle } from '@/lib/attribution';
-import { categorySlugOf } from '@/lib/campaign-categories';
+import { categoryLabel, categorySlugOf } from '@/lib/campaign-categories';
 import { daysUntil, fill, placesMeter, plural } from '@/lib/campaign-board';
-import { jobPostingLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
-import { countryFlag, countryIn, countryName } from '@/lib/countries';
+import { jobPostingLd, breadcrumbLd, SITE_NAME } from '@/lib/seo';
+import { countryIn, countryName } from '@/lib/countries';
+import { cityUnlessInLabel, deliverableSummary, languageLabel, localizedRights } from '@/lib/managed-listing';
 
 /**
  * Teaser description built ONLY from public fields (D1 soft wall): used for <meta name="description">,
  * OpenGraph and the JobPosting JSON-LD, identical for crawlers and visitors. Never the brief.
  */
 function teaser(c: PublicCampaign, t: Dictionary, locale: Locale): string {
+  if (c.isManaged) {
+    return fill(t.managed.seoTeaser, {
+      label: c.brandName,
+      city: c.brandCity ?? countryName(c.country, locale),
+      category: categoryLabel(c.category, locale, t.categories),
+      countryIn: countryIn(c.country),
+      country: countryName(c.country, locale),
+      pay: formatFcfa(c.payoutPerCreatorFcfa, locale),
+    });
+  }
   return fill(t.campaignBoard.wall.seoTeaser, {
     brand: c.brandName,
     category: c.category,
@@ -73,6 +85,20 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
   const applied = stats && stats.appliedCount > 0 ? plural(stats.appliedCount, k.appliedOne, k.appliedMany) : null;
   const shareUrl = campaignShareUrl(c.id, viewer);
   const wall = campaignWallHrefs(c.id, ref);
+  const category = categoryLabel(c.category, locale, t.categories);
+  const country = countryName(c.country, locale);
+  // Council R1: deliverable count + type are public on every listing.
+  const deliverables = deliverableSummary(c.deliverableQuantity, c.contentType, locale);
+  const city = c.isManaged ? cityUnlessInLabel(c.brandName, c.brandCity) : null;
+  const m = t.managed;
+  const essentials = [
+    c.isManaged && (c.brandCity || country) ? { key: 'place', Icon: MapPin, label: m.essentials.place, value: [c.brandCity, country].filter(Boolean).join(', '), wide: false } : null,
+    c.language ? { key: 'language', Icon: Languages, label: m.essentials.language, value: languageLabel(c.language, locale), wide: false } : null,
+    c.usageRights ? { key: 'rights', Icon: FileCheck2, label: m.essentials.rights, value: localizedRights(c.usageRights, c.country, locale), sub: m.essentials.rightsKeep, wide: true } : null,
+    c.creatorRequirements ? { key: 'requirements', Icon: UserCheck, label: m.essentials.requirements, value: c.creatorRequirements, wide: true } : null,
+    c.equipment ? { key: 'equipment', Icon: Camera, label: m.essentials.equipment, value: c.equipment, wide: false } : null,
+    c.isManaged ? { key: 'application', Icon: ClipboardCheck, label: m.essentials.application, value: m.essentials.applicationText, wide: true } : null,
+  ].filter((x): x is NonNullable<typeof x> => !!x);
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,7 +111,8 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
             datePosted: c.createdAt,
             country: c.country,
             payoutFcfa: c.payoutPerCreatorFcfa,
-            brandName: c.brandName,
+            // M1: Bayele is the publisher of a managed listing.
+            brandName: c.isManaged ? SITE_NAME : c.brandName,
             path: `/campaigns/${c.id}`,
             validThrough: c.deadline,
           }),
@@ -112,17 +139,25 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase text-brand-700">{c.category}</span>
+              <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase text-brand-700">{category}</span>
               <span className="inline-flex items-center gap-1 text-[12px] text-muted">
-                <MapPin className="h-3.5 w-3.5" aria-hidden /> {COUNTRY_NAME[c.country]} <span aria-hidden>{countryFlag(c.country)}</span>
+                <MapPin className="h-3.5 w-3.5" aria-hidden /> {country}
               </span>
               {full && <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-bold text-muted">{k.pillFull}</span>}
             </div>
 
             <h1 className="mt-2 font-display text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{c.title}</h1>
-            <p className="mt-1 text-sm text-muted">
-              {byBefore}<span className="font-semibold text-ink">{c.brandName}</span>{byAfter}
-            </p>
+            {c.isManaged ? (
+              <>
+                <BrandLine brand={c.brandName} city={city} managed byTemplate={k.by} badgeLabel={m.badge} size="md" className="mt-1.5 text-sm text-muted" />
+                {/* Council R3: exact wording. */}
+                <p className="mt-1.5 text-[13px] text-muted">{m.detailLine}</p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-muted">
+                {byBefore}<span className="font-semibold text-ink">{c.brandName}</span>{byAfter}
+              </p>
+            )}
 
             {/* Public facts (D1): pay, places, deadline, applied, platforms. */}
             <div className="mt-5 grid grid-cols-2 gap-3 sm:max-w-md">
@@ -145,19 +180,24 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
                 ) : full ? (
                   <>
                     <div className="mt-1 font-display text-lg font-extrabold text-ink">{k.pillFull}</div>
-                    <div className="text-[11px] text-muted">{fill(k.placesTotal, { n: c.creatorCountTarget })}</div>
+                    <div className="text-[11px] text-muted">{plural(c.creatorCountTarget, k.placesTotalOne, k.placesTotal)}</div>
                   </>
                 ) : (
                   <>
                     <div className="mt-1 font-display text-lg font-extrabold text-ink">{c.creatorCountTarget}</div>
-                    <div className="text-[11px] text-muted">{pg.placesUnit}</div>
+                    <div className="text-[11px] text-muted">{c.creatorCountTarget === 1 ? pg.placesUnitOne : pg.placesUnit}</div>
                   </>
                 )}
               </div>
             </div>
 
-            {(deadline || applied || c.platforms.length > 0) && (
+            {(deliverables || deadline || applied || c.platforms.length > 0) && (
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-muted">
+                {deliverables && (
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
+                    <Package className="h-4 w-4 text-brand" aria-hidden /> {deliverables}
+                  </span>
+                )}
                 {deadline && (
                   <span className="inline-flex items-center gap-1.5"><CalendarClock className="h-4 w-4 text-brand" aria-hidden /> {deadline}</span>
                 )}
@@ -166,6 +206,37 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
                 )}
                 <PlatformTiles platforms={c.platforms} label={k.platforms} />
               </div>
+            )}
+
+            {essentials.length > 0 && (
+              <section aria-labelledby="essentials-title" className="mt-5 rounded-2xl border border-line p-4 sm:p-5">
+                <h2 id="essentials-title" className="text-sm font-bold text-ink">{m.essentials.title}</h2>
+                <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {essentials.map(({ key, Icon, label, value, wide, ...rest }) => (
+                    <div key={key} className={wide ? 'sm:col-span-2' : ''}>
+                      <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                        <Icon className="h-3.5 w-3.5 text-brand" aria-hidden /> {label}
+                      </dt>
+                      <dd className="mt-0.5 whitespace-pre-line text-[14px] text-ink">{value}</dd>
+                      {'sub' in rest && rest.sub && <dd className="mt-0.5 text-[12px] text-muted">{rest.sub}</dd>}
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
+
+            {c.isManaged && (
+              <section aria-labelledby="managed-title" className="mt-4 rounded-2xl bg-surface p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <ManagedBadge label={m.badge} size="md" />
+                  <h2 id="managed-title" className="text-sm font-bold text-ink">{m.explainer.title}</h2>
+                </div>
+                <ul className="mt-3 grid gap-1.5 text-[13px] text-ink">
+                  {m.explainer.items.map((it) => (
+                    <li key={it} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden /> {it}</li>
+                  ))}
+                </ul>
+              </section>
             )}
 
             <div className="mt-5 flex items-center gap-1.5 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-[12px] font-medium text-emerald-700">
@@ -177,6 +248,8 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
                 {member?.brief && <p className="mt-5 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-ink/80">{member.brief}</p>}
                 <div className="mt-5 sm:max-w-md">
                   <CampaignBriefDetails
+                    locale={locale}
+                    labels={t.briefDetails}
                     brief={{
                       platforms: c.platforms,
                       contentType: c.contentType,
@@ -187,7 +260,7 @@ export default async function PublicCampaignPage({ params, searchParams }: { par
                   />
                 </div>
                 <div className="mt-5">
-                  <CampaignApplyCTA campaignId={c.id} full={full} fullLabel={k.fullApply} />
+                  <CampaignApplyCTA campaignId={c.id} full={full} t={t} />
                 </div>
               </>
             ) : (

@@ -226,15 +226,23 @@ export type Database = {
       }
       campaigns: {
         Row: {
+          brand_city: string | null
+          brand_consent: boolean
+          brand_label: string | null
           brief: string
           category: string
+          claims_verified: boolean
           content_type: string | null
           created_at: string
           creator_count_target: number
+          creator_requirements: string | null
           deadline: string | null
           deliverable_quantity: number | null
+          equipment: string | null
           id: string
+          is_managed: boolean
           is_public: boolean
+          language: string | null
           mandatory_tags: string | null
           match_pass_paid: boolean
           platforms: string[]
@@ -246,18 +254,27 @@ export type Database = {
           target_country: Database["public"]["Enums"]["country_code"]
           title: string
           total_budget_fcfa: number
+          usage_rights: string | null
           updated_at: string
         }
         Insert: {
+          brand_city?: string | null
+          brand_consent?: boolean
+          brand_label?: string | null
           brief: string
           category: string
+          claims_verified?: boolean
           content_type?: string | null
           created_at?: string
           creator_count_target?: number
+          creator_requirements?: string | null
           deadline?: string | null
           deliverable_quantity?: number | null
+          equipment?: string | null
           id?: string
+          is_managed?: boolean
           is_public?: boolean
+          language?: string | null
           mandatory_tags?: string | null
           match_pass_paid?: boolean
           platforms?: string[]
@@ -269,18 +286,27 @@ export type Database = {
           target_country: Database["public"]["Enums"]["country_code"]
           title: string
           total_budget_fcfa: number
+          usage_rights?: string | null
           updated_at?: string
         }
         Update: {
+          brand_city?: string | null
+          brand_consent?: boolean
+          brand_label?: string | null
           brief?: string
           category?: string
+          claims_verified?: boolean
           content_type?: string | null
           created_at?: string
           creator_count_target?: number
+          creator_requirements?: string | null
           deadline?: string | null
           deliverable_quantity?: number | null
+          equipment?: string | null
           id?: string
+          is_managed?: boolean
           is_public?: boolean
+          language?: string | null
           mandatory_tags?: string | null
           match_pass_paid?: boolean
           platforms?: string[]
@@ -292,6 +318,7 @@ export type Database = {
           target_country?: Database["public"]["Enums"]["country_code"]
           title?: string
           total_budget_fcfa?: number
+          usage_rights?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -670,6 +697,144 @@ export type Database = {
           },
         ]
       }
+      managed_briefs: {
+        Row: {
+          brand_consent: boolean
+          brand_consent_proof: string | null
+          brand_label: string | null
+          brand_name: string
+          campaign_id: string | null
+          category: string | null
+          city: string | null
+          claims_verified: boolean
+          contact_name: string | null
+          contact_whatsapp: string | null
+          content_type: string | null
+          country: Database["public"]["Enums"]["country_code"] | null
+          created_at: string
+          created_by: string | null
+          creator_requirements: string | null
+          deadline: string | null
+          decline_reason: string | null
+          declined_at: string | null
+          deliverable_count: number
+          deliverable_type: Database["public"]["Enums"]["deliverable_type"] | null
+          deliverables: string | null
+          deposit_status: "none" | "partial" | "full"
+          equipment: string | null
+          floor_check: "not_set" | "pass" | "below"
+          id: string
+          language: string | null
+          notes: string | null
+          order_confirmed_at: string | null
+          order_proof: string | null
+          places: number
+          platforms: string[]
+          sector: string | null
+          service: string | null
+          status: "draft" | "awaiting_order" | "awaiting_payment" | "published" | "declined"
+          title: string | null
+          total_budget_fcfa: number | null
+          updated_at: string
+          usage_rights: string | null
+        }
+        Insert: {
+          brand_consent?: boolean
+          brand_consent_proof?: string | null
+          brand_label?: string | null
+          brand_name: string
+          campaign_id?: string | null
+          category?: string | null
+          city?: string | null
+          claims_verified?: boolean
+          contact_name?: string | null
+          contact_whatsapp?: string | null
+          content_type?: string | null
+          country?: Database["public"]["Enums"]["country_code"] | null
+          created_at?: string
+          created_by?: string | null
+          creator_requirements?: string | null
+          deadline?: string | null
+          decline_reason?: string | null
+          declined_at?: string | null
+          deliverable_count?: number
+          deliverable_type?: Database["public"]["Enums"]["deliverable_type"] | null
+          deliverables?: string | null
+          deposit_status?: "none" | "partial" | "full"
+          equipment?: string | null
+          floor_check?: "not_set" | "pass" | "below"
+          id?: string
+          language?: string | null
+          notes?: string | null
+          order_confirmed_at?: string | null
+          order_proof?: string | null
+          places?: number
+          platforms?: string[]
+          sector?: string | null
+          service?: string | null
+          status?: "draft" | "awaiting_order" | "awaiting_payment" | "published" | "declined"
+          title?: string | null
+          total_budget_fcfa?: number | null
+          updated_at?: string
+          usage_rights?: string | null
+        }
+        Update: {
+          brand_consent?: boolean
+          brand_consent_proof?: string | null
+          brand_label?: string | null
+          brand_name?: string
+          campaign_id?: string | null
+          category?: string | null
+          city?: string | null
+          claims_verified?: boolean
+          contact_name?: string | null
+          contact_whatsapp?: string | null
+          content_type?: string | null
+          country?: Database["public"]["Enums"]["country_code"] | null
+          created_at?: string
+          created_by?: string | null
+          creator_requirements?: string | null
+          deadline?: string | null
+          decline_reason?: string | null
+          declined_at?: string | null
+          deliverable_count?: number
+          deliverable_type?: Database["public"]["Enums"]["deliverable_type"] | null
+          deliverables?: string | null
+          deposit_status?: "none" | "partial" | "full"
+          equipment?: string | null
+          floor_check?: "not_set" | "pass" | "below"
+          id?: string
+          language?: string | null
+          notes?: string | null
+          order_confirmed_at?: string | null
+          order_proof?: string | null
+          places?: number
+          platforms?: string[]
+          sector?: string | null
+          service?: string | null
+          status?: "draft" | "awaiting_order" | "awaiting_payment" | "published" | "declined"
+          title?: string | null
+          total_budget_fcfa?: number | null
+          updated_at?: string
+          usage_rights?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "managed_briefs_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: true
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "managed_briefs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -833,6 +998,35 @@ export type Database = {
           {
             foreignKeyName: "partner_creator_links_ended_by_fkey"
             columns: ["ended_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pay_floors: {
+        Row: {
+          deliverable_type: Database["public"]["Enums"]["deliverable_type"]
+          min_net_fcfa: number | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          deliverable_type: Database["public"]["Enums"]["deliverable_type"]
+          min_net_fcfa?: number | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          deliverable_type?: Database["public"]["Enums"]["deliverable_type"]
+          min_net_fcfa?: number | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pay_floors_updated_by_fkey"
+            columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1394,6 +1588,45 @@ export type Database = {
           brand_handle: string | null
         }[]
       }
+      public_campaign_board_v2: {
+        Args: {
+          p_category?: string
+          p_country?: Database["public"]["Enums"]["country_code"]
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          title: string
+          category: string
+          target_country: Database["public"]["Enums"]["country_code"]
+          payout_per_creator_fcfa: number
+          creator_count_target: number
+          platforms: string[]
+          content_type: string | null
+          deliverable_quantity: number | null
+          deadline: string | null
+          created_at: string
+          brand_name: string | null
+          brand_handle: string | null
+          applied_count: number
+          places_left: number
+          is_managed: boolean
+          brand_city: string | null
+        }[]
+      }
+      public_campaign_stats_v2: {
+        Args: {
+          p_campaign_id: string
+        }
+        Returns: {
+          applied_count: number
+          places_left: number
+          brand_name: string | null
+          brand_handle: string | null
+          is_managed: boolean
+          brand_city: string | null
+        }[]
+      }
       record_signup_attribution: {
         Args: {
           p_referrer_handle?: string
@@ -1441,6 +1674,72 @@ export type Database = {
           created_at: string
         }[]
       }
+      admin_set_pay_floor: {
+        Args: {
+          p_deliverable_type: Database["public"]["Enums"]["deliverable_type"]
+          p_min_net_fcfa: number
+        }
+        Returns: undefined
+      }
+      admin_clear_pay_floor: {
+        Args: {
+          p_deliverable_type: Database["public"]["Enums"]["deliverable_type"]
+        }
+        Returns: undefined
+      }
+      pay_floor_list: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          deliverable_type: Database["public"]["Enums"]["deliverable_type"]
+          min_net_fcfa: number | null
+          updated_at: string | null
+          updated_by: string | null
+        }[]
+      }
+      pay_floors_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          deliverable_type: Database["public"]["Enums"]["deliverable_type"]
+          min_net_fcfa: number
+        }[]
+      }
+      admin_upsert_managed_brief: {
+        Args: {
+          p_brief: Json
+        }
+        Returns: string
+      }
+      admin_list_managed_briefs: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Tables"]["managed_briefs"]["Row"][]
+      }
+      admin_publish_managed_brief: {
+        Args: {
+          p_brief_id: string
+        }
+        Returns: string
+      }
+      admin_decline_managed_brief: {
+        Args: {
+          p_brief_id: string
+          p_reason?: string
+        }
+        Returns: undefined
+      }
+      managed_net_preview: {
+        Args: {
+          p_total_budget_fcfa: number
+          p_places: number
+          p_deliverable_count?: number
+        }
+        Returns: {
+          fee_fcfa: number
+          creators_pool_fcfa: number
+          net_per_place_fcfa: number
+          net_per_unit_fcfa: number
+          rounding_remainder_fcfa: number
+        }[]
+      }
     }
     Enums: {
       account_status: "pending_review" | "active" | "suspended" | "rejected"
@@ -1464,6 +1763,16 @@ export type Database = {
         | "verified"
         | "paid"
         | "disputed"
+      deliverable_type:
+        | "photo"
+        | "short_video"
+        | "long_video"
+        | "animation"
+        | "shoot_day"
+        | "post"
+        | "story"
+        | "ugc_video"
+        | "other"
       escrow_status:
         | "pending"
         | "held"
@@ -1645,6 +1954,17 @@ export const Constants = {
         "verified",
         "paid",
         "disputed",
+      ],
+      deliverable_type: [
+        "photo",
+        "short_video",
+        "long_video",
+        "animation",
+        "shoot_day",
+        "post",
+        "story",
+        "ugc_video",
+        "other",
       ],
       escrow_status: [
         "pending",

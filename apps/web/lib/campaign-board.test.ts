@@ -44,6 +44,8 @@ describe('cardPill — at most one', () => {
   it('Complet at 0 places', () => expect(cardPill({ placesLeft: 0, creatorCountTarget: 10, createdAt: fresh }, now)).toBe('full'));
   it('Bientôt complet at ≤ 20 % left (wins over Nouveau)', () => {
     expect(cardPill({ placesLeft: 2, creatorCountTarget: 10, createdAt: fresh }, now)).toBe('almostFull');
+    // nobody selected yet on a 1-place listing → not « Bientôt complet »
+    expect(cardPill({ placesLeft: 1, creatorCountTarget: 1, createdAt: fresh }, now)).toBe('new');
     expect(cardPill({ placesLeft: 3, creatorCountTarget: 10, createdAt: old }, now)).toBeNull();
   });
   it('Nouveau within 7 days', () => {
@@ -79,5 +81,26 @@ describe('campaign categories', () => {
     expect(categoryLabel('Beauté', 'en', en.categories)).toBe(en.categories[0]);
     expect(categoryLabel('Beauté', 'fr', en.categories)).toBe('Beauté');
     expect(categoryLabel('Free text', 'en', en.categories)).toBe('Free text');
+  });
+});
+
+import { CAMPAIGN_CATEGORIES as CATS, categoryNeedsClaims, parseCategorySlug as parseSlug, categoryValue as catValue } from './campaign-categories';
+
+describe('categories — council R8', () => {
+  it('adds ONG / Immobilier / Hôtellerie / Finance-Fintech with URL slugs, after the existing ones', () => {
+    expect(CATS.slice(-4).map((c) => [c.slug, c.fr])).toEqual([
+      ['ong-impact-social', 'ONG / Impact social'],
+      ['immobilier', 'Immobilier'],
+      ['hotellerie', 'Hôtellerie'],
+      ['finance-fintech', 'Finance / Fintech'],
+    ]);
+    expect(catValue(parseSlug('finance-fintech'))).toBe('Finance / Fintech');
+    expect(new Set(CATS.map((c) => c.slug)).size).toBe(CATS.length);
+  });
+  it('« Allégations vérifiées » categories match the SQL strings (trimmed, case-insensitive)', () => {
+    expect(categoryNeedsClaims('Immobilier')).toBe(true);
+    expect(categoryNeedsClaims(' finance / fintech ')).toBe(true);
+    expect(categoryNeedsClaims('Santé & Bien-être')).toBe(true);
+    expect(categoryNeedsClaims('Food')).toBe(false);
   });
 });

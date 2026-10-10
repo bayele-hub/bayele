@@ -146,7 +146,7 @@
         "body": "Budget, category, country and deliverables: tell us what your brand needs."
       },
       {
-        "title": "Bayele selects the creators",
+        "title": "Bayele proposes the creators",
         "body": "We and our partners propose the profiles that fit your campaign."
       },
       {
@@ -224,7 +224,11 @@
     "Comedy",
     "Education",
     "Travel",
-    "Business"
+    "Business",
+    "NGO / Social impact",
+    "Real estate",
+    "Hospitality",
+    "Finance / Fintech"
   ],
   "directory": {
     "creatorsTitle": "Creators",
@@ -390,7 +394,8 @@
       "pillNew": "New",
       "pillAlmostFull": "Almost full",
       "pillFull": "Full",
-      "fullApply": "Full — no spots left"
+      "fullApply": "Full — no spots left",
+      "placesTotalOne": "1 spot"
     },
     "cta": {
       "guest": {
@@ -438,10 +443,10 @@
     "wall": {
       "back": "All campaigns",
       "title": "The full brief is for registered creators",
-      "body": "Free sign-up: create your account to read the brief, see the deliverables and apply.",
+      "body": "Free sign-up: create your account to read the brief, see the deliverables detail and apply.",
       "items": [
         "The brand's brief",
-        "Expected deliverables",
+        "Deliverables detail",
         "Mandatory elements"
       ],
       "cta": "Create my account to apply",
@@ -464,7 +469,9 @@
       "metaTitle": "{title} — {category} campaign · {pay}/creator",
       "notFound": "Campaign not found",
       "breadcrumbHome": "Home",
-      "breadcrumbCampaigns": "Campaigns"
+      "breadcrumbCampaigns": "Campaigns",
+      "deliverables": "Deliverables",
+      "placesUnitOne": "spot"
     }
   },
   "share": {
@@ -509,5 +516,471 @@
   },
   "common": {
     "loading": "Loading…"
+  },
+  "managed": {
+    "badge": "Managed by Bayele",
+    "detailLine": "Campaign managed by Bayele for the brand · paid through Bayele escrow",
+    "processLine": "Bayele proposes the creators, the brand approves.",
+    "essentials": {
+      "title": "Offer essentials",
+      "place": "Location",
+      "language": "Content language",
+      "rights": "Usage rights",
+      "rightsKeep": "You keep authorship and can show the content in your portfolio.",
+      "requirements": "Who they're looking for",
+      "equipment": "Equipment",
+      "application": "How to apply",
+      "applicationText": "Apply through Bayele with a creator account. Bayele proposes 2 to 3 creators per spot, the brand approves within 48 h."
+    },
+    "explainer": {
+      "title": "What this means for you",
+      "items": [
+        "Bayele wrote this listing with the brand.",
+        "The budget is already locked in escrow.",
+        "Bayele proposes the creators, the brand approves.",
+        "2 rounds of revisions included; any more are paid."
+      ]
+    },
+    "seoTeaser": "{label} ({city}) is hiring creators through Bayele for a {category} campaign in {country}. {pay} per creator, budget locked in escrow.",
+    "ogSuffix": "Managed by Bayele"
+  },
+  "briefDetails": {
+    "title": "What's expected",
+    "deliverable": "Deliverable:",
+    "mandatory": "Required:",
+    "deadline": "Publish by:"
+  },
+  "applyCta": {
+    "apply": "Apply",
+    "applyLong": "Apply to this campaign",
+    "sent": "Application sent",
+    "finishSignup": "Finish signing up to apply",
+    "brandNotice": "You're signed in with a brand account. Only creator accounts can apply.",
+    "partnerNotice": "You're signed in with a partner account. Put your creators forward from your partner space.",
+    "partnerLink": "Put my creators forward",
+    "adminNotice": "Admin view: only creator accounts can apply.",
+    "ineligible": "Your account can't apply right now.",
+    "pendingHint": "Bayele is reviewing your profile: you can be selected once it's verified.",
+    "full": "Full — no spots left",
+    "signinPrefix": "Already a member?",
+    "signin": "Sign in",
+    "errors": {
+      "missing": "Campaign missing.",
+      "notCreator": "Only creators can apply.",
+      "notEligible": "Your account isn't eligible to apply.",
+      "alreadyApplied": "You've already applied to this campaign.",
+      "notOpen": "This campaign no longer accepts applications.",
+      "notFound": "Campaign not found.",
+      "generic": "The application failed. Try again."
+    },
+    "status": {
+      "invited": "Invited",
+      "applied": "Application sent",
+      "approved": "Accepted — ready to post",
+      "rejected": "Not selected",
+      "content_submitted": "Proof under review",
+      "verified": "Approved — payment being prepared",
+      "paid": "Paid",
+      "disputed": "Dispute open"
+    }
+  },
+  "publishWhatsapp": {
+    "cta": "Publish via WhatsApp",
+    "ariaSuffix": "(opens WhatsApp)",
+    "homeHint": "Bayele handles everything: listing, creator proposals, creator payments.",
+    "campaignsLink": "Are you a brand? Publish via WhatsApp",
+    "signupLink": "No time to create an account? Publish via WhatsApp",
+    "formTitle": "Would you rather Bayele handled it?",
+    "formBody": "Send your brief on WhatsApp: we write the listing, lock the budget in escrow and pay the creators.",
+    "pricingHint": "Managed plan: send your brief, Bayele does the rest.",
+    "message": "Hello Bayele, I'd like to publish a campaign managed by Bayele.\n1. What I need (videos, photos…): {what}\n2. How many pieces and creators: {howMany}\n3. City and country: {where}\n4. Deadline: {deadline}\n5. Total budget (FCFA): {budget}\n6. Usage rights (channels, duration): {rights}\nRef: {source}"
+  },
+  "brandForm": {
+    "back": "My campaigns",
+    "title": "New campaign",
+    "subtitle": "6 questions, 2 minutes. Your budget stays in escrow: the creator is only paid after you approve.",
+    "sector": "Your sector",
+    "sectorHint": "We prefill the text for you. No prices.",
+    "sectorOther": "Other",
+    "category": "Category",
+    "what": "What do you need?",
+    "whatHint": "E.g. 3 short videos",
+    "contentType": "Content type",
+    "quantity": "Quantity",
+    "choose": "Choose…",
+    "count": "How many creators?",
+    "countHint": "Each creator delivers the quantity above.",
+    "where": "Where?",
+    "city": "City",
+    "cityHint": "The city where the content is shot.",
+    "country": "Country",
+    "when": "By when?",
+    "whenHint": "Latest publishing date.",
+    "budget": "Total budget (FCFA)",
+    "budgetHint": "All-in. Each creator receives: {payout}",
+    "budgetSplit": "Creators {pool} · Bayele fee {fee} ({rate}%)",
+    "advancedToggle": "Enter the net pay per creator instead",
+    "advancedBack": "Back to the total budget",
+    "payout": "Net pay per creator (FCFA)",
+    "payoutHint": "The total budget is computed to cover each creator after the fee.",
+    "belowFloorHint": "Below the minimum Bayele recommends for this content ({floor} per unit): you may get few applications.",
+    "floorAck": "I understand creators may not apply",
+    "rights": "Usage rights",
+    "rightsHint": "Where and for how long you can use the content.",
+    "rightsRecommended": "(recommended)",
+    "rightsCustom": "Describe the usage rights",
+    "more": "More details (optional)",
+    "titleField": "Campaign title",
+    "titleHint": "Leave empty: we build it from your answers.",
+    "message": "Message and guidelines",
+    "messagePlaceholder": "The message to get across, the tone, the do's and don'ts…",
+    "platforms": "Platforms",
+    "mandatory": "Required elements",
+    "mandatoryPlaceholder": "#hashtag, @brand, link or promo code…",
+    "requirements": "Who you're looking for",
+    "language": "Content language",
+    "languageOther": "Specify the language",
+    "equipment": "Equipment",
+    "plan": "Plan",
+    "visibility": "Visibility",
+    "visibilityPrivate": "Private",
+    "visibilityPrivateHint": "Visible to signed-in creators only.",
+    "visibilityPublic": "Public",
+    "visibilityPublicHint": "Shareable link + search engines. Anyone can see it.",
+    "summaryTitle": "Before you create",
+    "summaryTotal": "Total budget to fund",
+    "summaryFee": "Bayele fee ({rate}%)",
+    "summaryNet": "Net pay per creator",
+    "submit": "Create the campaign",
+    "footnote": "The campaign is saved as a draft. It goes live as soon as the Mobile Money payment is confirmed.",
+    "autoTitle": "{what} · {sector} · {city}",
+    "creatorsOne": "1 creator",
+    "creatorsMany": "{n} creators",
+    "generatedBrief": "{what} per creator, to publish by {deadline}.",
+    "briefPlace": "Shooting location: {city}, {country}.",
+    "errors": {
+      "required": "Answer the 6 questions to create the campaign.",
+      "deadline": "Pick a future date.",
+      "budget": "The budget must be enough to pay each creator.",
+      "floorAck": "Tick the box to confirm you've read the pay warning.",
+      "notBrand": "Only brands can create campaigns.",
+      "generic": "Creation failed. Check the amounts and try again."
+    }
+  },
+  "admin": {
+    "briefs": {
+      "title": "Managed briefs",
+      "subtitle": "Briefs received by WhatsApp or phone: from draft to funded listing.",
+      "countOne": "1 brief",
+      "countMany": "{n} briefs",
+      "new": "New brief",
+      "floorsLink": "Pay floors",
+      "filterLabel": "Filter by status",
+      "all": "All",
+      "search": "Brand, label or phone",
+      "searchSubmit": "Filter",
+      "allCountries": "All countries",
+      "status": {
+        "draft": "Draft",
+        "awaiting_order": "Waiting for \"YES\"",
+        "ready": "Ready to publish",
+        "awaiting_payment": "Waiting for payment",
+        "published": "Published",
+        "declined": "Declined"
+      },
+      "statusShort": {
+        "draft": "Draft",
+        "awaiting_order": "\"YES\"",
+        "ready": "Ready",
+        "awaiting_payment": "Payment",
+        "published": "Published",
+        "declined": "Declined"
+      },
+      "row": {
+        "public": "Public:",
+        "labelMissing": "not set",
+        "consentReal": "Real name approved",
+        "consentDescriptor": "Descriptor",
+        "deadline": "Deadline {date}",
+        "money": "{total} total → {net} / spot × {places}",
+        "fields": "{done}/{total} fields",
+        "stale": "Needs a nudge",
+        "age": "{n} d ago",
+        "ageToday": "today",
+        "floorNotSet": "No floor set",
+        "floorOk": "Floor OK",
+        "floorBelow": "Below the floor"
+      },
+      "action": {
+        "complete": "Complete",
+        "recordYes": "Record the YES",
+        "publish": "Publish",
+        "confirmFunding": "Confirm funding",
+        "viewListing": "View listing",
+        "duplicate": "Duplicate",
+        "reopen": "Reopen",
+        "nudge": "Nudge on WhatsApp",
+        "open": "Open"
+      },
+      "empty": {
+        "title": "No managed briefs yet",
+        "body": "When a brand sends its brief on WhatsApp, create it here: the form follows the listing standard, computes the net pay and prepares the order form.",
+        "filtered": "No briefs in this status.",
+        "search": "No brief matches \"{q}\".",
+        "showAll": "See all briefs",
+        "clearSearch": "Clear search",
+        "unavailable": "Managed briefs are not available on this database yet (migration 0033 not applied)."
+      },
+      "editor": {
+        "newTitle": "New managed brief",
+        "editTitle": "Managed brief · {name}",
+        "back": "Managed briefs",
+        "vis": {
+          "public": "Public",
+          "members": "Members",
+          "internal": "Internal"
+        },
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "savedAt": "Saved at {time}",
+        "unsaved": "Unsaved changes",
+        "netShort": "Net / spot",
+        "notFound": "Brief not found.",
+        "resendNotice": "Listing changed after the order form was sent: the brief is back to draft. Send the order form again to get a new \"YES\"."
+      },
+      "template": {
+        "title": "Start from a template",
+        "none": "None",
+        "hint": "Templates suggest text, never prices.",
+        "confirm": "This template replaces the service, deliverables, profile and rights already entered.",
+        "replace": "Replace",
+        "cancel": "Cancel"
+      },
+      "section": {
+        "brand": "Brand",
+        "service": "Service",
+        "deliverables": "Deliverables",
+        "deadline": "Deadline",
+        "budget": "Budget",
+        "rights": "Usage rights",
+        "profile": "Creator profile",
+        "application": "Application",
+        "order": "Order form",
+        "payment": "Payment",
+        "publish": "Publishing",
+        "notes": "Internal notes",
+        "preview": "Public preview",
+        "status": "Status"
+      },
+      "brand": {
+        "internalName": "Brand name (internal)",
+        "internalNameHint": "Legal or trade name, for the order form. Never shown.",
+        "contactName": "Contact · name",
+        "contactWhatsapp": "Contact · WhatsApp",
+        "contactWhatsappHint": "International format, e.g. +237 6XX XX XX XX.",
+        "display": "Public display",
+        "descriptor": "Descriptor",
+        "descriptorHint": "E.g. Restaurant, Fashion brand",
+        "realName": "Real name",
+        "realNameHint": "Only with written consent",
+        "label": "Public label",
+        "labelHintDescriptor": "Describe the business without the city (it's shown next to it). Never use another company's name.",
+        "labelHintReal": "The exact name the brand agreed to have published.",
+        "consent": "Written consent received",
+        "consentHint": "A screenshot of the WhatsApp \"OK\" is enough. Without consent, use a descriptor: the listing always shows \"Managed by Bayele\".",
+        "consentProof": "Consent proof",
+        "consentProofHint": "E.g. WhatsApp screenshot of 12/10, saved in the client folder.",
+        "labelEqualsName": "Without consent, the public label can't reuse the brand's name.",
+        "city": "City",
+        "country": "Country",
+        "choose": "Choose…",
+        "preview": "Preview:"
+      },
+      "service": {
+        "service": "Service",
+        "title": "Listing title (optional)",
+        "titleHint": "Leave empty to reuse the service.",
+        "category": "Category"
+      },
+      "deliv": {
+        "main": "Main deliverable",
+        "units": "Units per spot",
+        "mainHint": "The deliverable that costs the most to produce. The others go in the detail.",
+        "platforms": "Platforms",
+        "detail": "Deliverables detail",
+        "detailHint": "Everything that will be delivered: formats, durations, what to show, do's and don'ts. Members only.",
+        "disclosureHint": "The \"#ad\" disclosure is required on sponsored posts.",
+        "claims": "Claims verified",
+        "claimsHint": "Sensitive category (real estate, finance, health): tick only once you've checked the evidence for the brand's claims (price, yield, effects…)."
+      },
+      "deadline": {
+        "label": "Delivery deadline",
+        "hint": "Latest delivery date, the one on the order form."
+      },
+      "budget": {
+        "total": "Brand's total budget (FCFA)",
+        "totalHint": "25% Bayele fee included — the amount the brand pays.",
+        "places": "Spots (number of creators)",
+        "plan": "Agency plan · 25% — fixed for managed campaigns."
+      },
+      "pay": {
+        "total": "Brand total budget",
+        "fee": "Bayele fee (25%)",
+        "pool": "Creator pay",
+        "divide": "÷ {n} spots",
+        "divideOne": "÷ 1 spot",
+        "netLabel": "Net per spot",
+        "perUnit": "Per unit: {amount} ({qty})",
+        "shownOnListing": "This is the amount shown on the listing.",
+        "remainder": "Rounding remainder: {amount}",
+        "remainderHint": "It stays in escrow.",
+        "incomplete": "Enter the budget and the number of spots."
+      },
+      "floor": {
+        "undefinedTitle": "No floor set",
+        "undefinedBody": "No floor is set for this deliverable: publishing is allowed.",
+        "okTitle": "Above the floor",
+        "okBody": "{perUnit} per unit ≥ {floor} required.",
+        "belowTitle": "Below the floor — counter-offer",
+        "belowBody": "{gap} short per spot.",
+        "optionBudget": "Same work: total budget of {total}",
+        "optionScope": "Same budget: {qty} per spot instead of {current}",
+        "copyCounter": "Copy the counter-offer",
+        "copied": "Counter-offer copied",
+        "blocked": "Below the pay floor: send a counter-offer.",
+        "unknown": "Floors unavailable: the server will check on publish."
+      },
+      "rights": {
+        "label": "Usage rights",
+        "custom": "Custom",
+        "customPlaceholder": "Where, for how long, paid ads or not…",
+        "keep": "The creator keeps authorship and can show the content in their portfolio."
+      },
+      "profile": {
+        "requirements": "Who we're looking for",
+        "requirementsHint": "What matters to succeed: style, experience, on-camera language. No physical or age criteria.",
+        "language": "Content language",
+        "languageOther": "Specify the language",
+        "equipment": "Equipment",
+        "equipmentHint": "Only if essential — otherwise leave empty."
+      },
+      "application": {
+        "text": "Apply through Bayele with a creator account. Bayele proposes 2 to 3 creators per spot; the brand approves within 48 h (no reply: Bayele picks)."
+      },
+      "checklist": {
+        "title": "Before publishing",
+        "items": [
+          "Public label",
+          "Consistent consent",
+          "Service and category",
+          "Deliverables",
+          "Platforms",
+          "City",
+          "Country",
+          "Language",
+          "Deadline",
+          "Total budget",
+          "Spots · net per spot",
+          "Usage rights",
+          "Creator profile",
+          "Floor",
+          "Brand's \"YES\""
+        ],
+        "missing": "Missing: {fields}",
+        "done": "done",
+        "todo": "to do"
+      },
+      "order": {
+        "lang": "Text in:",
+        "view": "View the text",
+        "copy": "Copy the order form",
+        "copied": "Order form copied",
+        "openWhatsapp": "Open in WhatsApp",
+        "sent": "I've sent the order form",
+        "yes": "\"YES\" (or \"OUI\") received",
+        "yesAt": "Received on",
+        "proof": "Proof",
+        "proofHint": "E.g. screenshot of the WhatsApp \"YES\", 12/10 at 10:14",
+        "yesRecorded": "\"YES\" recorded on {date}."
+      },
+      "payment": {
+        "deposit": "Deposit received",
+        "depositOptions": [
+          "None",
+          "Partial",
+          "Full"
+        ],
+        "refHint": "Enter the MTN, Orange, Wave… receipt or SokoClick invoice reference in Funding. Never just a screenshot."
+      },
+      "publish": {
+        "steps": [
+          "Create the campaign",
+          "Confirm funding"
+        ],
+        "explain": "Publishing takes 2 steps. 1. The campaign is created, invisible on Bayele. 2. Once the payment has arrived, you confirm the funding in Funding with the receipt reference: the campaign goes live and creators are notified in the app.",
+        "readOnly": "The listing has been created. To change it before funding, decline this brief and duplicate it.",
+        "create": "Create the campaign",
+        "cancel": "Cancel",
+        "step2Title": "Step 2 of 2 — funding to confirm",
+        "step2Body": "The campaign exists but stays invisible until the funding is confirmed.",
+        "done": "Published",
+        "copyLink": "Copy link",
+        "linkCopied": "Link copied",
+        "needYes": "Record the brand's \"YES\" to publish.",
+        "needChecklist": "Complete the \"Before publishing\" list to publish.",
+        "saveFirst": "Save your changes before publishing.",
+        "republish": "The previous campaign was cancelled: this brief can be published again."
+      },
+      "decline": {
+        "action": "Decline the brief",
+        "reason": "Reason",
+        "reasons": [
+          "Below the floor, counter-offer refused",
+          "No reply from the brand",
+          "Out of scope (recurring, prohibited content…)",
+          "Other"
+        ],
+        "note": "Detail (optional)",
+        "confirm": "Confirm decline",
+        "cancel": "Cancel",
+        "cancelsCampaign": "The created (unfunded) campaign will be cancelled.",
+        "declinedOn": "Declined: {reason}"
+      },
+      "notes": {
+        "label": "Internal notes",
+        "hint": "Never shown. History of exchanges, nudges, counter-offers."
+      },
+      "manual": {
+        "label": "Manual status",
+        "hint": "Only Draft, Waiting for \"YES\" and Declined can be set by hand; payment and publishing update automatically."
+      },
+      "funding": {
+        "managedChip": "Managed",
+        "briefLink": "Brief",
+        "viewPublic": "View the public listing",
+        "backToBrief": "Back to the brief",
+        "highlight": "Managed campaign to fund"
+      }
+    }
+  },
+  "payFloors": {
+    "title": "Pay floors",
+    "back": "Managed briefs",
+    "body": "The minimum net amount a creator must receive per delivered unit, after Bayele's fee. Finance and Community will set these floors from Bayele's real data. Until a floor is set for a deliverable type, managed campaigns of that type can be published.",
+    "empty": "No floors set yet.",
+    "unavailable": "Pay floors are not available on this database yet (migration 0033 not applied).",
+    "notSet": "Not set",
+    "inputLabel": "FCFA net / unit",
+    "save": "Save",
+    "confirmSet": "Managed campaigns of this type can no longer be published below {value} per unit. Campaigns already published don't change.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "remove": "Remove floor",
+    "confirmRemove": "Without a floor, publishing is allowed whatever the amount.",
+    "updated": "Updated on {date}",
+    "saved": "Floor saved.",
+    "removed": "Floor removed."
   }
 }

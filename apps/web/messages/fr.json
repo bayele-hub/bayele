@@ -146,7 +146,7 @@
         "body": "Budget, catégorie, pays et livrables : dites-nous ce dont votre marque a besoin."
       },
       {
-        "title": "Bayele sélectionne les créateurs",
+        "title": "Bayele propose les créateurs",
         "body": "Nous et nos partenaires vous proposons les profils qui correspondent à votre campagne."
       },
       {
@@ -224,7 +224,11 @@
     "Humour",
     "Éducation",
     "Voyage",
-    "Business"
+    "Business",
+    "ONG / Impact social",
+    "Immobilier",
+    "Hôtellerie",
+    "Finance / Fintech"
   ],
   "directory": {
     "creatorsTitle": "Créateurs",
@@ -390,7 +394,8 @@
       "pillNew": "Nouveau",
       "pillAlmostFull": "Bientôt complet",
       "pillFull": "Complet",
-      "fullApply": "Complet — plus de place disponible"
+      "fullApply": "Complet — plus de place disponible",
+      "placesTotalOne": "1 place"
     },
     "cta": {
       "guest": {
@@ -438,10 +443,10 @@
     "wall": {
       "back": "Toutes les campagnes",
       "title": "Le brief complet est réservé aux créateurs inscrits",
-      "body": "Inscription gratuite : créez votre compte pour lire le brief, voir les livrables attendus et postuler.",
+      "body": "Inscription gratuite : créez votre compte pour lire le brief, voir le détail des livrables et postuler.",
       "items": [
         "Le brief de la marque",
-        "Les livrables attendus",
+        "Le détail des livrables",
         "Les éléments obligatoires"
       ],
       "cta": "Créer mon compte pour postuler",
@@ -464,7 +469,9 @@
       "metaTitle": "{title} — Campagne {category} · {pay}/créateur",
       "notFound": "Campagne introuvable",
       "breadcrumbHome": "Accueil",
-      "breadcrumbCampaigns": "Campagnes"
+      "breadcrumbCampaigns": "Campagnes",
+      "deliverables": "Livrables",
+      "placesUnitOne": "place"
     }
   },
   "share": {
@@ -509,5 +516,471 @@
   },
   "common": {
     "loading": "Chargement…"
+  },
+  "managed": {
+    "badge": "Géré par Bayele",
+    "detailLine": "Campagne gérée par Bayele pour la marque · paiement via le séquestre Bayele",
+    "processLine": "Bayele propose les créateurs, la marque valide.",
+    "essentials": {
+      "title": "L'essentiel de l'offre",
+      "place": "Lieu",
+      "language": "Langue du contenu",
+      "rights": "Droits d'usage",
+      "rightsKeep": "Vous gardez la paternité du contenu et pouvez le montrer dans votre portfolio.",
+      "requirements": "Profil recherché",
+      "equipment": "Matériel",
+      "application": "Candidature",
+      "applicationText": "Candidature via Bayele, compte créateur requis. Bayele propose 2 à 3 profils par place, la marque valide sous 48 h."
+    },
+    "explainer": {
+      "title": "Ce que cela change pour vous",
+      "items": [
+        "Bayele a rédigé l'annonce avec la marque.",
+        "Le budget est déjà bloqué sous séquestre.",
+        "Bayele propose les créateurs, la marque valide.",
+        "2 séries de retouches incluses ; au-delà, elles sont rémunérées."
+      ]
+    },
+    "seoTeaser": "{label} ({city}) recrute des créateurs via Bayele pour une campagne {category} {countryIn}. {pay} par créateur, budget bloqué sous séquestre.",
+    "ogSuffix": "Géré par Bayele"
+  },
+  "briefDetails": {
+    "title": "Ce qui est attendu",
+    "deliverable": "Livrable :",
+    "mandatory": "Obligatoire :",
+    "deadline": "À publier avant le :"
+  },
+  "applyCta": {
+    "apply": "Postuler",
+    "applyLong": "Postuler à cette campagne",
+    "sent": "Candidature envoyée",
+    "finishSignup": "Terminez votre inscription pour postuler",
+    "brandNotice": "Vous êtes connecté avec un compte marque. Seuls les comptes créateurs peuvent postuler.",
+    "partnerNotice": "Vous êtes connecté avec un compte partenaire. Proposez vos créateurs depuis votre espace partenaire.",
+    "partnerLink": "Proposer mes créateurs",
+    "adminNotice": "Vue admin : seuls les comptes créateurs peuvent postuler.",
+    "ineligible": "Votre compte n'est pas éligible pour postuler pour le moment.",
+    "pendingHint": "Votre profil est en cours de validation par Bayele : vous pourrez être retenu une fois vérifié.",
+    "full": "Complet — plus de place disponible",
+    "signinPrefix": "Déjà membre ?",
+    "signin": "Se connecter",
+    "errors": {
+      "missing": "Campagne manquante.",
+      "notCreator": "Seuls les créateurs peuvent postuler.",
+      "notEligible": "Votre compte n'est pas éligible pour postuler.",
+      "alreadyApplied": "Vous avez déjà postulé à cette campagne.",
+      "notOpen": "Cette campagne n'accepte plus de candidatures.",
+      "notFound": "Campagne introuvable.",
+      "generic": "La candidature a échoué. Réessayez."
+    },
+    "status": {
+      "invited": "Invité",
+      "applied": "Candidature envoyée",
+      "approved": "Accepté — à publier",
+      "rejected": "Non retenu",
+      "content_submitted": "Preuve en cours de revue",
+      "verified": "Validé — paiement en préparation",
+      "paid": "Payé",
+      "disputed": "Litige en cours"
+    }
+  },
+  "publishWhatsapp": {
+    "cta": "Publiez par WhatsApp",
+    "ariaSuffix": "(ouvre WhatsApp)",
+    "homeHint": "Bayele s'occupe de tout : annonce, propositions de créateurs, paiement des créateurs.",
+    "campaignsLink": "Vous êtes une marque ? Publiez par WhatsApp",
+    "signupLink": "Pas le temps de créer un compte ? Publiez par WhatsApp",
+    "formTitle": "Préférez-vous que Bayele s'en occupe ?",
+    "formBody": "Envoyez votre brief par WhatsApp : nous rédigeons l'annonce, bloquons le budget sous séquestre et payons les créateurs.",
+    "pricingHint": "Formule gérée : envoyez votre brief, Bayele fait le reste.",
+    "message": "Bonjour Bayele, je souhaite publier une campagne gérée par Bayele.\n1. Ce que je veux (vidéos, photos…) : {what}\n2. Combien de contenus et de créateurs : {howMany}\n3. Ville et pays : {where}\n4. Date limite : {deadline}\n5. Budget total (FCFA) : {budget}\n6. Droits d'utilisation (réseaux, durée) : {rights}\nRéf. : {source}"
+  },
+  "brandForm": {
+    "back": "Mes campagnes",
+    "title": "Nouvelle campagne",
+    "subtitle": "6 questions, 2 minutes. Votre budget reste sous séquestre : le créateur n'est payé qu'après votre validation.",
+    "sector": "Votre secteur",
+    "sectorHint": "Nous préremplissons le texte pour vous. Aucun prix.",
+    "sectorOther": "Autre",
+    "category": "Catégorie",
+    "what": "Que voulez-vous ?",
+    "whatHint": "Ex. 3 vidéos courtes",
+    "contentType": "Type de contenu",
+    "quantity": "Quantité",
+    "choose": "Choisir…",
+    "count": "Combien de créateurs ?",
+    "countHint": "Chaque créateur fait la quantité ci-dessus.",
+    "where": "Où ?",
+    "city": "Ville",
+    "cityHint": "La ville où le contenu est tourné.",
+    "country": "Pays",
+    "when": "Pour quand ?",
+    "whenHint": "Date de publication au plus tard.",
+    "budget": "Budget total (FCFA)",
+    "budgetHint": "Tout compris. Chaque créateur reçoit : {payout}",
+    "budgetSplit": "Créateurs {pool} · Commission Bayele {fee} ({rate} %)",
+    "advancedToggle": "Saisir plutôt la rémunération nette par créateur",
+    "advancedBack": "Revenir au budget total",
+    "payout": "Rémunération nette par créateur (FCFA)",
+    "payoutHint": "Le budget total est calculé pour couvrir chaque créateur après la commission.",
+    "belowFloorHint": "En dessous du minimum que Bayele recommande pour ce contenu ({floor} par unité) : vous risquez de recevoir peu de candidatures.",
+    "floorAck": "Je comprends que des créateurs pourraient ne pas postuler",
+    "rights": "Droits d'utilisation",
+    "rightsHint": "Où et combien de temps vous pourrez utiliser les contenus.",
+    "rightsRecommended": "(recommandé)",
+    "rightsCustom": "Précisez les droits d'utilisation",
+    "more": "Plus de détails (facultatif)",
+    "titleField": "Titre de la campagne",
+    "titleHint": "Laissez vide : nous le composons à partir de vos réponses.",
+    "message": "Message et consignes",
+    "messagePlaceholder": "Le message à faire passer, le ton, les à-faire et à-éviter…",
+    "platforms": "Plateformes",
+    "mandatory": "Éléments obligatoires",
+    "mandatoryPlaceholder": "#hashtag, @marque, lien ou code promo…",
+    "requirements": "Profil recherché",
+    "language": "Langue du contenu",
+    "languageOther": "Précisez la langue",
+    "equipment": "Matériel",
+    "plan": "Formule",
+    "visibility": "Visibilité",
+    "visibilityPrivate": "Privée",
+    "visibilityPrivateHint": "Visible par les créateurs connectés uniquement.",
+    "visibilityPublic": "Publique",
+    "visibilityPublicHint": "Lien partageable + référencement. Tout le monde peut la voir.",
+    "summaryTitle": "Avant de créer",
+    "summaryTotal": "Budget total à financer",
+    "summaryFee": "Commission Bayele ({rate} %)",
+    "summaryNet": "Rémunération nette par créateur",
+    "submit": "Créer la campagne",
+    "footnote": "La campagne est créée en brouillon. Elle est publiée dès que le paiement Mobile Money est confirmé.",
+    "autoTitle": "{what} · {sector} · {city}",
+    "creatorsOne": "1 créateur",
+    "creatorsMany": "{n} créateurs",
+    "generatedBrief": "{what} par créateur, à publier avant le {deadline}.",
+    "briefPlace": "Lieu de tournage : {city}, {country}.",
+    "errors": {
+      "required": "Répondez aux 6 questions pour créer la campagne.",
+      "deadline": "Choisissez une date à venir.",
+      "budget": "Le budget doit permettre de payer chaque créateur.",
+      "floorAck": "Cochez la case pour confirmer que vous avez lu l'avertissement sur la rémunération.",
+      "notBrand": "La création de campagne est réservée aux marques.",
+      "generic": "La création a échoué. Vérifiez les montants et réessayez."
+    }
+  },
+  "admin": {
+    "briefs": {
+      "title": "Briefs gérés",
+      "subtitle": "Briefs reçus par WhatsApp ou téléphone : du brouillon à l'annonce financée.",
+      "countOne": "1 brief",
+      "countMany": "{n} briefs",
+      "new": "Nouveau brief",
+      "floorsLink": "Seuils de rémunération",
+      "filterLabel": "Filtrer par statut",
+      "all": "Tous",
+      "search": "Marque, descripteur ou téléphone",
+      "searchSubmit": "Filtrer",
+      "allCountries": "Tous les pays",
+      "status": {
+        "draft": "Brouillon",
+        "awaiting_order": "En attente du « OUI »",
+        "ready": "Prête à publier",
+        "awaiting_payment": "En attente du paiement",
+        "published": "Publiée",
+        "declined": "Refusée"
+      },
+      "statusShort": {
+        "draft": "Brouillon",
+        "awaiting_order": "« OUI »",
+        "ready": "Prête",
+        "awaiting_payment": "Paiement",
+        "published": "Publiée",
+        "declined": "Refusée"
+      },
+      "row": {
+        "public": "Public :",
+        "labelMissing": "à définir",
+        "consentReal": "Nom réel autorisé",
+        "consentDescriptor": "Descripteur",
+        "deadline": "Date limite {date}",
+        "money": "{total} total → {net} / place × {places}",
+        "fields": "{done}/{total} champs",
+        "stale": "À relancer",
+        "age": "il y a {n} j",
+        "ageToday": "aujourd'hui",
+        "floorNotSet": "Seuil non défini",
+        "floorOk": "Seuil OK",
+        "floorBelow": "Sous le seuil"
+      },
+      "action": {
+        "complete": "Compléter",
+        "recordYes": "Enregistrer le OUI",
+        "publish": "Publier",
+        "confirmFunding": "Confirmer le financement",
+        "viewListing": "Voir l'annonce",
+        "duplicate": "Dupliquer",
+        "reopen": "Rouvrir",
+        "nudge": "Relancer sur WhatsApp",
+        "open": "Ouvrir"
+      },
+      "empty": {
+        "title": "Aucun brief géré pour l'instant",
+        "body": "Quand une marque envoie son brief par WhatsApp, créez-le ici : le formulaire suit le standard d'annonce, calcule la rémunération nette et prépare le bon de commande.",
+        "filtered": "Aucun brief dans ce statut.",
+        "search": "Aucun brief ne correspond à « {q} ».",
+        "showAll": "Voir tous les briefs",
+        "clearSearch": "Effacer la recherche",
+        "unavailable": "Les briefs gérés ne sont pas encore disponibles sur cette base (migration 0033 non appliquée)."
+      },
+      "editor": {
+        "newTitle": "Nouveau brief géré",
+        "editTitle": "Brief géré · {name}",
+        "back": "Briefs gérés",
+        "vis": {
+          "public": "Public",
+          "members": "Membres",
+          "internal": "Interne"
+        },
+        "save": "Enregistrer",
+        "saving": "Enregistrement…",
+        "saved": "Enregistré",
+        "savedAt": "Enregistré à {time}",
+        "unsaved": "Modifications non enregistrées",
+        "netShort": "Net / place",
+        "notFound": "Brief introuvable.",
+        "resendNotice": "Annonce modifiée après l'envoi du bon de commande : le brief repasse en brouillon. Renvoyez le bon de commande pour obtenir un nouveau « OUI »."
+      },
+      "template": {
+        "title": "Partir d'un modèle",
+        "none": "Aucun",
+        "hint": "Les modèles proposent du texte, jamais de prix.",
+        "confirm": "Ce modèle remplace le service, les livrables, le profil et les droits déjà saisis.",
+        "replace": "Remplacer",
+        "cancel": "Annuler"
+      },
+      "section": {
+        "brand": "Marque",
+        "service": "Service",
+        "deliverables": "Livrables",
+        "deadline": "Date limite",
+        "budget": "Budget",
+        "rights": "Droits d'usage",
+        "profile": "Profil créateur",
+        "application": "Candidature",
+        "order": "Bon de commande",
+        "payment": "Paiement",
+        "publish": "Publication",
+        "notes": "Notes internes",
+        "preview": "Aperçu public",
+        "status": "Statut"
+      },
+      "brand": {
+        "internalName": "Nom de la marque (interne)",
+        "internalNameHint": "Nom légal ou commercial, pour le bon de commande. Jamais affiché.",
+        "contactName": "Contact · nom",
+        "contactWhatsapp": "Contact · WhatsApp",
+        "contactWhatsappHint": "Format international, ex. +237 6XX XX XX XX.",
+        "display": "Affichage public",
+        "descriptor": "Descripteur",
+        "descriptorHint": "Ex. Restaurant, Marque de mode",
+        "realName": "Nom réel",
+        "realNameHint": "Seulement avec un accord écrit",
+        "label": "Libellé public",
+        "labelHintDescriptor": "Décrivez l'activité sans la ville (elle s'affiche à côté). N'utilisez jamais le nom d'une autre entreprise.",
+        "labelHintReal": "Le nom exact que la marque a accepté de voir publié.",
+        "consent": "Consentement écrit reçu",
+        "consentHint": "Une capture du « OK » WhatsApp suffit. Sans accord, utilisez un descripteur : l'annonce affiche toujours « Géré par Bayele ».",
+        "consentProof": "Preuve du consentement",
+        "consentProofHint": "Ex. capture WhatsApp du 12/10, enregistrée dans le dossier client.",
+        "labelEqualsName": "Sans consentement, le libellé public ne peut pas reprendre le nom de la marque.",
+        "city": "Ville",
+        "country": "Pays",
+        "choose": "Choisir…",
+        "preview": "Aperçu :"
+      },
+      "service": {
+        "service": "Service",
+        "title": "Titre de l'annonce (facultatif)",
+        "titleHint": "Laissez vide pour reprendre le service.",
+        "category": "Catégorie"
+      },
+      "deliv": {
+        "main": "Livrable principal",
+        "units": "Unités par place",
+        "mainHint": "Le livrable qui coûte le plus à produire. Les autres vont dans le détail.",
+        "platforms": "Plateformes",
+        "detail": "Détail des livrables",
+        "detailHint": "Tout ce qui sera livré : formats, durées, ce qu'il faut montrer, à faire et à éviter. Réservé aux membres.",
+        "disclosureHint": "La mention « #pub » est obligatoire sur les publications sponsorisées.",
+        "claims": "Allégations vérifiées",
+        "claimsHint": "Catégorie sensible (immobilier, finance, santé) : cochez seulement après avoir vérifié les justificatifs des allégations de la marque (prix, rendement, effets…)."
+      },
+      "deadline": {
+        "label": "Date limite de livraison",
+        "hint": "Date de livraison au plus tard, celle du bon de commande."
+      },
+      "budget": {
+        "total": "Budget total de la marque (FCFA)",
+        "totalHint": "Frais Bayele 25 % inclus — le montant que la marque paie.",
+        "places": "Places (nombre de créateurs)",
+        "plan": "Formule Agency · 25 % — fixe pour les campagnes gérées."
+      },
+      "pay": {
+        "total": "Budget total marque",
+        "fee": "Frais Bayele (25 %)",
+        "pool": "Rémunération créateurs",
+        "divide": "÷ {n} places",
+        "divideOne": "÷ 1 place",
+        "netLabel": "Net par place",
+        "perUnit": "Par unité : {amount} ({qty})",
+        "shownOnListing": "C'est le montant affiché sur l'annonce.",
+        "remainder": "Reste d'arrondi : {amount}",
+        "remainderHint": "Il reste dans le séquestre.",
+        "incomplete": "Saisissez le budget et le nombre de places."
+      },
+      "floor": {
+        "undefinedTitle": "Seuil non défini",
+        "undefinedBody": "Aucun seuil n'est fixé pour ce livrable : la publication est autorisée.",
+        "okTitle": "Au-dessus du seuil",
+        "okBody": "{perUnit} par unité ≥ {floor} requis.",
+        "belowTitle": "Sous le seuil — contre-proposition",
+        "belowBody": "Il manque {gap} par place.",
+        "optionBudget": "Même travail : budget total de {total}",
+        "optionScope": "Même budget : {qty} par place au lieu de {current}",
+        "copyCounter": "Copier la contre-proposition",
+        "copied": "Contre-proposition copiée",
+        "blocked": "Sous le seuil de rémunération : envoyez une contre-proposition.",
+        "unknown": "Seuils indisponibles : le serveur vérifiera à la publication."
+      },
+      "rights": {
+        "label": "Droits d'usage",
+        "custom": "Personnalisé",
+        "customPlaceholder": "Où, combien de temps, publicité payante ou non…",
+        "keep": "Le créateur garde la paternité du contenu et peut le montrer dans son portfolio."
+      },
+      "profile": {
+        "requirements": "Profil recherché",
+        "requirementsHint": "Ce qui compte pour réussir : style, expérience, langue parlée face caméra. Pas de critère physique ni d'âge.",
+        "language": "Langue du contenu",
+        "languageOther": "Précisez la langue",
+        "equipment": "Matériel",
+        "equipmentHint": "Seulement si indispensable — sinon laissez vide."
+      },
+      "application": {
+        "text": "Candidature via Bayele, compte créateur requis. Bayele propose 2 à 3 profils par place ; la marque valide sous 48 h (sans réponse, Bayele choisit)."
+      },
+      "checklist": {
+        "title": "Avant publication",
+        "items": [
+          "Libellé public",
+          "Consentement cohérent",
+          "Service et catégorie",
+          "Livrables",
+          "Plateformes",
+          "Ville",
+          "Pays",
+          "Langue",
+          "Date limite",
+          "Budget total",
+          "Places · net par place",
+          "Droits d'usage",
+          "Profil créateur",
+          "Seuil",
+          "« OUI » de la marque"
+        ],
+        "missing": "Il manque : {fields}",
+        "done": "fait",
+        "todo": "à faire"
+      },
+      "order": {
+        "lang": "Texte en :",
+        "view": "Voir le texte",
+        "copy": "Copier le bon de commande",
+        "copied": "Bon de commande copié",
+        "openWhatsapp": "Ouvrir dans WhatsApp",
+        "sent": "J'ai envoyé le bon de commande",
+        "yes": "« OUI » (ou « YES ») reçu",
+        "yesAt": "Reçu le",
+        "proof": "Preuve",
+        "proofHint": "Ex. capture du « OUI » WhatsApp du 12/10 à 10 h 14",
+        "yesRecorded": "« OUI » enregistré le {date}."
+      },
+      "payment": {
+        "deposit": "Acompte reçu",
+        "depositOptions": [
+          "Aucun",
+          "Partiel",
+          "Complet"
+        ],
+        "refHint": "Saisissez la référence du reçu MTN, Orange, Wave… ou de la facture SokoClick dans Financement. Jamais une simple capture."
+      },
+      "publish": {
+        "steps": [
+          "Créer la campagne",
+          "Confirmer le financement"
+        ],
+        "explain": "Publier se fait en 2 étapes. 1. La campagne est créée, invisible sur Bayele. 2. Dès que le paiement est arrivé, vous confirmez le financement dans Financement avec la référence du reçu : la campagne passe en ligne et les créateurs sont prévenus dans l'application.",
+        "readOnly": "L'annonce est créée. Pour la changer avant le financement, refusez ce brief puis dupliquez-le.",
+        "create": "Créer la campagne",
+        "cancel": "Annuler",
+        "step2Title": "Étape 2 sur 2 — financement à confirmer",
+        "step2Body": "La campagne existe mais reste invisible tant que le financement n'est pas confirmé.",
+        "done": "Publiée",
+        "copyLink": "Copier le lien",
+        "linkCopied": "Lien copié",
+        "needYes": "Enregistrez le « OUI » de la marque pour publier.",
+        "needChecklist": "Complétez la liste « Avant publication » pour publier.",
+        "saveFirst": "Enregistrez vos modifications avant de publier.",
+        "republish": "La campagne précédente a été annulée : ce brief peut être publié à nouveau."
+      },
+      "decline": {
+        "action": "Refuser le brief",
+        "reason": "Motif",
+        "reasons": [
+          "Sous le seuil, contre-proposition refusée",
+          "Sans réponse de la marque",
+          "Hors périmètre (récurrent, contenu interdit…)",
+          "Autre"
+        ],
+        "note": "Précision (facultatif)",
+        "confirm": "Confirmer le refus",
+        "cancel": "Annuler",
+        "cancelsCampaign": "La campagne créée (non financée) sera annulée.",
+        "declinedOn": "Refusé : {reason}"
+      },
+      "notes": {
+        "label": "Notes internes",
+        "hint": "Jamais affichées. Historique des échanges, relances, contre-propositions."
+      },
+      "manual": {
+        "label": "Statut manuel",
+        "hint": "Seuls Brouillon, En attente du « OUI » et Refusée se choisissent à la main ; le paiement et la publication sont mis à jour automatiquement."
+      },
+      "funding": {
+        "managedChip": "Gérée",
+        "briefLink": "Brief",
+        "viewPublic": "Voir l'annonce publique",
+        "backToBrief": "Retour au brief",
+        "highlight": "Campagne gérée à financer"
+      }
+    }
+  },
+  "payFloors": {
+    "title": "Seuils de rémunération",
+    "back": "Briefs gérés",
+    "body": "Montant net minimum qu'un créateur doit recevoir par unité livrée, après les frais Bayele. Ces seuils seront fixés par Finance et Communauté à partir des données réelles de Bayele. Tant qu'un seuil n'est pas défini pour un type de livrable, les campagnes gérées de ce type peuvent être publiées.",
+    "empty": "Aucun seuil défini pour l'instant.",
+    "unavailable": "Les seuils ne sont pas encore disponibles sur cette base (migration 0033 non appliquée).",
+    "notSet": "Non défini",
+    "inputLabel": "FCFA net / unité",
+    "save": "Enregistrer",
+    "confirmSet": "Les campagnes gérées de ce type ne pourront plus être publiées en dessous de {value} par unité. Les campagnes déjà publiées ne changent pas.",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "remove": "Retirer le seuil",
+    "confirmRemove": "Sans seuil, la publication sera autorisée quel que soit le montant.",
+    "updated": "Modifié le {date}",
+    "saved": "Seuil enregistré.",
+    "removed": "Seuil retiré."
   }
 }

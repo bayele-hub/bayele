@@ -2,8 +2,10 @@ import type { CSSProperties } from 'react';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
 import type { Dictionary } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
-import { countryFlag, countryName } from '@/lib/countries';
+import { countryName } from '@/lib/countries';
 import { categoryLabel } from '@/lib/campaign-categories';
+import { cityUnlessInLabel, deliverableSummary } from '@/lib/managed-listing';
+import { ManagedBadge } from './managed-badge';
 import { cardPill, daysUntil, fill, placesMeter, plural, type BoardCampaign, type Meter, type Pill } from '@/lib/campaign-board';
 
 /** Stagger helper for [data-reveal] / .anim-* delays (design §0.2). */
@@ -17,9 +19,13 @@ export function knownPlatforms(list: string[] | null | undefined): Platform[] {
 /** Everything a card prints, resolved once from the RPC row (design §0.3). Hidden fields are null. */
 export interface CardCopy {
   category: string | null;
-  countryFlag: string;
   countryName: string | null;
   by: string | null;
+  /** Managed listing: the public label's city (null when absent or already in the label). */
+  brandCity: string | null;
+  managed: boolean;
+  /** Council R1: « 3 vidéos courtes » — public on every listing. */
+  deliverables: string | null;
   deadline: string | null;
   applied: string | null;
   pill: Pill;
@@ -38,18 +44,66 @@ export function cardCopy(c: BoardCampaign, t: Dictionary, locale: Locale, now: D
   const brand = (c.brandName ?? '').trim();
   return {
     category: categoryLabel(c.category, locale, t.categories) || null,
-    countryFlag: countryFlag(c.country),
     countryName: countryName(c.country, locale) || null,
     by: brand ? brand : null,
+    brandCity: c.isManaged ? cityUnlessInLabel(brand, c.brandCity) : null,
+    managed: !!c.isManaged,
+    deliverables: deliverableSummary(c.deliverableQuantity, c.contentType, locale),
     deadline,
     applied: c.appliedCount > 0 ? plural(c.appliedCount, k.appliedOne, k.appliedMany) : null,
     pill,
     pillLabel: pill === 'full' ? k.pillFull : pill === 'almostFull' ? k.pillAlmostFull : pill === 'new' ? k.pillNew : null,
     meter,
     meterLabel:
-      meter?.kind === 'bar' ? plural(meter.left, k.placesLeftOne, k.placesLeftMany) : meter?.kind === 'total' ? fill(k.placesTotal, { n: meter.target }) : null,
+      meter?.kind === 'bar' ? plural(meter.left, k.placesLeftOne, k.placesLeftMany) : meter?.kind === 'total' ? plural(meter.target, k.placesTotalOne, k.placesTotal) : null,
     meterOf: meter?.kind === 'bar' ? fill(k.placesOf, { total: meter.target }) : null,
   };
+}
+
+/**
+ * Brand line (design §5.2): self-serve → « par **{brand}** »; managed → « {label} · {city} » +
+ * « Géré par Bayele », without « par » and never linked (v2 returns no handle for managed rows).
+ * On 360 px the label truncates before the badge wraps.
+ */
+export function BrandLine({
+  brand,
+  city,
+  managed,
+  byTemplate,
+  badgeLabel,
+  tone = 'light',
+  size = 'sm',
+  className = '',
+}: {
+  brand: string;
+  city: string | null;
+  managed: boolean;
+  byTemplate: string;
+  badgeLabel: string;
+  tone?: 'light' | 'dark';
+  size?: 'sm' | 'md';
+  className?: string;
+}) {
+  const dark = tone === 'dark';
+  if (!managed) {
+    return (
+      <ByBrand
+        template={byTemplate}
+        brand={brand}
+        className={className}
+        strongClassName={dark ? 'font-semibold text-white' : 'font-semibold text-ink'}
+      />
+    );
+  }
+  return (
+    <p className={`flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 ${className}`}>
+      <span className="min-w-0 truncate">
+        <span className={`font-semibold ${dark ? 'text-white' : 'text-ink'}`}>{brand}</span>
+        {city && <span className={dark ? 'text-white/70' : 'text-muted'}> · {city}</span>}
+      </span>
+      <ManagedBadge label={badgeLabel} tone={tone} size={size} />
+    </p>
+  );
 }
 
 /** « par **{brand}** » with the brand in bold. */

@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShieldCheck, Users, Wallet, Send, Handshake, Receipt, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, Users, Wallet, Send, Handshake, Receipt, ShieldAlert, ClipboardList } from 'lucide-react';
 
 const TABS = [
   { href: '/admin/dashboard', label: "Vue d'ensemble", short: 'Vue', Icon: LayoutDashboard },
   { href: '/admin/moderation', label: 'Profils', short: 'Profils', Icon: ShieldCheck },
   { href: '/admin/users', label: 'Utilisateurs', short: 'Utilisateurs', Icon: Users },
+  // Managed campaigns: placed before « Campagnes » so the tabs follow the money (brief → funding → payout).
+  { href: '/admin/briefs', label: 'Briefs gérés', short: 'Briefs', Icon: ClipboardList },
   { href: '/admin/funding', label: 'Campagnes', short: 'Campagnes', Icon: Wallet },
   { href: '/admin/payouts', label: 'Paiements', short: 'Paiements', Icon: Send },
   { href: '/admin/retainers', label: 'Rétainers', short: 'Rétainers', Icon: Handshake },
