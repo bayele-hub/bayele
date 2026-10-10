@@ -1,5 +1,12 @@
 # Release runbook: public Campagnes board (feat/campaign-board)
 
+> **Update 2026-10-10:** 0030 and 0031 are applied in production (history rows `0030_public_campaign_board`,
+> `0031_signup_attribution_and_alerts`), except the function `unsubscribe_campaign_alert`. The Supabase
+> connector holds any SQL containing `DROP` or `DELETE` for an owner confirmation that never reaches the
+> session, which explains the earlier time-outs. Paste `unsubscribe-campaign-alert.sql` into the SQL Editor
+> (one function). Apply **0032 in the SQL Editor too** (it contains `REVOKE ALL`, which is fine, but keep the
+> same route for anything flagged destructive). Steps A is done; continue at B.
+
 Owner: DevOps & SRE seat · 2026-10-10 · Supabase project `oxesplxlshsdrijzckpq` (Postgres 17.6)
 
 ## 0. State at hand-off

@@ -7,7 +7,7 @@
 | **Owner roles** (`docs/SKILL.md` §2) | Head of Growth (funnel) · Mobile UX (field budget) · Frontend & Design Systems · Backend & DB (RPC/RLS) · Security · QA & Chaos (sign-off) |
 | **Design standard** | `epic-design/SKILL.md`, **Mode 2 — enhance existing site** (CSS-only motion system in `app/globals.css`, no GSAP/WebGL on the mobile budget) |
 | **Created** | 2026-10-10 |
-| **Status** | 🟠 Built and QA-passed on branch `feat/campaign-board` — waiting for production DB step (0030/0031), PR merge, then 0032 (see `docs/CAMPAIGNS-RELEASE-RUNBOOK.md`) |
+| **Status** | 🟠 Built, QA-passed, 0030 + 0031 live in production — waiting for `unsubscribe_campaign_alert` (SQL Editor), PR merge, then 0032 (see `docs/CAMPAIGNS-RELEASE-RUNBOOK.md`) |
 
 **How to use this file.** It is the single source of truth for this feature. Update the tracker
 (§9) in the same commit as the work it describes: `[ ]` todo · `[~]` in progress · `[x]` done ·
@@ -186,7 +186,7 @@ les campagnes ».
 ### Phase 1
 - [x] Migration `0030_public_campaign_board` + rollback + local DB tests
 - [x] Migration 0032 anon column lockdown on campaigns + tests
-- [!] Apply 0030 to production (after review) — blocked 2026-10-10: pre-checks pass (prod at 0029, 0 mixed-case handles), but `apply_migration` timed out twice with no change (needs owner approval); run per `docs/CAMPAIGNS-RELEASE-RUNBOOK.md` §3. 0031 same; 0032 only after the production web deploy
+- [x] Apply 0030 + 0031 to production (2026-10-10, via apply_migration; history rows `0030_public_campaign_board`, `0031_signup_attribution_and_alerts`). One function, `unsubscribe_campaign_alert`, is pending — the connector holds any SQL containing DELETE/DROP for an owner confirmation that never arrives; owner pastes `unsubscribe-campaign-alert.sql` in the SQL Editor. 0032 only after the production web deploy
 - [x] `types.gen.ts` updated
 - [x] `listCampaignBoard()` data helper (+ `getCampaignStats`, `getPublicCampaign` anon-safe columns only, `getCampaignBriefForMember` for signed-in viewers — 0032-ready)
 - [x] `lib/auth/campaign-ctas.ts` + unit tests
@@ -228,3 +228,4 @@ les campagnes ».
 | 2026-10-10 | Backend: migration 0032 (anon column lockdown on `campaigns`: no brief/budget/fee/tags for anon, anon writes revoked); business council decisions C1–C6 applied (full campaigns ranked last, in-app alerts only, no referral rewards, URL-only first-touch attribution ≤ 7 days, max 5 alerts, « inscription gratuite » wording). |
 | 2026-10-10 | UI/UX design spec added: docs/CAMPAIGNS-PUBLIC-PAGE-DESIGN.md |
 | 2026-10-10 | Owner decisions D1–D3 recorded; business council C1–C6; engineering decisions E1–E5. Backend, UI/UX, Frontend, QA (2 rounds, all local gates pass) and DevOps seats complete. QA report and release runbook added to docs/. Production DB step pending owner approval. |
+| 2026-10-10 | Production: 0030 and 0031 applied. Cause of the earlier time-outs found: the Supabase connector holds any statement containing DROP/DELETE for an owner confirmation that never reaches the session. The `DROP … IF EXISTS` lines were no-ops on production and were omitted there; `unsubscribe_campaign_alert` (contains DELETE) is applied by the owner in the SQL Editor. `MANIFEST.sha256` regenerated for 0001–0032. |
