@@ -34,6 +34,8 @@ export interface ProfileInitial {
   socials: SocialsMap;
   specialties: string;
   yearsExperience: number;
+  partnerMomoPhone: string;
+  partnerMomoProvider: string;
   companyName: string;
   industry: string;
   billingEmail: string;
@@ -127,6 +129,22 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
         <Card title="Profil partenaire">
           <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
           <NumberField label="Années d'expérience" name="years_experience" defaultValue={initial.yearsExperience} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Mobile Money pour vos commissions" name="partner_momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.partnerMomoPhone} placeholder="+237 6XX XXX XXX" />
+            <div>
+              <label className="text-xs font-semibold text-ink">Opérateur</label>
+              <select
+                name="partner_momo_provider"
+                defaultValue={initial.partnerMomoProvider || 'mtn_momo'}
+                className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
+              >
+                {PROVIDERS.map((p) => (
+                  <option key={p.id} value={p.id}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <p className="text-[11px] text-muted">Bayele y verse vos commissions sur les missions des créateurs que vous représentez. Ce numéro reste privé.</p>
         </Card>
       )}
 

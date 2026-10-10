@@ -93,11 +93,21 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   }
 
   if (session.roles.includes('consultant')) {
+    const partnerProviderRaw = String(formData.get('partner_momo_provider') ?? 'mtn_momo') as Provider;
+    const partnerProvider: Provider = PROVIDERS.includes(partnerProviderRaw) ? partnerProviderRaw : 'mtn_momo';
+    let partnerPhone: string | null;
+    try {
+      partnerPhone = normalizeMomo(String(formData.get('partner_momo_phone') ?? ''));
+    } catch {
+      return { error: 'Numéro Mobile Money invalide. Utilisez le format international, ex. +2376XXXXXXXX.' };
+    }
     const { error } = await supabase
       .from('consultant_profiles')
       .update({
         specialties: parseList(formData.get('specialties')),
         years_experience: Math.max(0, Math.round(Number(formData.get('years_experience') ?? 0))),
+        momo_payout_phone_e164: partnerPhone,
+        momo_provider: partnerProvider,
       })
       .eq('user_id', session.userId);
     if (error) return { error: 'Profil partenaire : mise à jour impossible.' };
@@ -124,6 +134,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   revalidatePath('/creator/dashboard');
   revalidatePath('/creator/wallet');
   revalidatePath('/partner/dashboard');
+  revalidatePath('/partner/creators');
   revalidatePath('/business/dashboard');
   return { error: null, ok: true };
 }
