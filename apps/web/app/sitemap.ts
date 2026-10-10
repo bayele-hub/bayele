@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { open: creatorsListed } = await getCreatorDirectoryGate();
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: 'daily', priority: 1 },
+    { url: `${BASE}/campaigns`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     ...(creatorsListed ? [{ url: `${BASE}/creators`, lastModified: now, changeFrequency: 'daily' as const, priority: 0.8 }] : []),
     { url: `${BASE}/partners`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
     { url: `${BASE}/pricing`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },

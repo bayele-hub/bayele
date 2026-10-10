@@ -26,6 +26,9 @@ const config: NextConfig = {
       { source: '/consultants/:handle', destination: '/partners/:handle', permanent: true },
       { source: '/consultant/:path*', destination: '/partner/:path*', permanent: true },
       { source: '/onboarding/consultant', destination: '/onboarding/partner', permanent: true },
+      // French alias of the public campaign board (query string — filters, ref — is kept by Next).
+      { source: '/campagnes', destination: '/campaigns', statusCode: 301 },
+      { source: '/campagnes/:id', destination: '/campaigns/:id', statusCode: 301 },
     ];
   },
 };

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { CheckCircle2, Clock, ShieldAlert, XCircle } from 'lucide-react';
 import { getSession } from '@/lib/auth/session';
+import { continueTarget, withNext } from '@/lib/auth/return-path';
 
 // One screen for every non-dashboard account state, so the dispatcher has a safe place to send
 // pending / suspended / rejected profiles (see the dashboard dispatcher for why this must not bounce).
@@ -37,14 +38,17 @@ const STATUS_UI = {
   },
 } as const;
 
-export default async function OnboardingDone() {
-  const session = await getSession();
+export default async function OnboardingDone({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const [session, { next }] = await Promise.all([getSession(), searchParams]);
   if (!session.userId) redirect('/auth?mode=signin');
   // No profile yet → they haven't finished onboarding.
-  if (!session.profile) redirect('/dashboard');
+  if (!session.profile) redirect(withNext('/dashboard', next));
 
   const ui = STATUS_UI[session.profile.status] ?? STATUS_UI.pending_review;
   const { Icon } = ui;
+  // Signed up from a specific page (a campaign, the alert opt-in…): « Continuer » takes them back there.
+  // Pending creators can already browse, apply and set alerts, so they continue too.
+  const resume = continueTarget(session.profile.status, next);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-surface p-6 text-center">
@@ -64,7 +68,15 @@ export default async function OnboardingDone() {
         <p className="mt-2 text-sm text-muted">{ui.body}</p>
 
         <div className="mt-6 grid gap-2">
-          {ui.showEnter && (
+          {resume && (
+            <Link
+              href={resume}
+              className="flex min-h-tap items-center justify-center rounded-xl bg-brand text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"
+            >
+              Continuer
+            </Link>
+          )}
+          {ui.showEnter && !resume && (
             <Link
               href="/dashboard"
               className="flex min-h-tap items-center justify-center rounded-xl bg-brand text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95"

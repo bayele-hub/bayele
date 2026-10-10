@@ -5,6 +5,7 @@ import { SmartAvatar } from '@/components/smart-avatar';
 import { RespondButtons, EndRepresentationButton } from '@/components/representation-forms';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
+import { creatorAllowed } from '@/lib/auth/creator-gate';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { formatPct, splitPayout } from '@/lib/founder';
 
@@ -19,6 +20,8 @@ const STATUS_FR: Record<string, string> = { pending: 'En attente', active: 'Acti
 export default async function CreatorPartnerPage() {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
+  // Active creators only (pending_review creators get /creator/campaigns alone — see the layout).
+  if (!creatorAllowed({ roles: session.roles, primary: session.primary, status: session.profile?.status }, 'workspace')) redirect('/dashboard');
 
   const supabase = await createClient();
   const { data } = await supabase.rpc('my_partner_links');

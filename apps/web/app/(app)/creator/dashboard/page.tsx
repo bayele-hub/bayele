@@ -6,6 +6,7 @@ import { formatFounderNumber, formatPct, splitPayout } from '@/lib/founder';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
+import { creatorAllowed } from '@/lib/auth/creator-gate';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 import { ProofForm } from './proof-form';
 import { countryFlag } from '@/lib/countries';
@@ -16,6 +17,8 @@ export const dynamic = 'force-dynamic';
 export default async function CreatorDashboard() {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
+  // Active creators only (pending_review creators get /creator/campaigns alone — see the layout).
+  if (!creatorAllowed({ roles: session.roles, primary: session.primary, status: session.profile?.status }, 'workspace')) redirect('/dashboard');
 
   const supabase = await createClient();
   const [{ data: assignments }, { data: creatorProfile }, { data: founder }, { data: links }] = await Promise.all([

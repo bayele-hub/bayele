@@ -6,8 +6,10 @@ import { createCampaignAction, type CampaignState } from '../../actions';
 import { TIERS, computeBudget, fmtFcfa } from '@/lib/data/campaigns';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
 import { countryOptions } from '@/lib/countries';
+import { CATEGORY_VALUES } from '@/lib/campaign-categories';
 
-const CATEGORIES = ['Beauté', 'Mode', 'Tech', 'Food', 'Musique', 'Sport', 'Santé & Bien-être', 'Humour', 'Éducation', 'Voyage', 'Business'];
+// Shared with the public board filters and campaign alerts (lib/campaign-categories.ts).
+const CATEGORIES = CATEGORY_VALUES;
 const COUNTRIES = countryOptions('fr');
 // Networks brands run creator campaigns on in-market (WhatsApp-first). Keys match SOCIAL_META.
 const CAMPAIGN_PLATFORMS: Platform[] = ['whatsapp', 'tiktok', 'instagram', 'facebook', 'youtube'];
@@ -19,7 +21,8 @@ export function CampaignForm() {
   const [payout, setPayout] = useState(50000);
   const [count, setCount] = useState(5);
   const [platforms, setPlatforms] = useState<Platform[]>([]);
-  const [isPublic, setIsPublic] = useState(false);
+  // D2: new campaigns are public by default (listed on /campaigns once funded); the brand can switch it off.
+  const [isPublic, setIsPublic] = useState(true);
 
   const togglePlatform = (p: Platform) =>
     setPlatforms((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
@@ -157,7 +160,7 @@ export function CampaignForm() {
         </div>
       </div>
 
-      {/* Visibility — private by default (signed-in creators only); public adds a shareable link + SEO. */}
+      {/* Visibility — public by default (D2: shareable link, SEO, listed on /campaigns); private = signed-in creators only. */}
       <div className="rounded-2xl border border-line bg-surface p-4">
         <p className="text-xs font-bold text-ink">Visibilité</p>
         <input type="hidden" name="is_public" value={isPublic ? 'true' : 'false'} />

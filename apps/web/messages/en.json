@@ -12,7 +12,8 @@
     "billing": "Billing",
     "login": "Sign in",
     "start": "Get started",
-    "dashboard": "My space"
+    "dashboard": "My space",
+    "campaigns": "Campaigns"
   },
   "hero": {
     "badge": "Live in 6 African countries",
@@ -340,5 +341,173 @@
   "founder": {
     "label": "Founding creator",
     "title": "Among Bayele's first 10,000 creators"
+  },
+  "campaignBoard": {
+    "meta": {
+      "title": "Open campaigns for creators",
+      "description": "Brands pay creators in Cameroon, Côte d'Ivoire, Gabon, Nigeria, Kenya and South Africa. Budget locked in escrow, paid by Mobile Money."
+    },
+    "title": "Open campaigns",
+    "titleLines": [
+      "Open",
+      "campaigns"
+    ],
+    "eyebrowOne": "1 open offer",
+    "eyebrowMany": "{n} open offers",
+    "subtitle": "Brands pay creators like you — the budget is already locked in escrow.",
+    "trust": [
+      "Budget locked in escrow",
+      "Paid by Mobile Money"
+    ],
+    "filters": {
+      "country": "Filter by country",
+      "category": "Filter by category",
+      "allCountries": "All countries",
+      "allCategories": "All categories",
+      "reset": "Clear filters"
+    },
+    "listLabel": "Campaigns ranked by pay",
+    "featured": {
+      "label": "Best-paid offer",
+      "youReceive": "You receive"
+    },
+    "card": {
+      "by": "by {brand}",
+      "perCreator": "per creator",
+      "perCreatorShort": "/ creator",
+      "escrow": "Budget locked in escrow",
+      "cta": "See the offer",
+      "platforms": "Platforms",
+      "placesLeftOne": "1 spot left",
+      "placesLeftMany": "{n} spots left",
+      "placesOf": "of {total}",
+      "placesTotal": "{n} spots",
+      "closesToday": "Closes today",
+      "closesTomorrow": "Closes tomorrow",
+      "closesIn": "Closes in {n} days",
+      "appliedOne": "1 creator has applied",
+      "appliedMany": "{n} creators have applied",
+      "pillNew": "New",
+      "pillAlmostFull": "Almost full",
+      "pillFull": "Full",
+      "fullApply": "Full — no spots left"
+    },
+    "cta": {
+      "guest": {
+        "heading": "Every offer is waiting in your creator space",
+        "label": "See all campaigns",
+        "helper": "Free sign-up: create your creator profile to see everything and apply in one tap.",
+        "signinPrefix": "Already a member?",
+        "signin": "Sign in"
+      },
+      "creator": {
+        "heading": "Ready to apply?",
+        "label": "See all campaigns",
+        "helper": "Apply from your creator space."
+      },
+      "partner": {
+        "heading": "Your creators can apply",
+        "label": "Apply for my creators",
+        "helper": "Put your talent forward from your partner space."
+      },
+      "brand": {
+        "heading": "Your offer can be here",
+        "label": "Launch a campaign",
+        "helper": "Your campaign appears on this page as soon as its budget is in escrow."
+      },
+      "admin": {
+        "heading": "Admin view",
+        "label": "Open the dashboard",
+        "helper": "Campaigns, funding and sign-ups."
+      }
+    },
+    "empty": {
+      "title": "No open campaigns right now",
+      "body": "Brands post their offers here as soon as the budget is locked in escrow. Turn on an alert: we'll notify you in the app when a campaign matches your country.",
+      "brandPrefix": "Are you a brand?",
+      "brandLink": "Launch a campaign"
+    },
+    "emptyFiltered": {
+      "title": "No campaign matches these filters yet",
+      "showAll": "See all open campaigns"
+    },
+    "thin": {
+      "title": "Hear about the next campaigns first",
+      "body": "Pick your country and category: we'll notify you in the app as soon as a new offer is posted."
+    },
+    "wall": {
+      "back": "All campaigns",
+      "title": "The full brief is for registered creators",
+      "body": "Free sign-up: create your account to read the brief, see the deliverables and apply.",
+      "items": [
+        "The brand's brief",
+        "Expected deliverables",
+        "Mandatory elements"
+      ],
+      "cta": "Create my account to apply",
+      "signinPrefix": "Already a member?",
+      "signin": "Sign in",
+      "seoTeaser": "{brand} is hiring creators for a {category} campaign in {country}. {pay} per creator, payment secured by escrow on Bayele."
+    },
+    "home": {
+      "heading": "Open campaigns",
+      "seeAll": "See all"
+    },
+    "page": {
+      "pay": "Pay",
+      "wanted": "Creators wanted",
+      "placesUnit": "spots",
+      "proposedBy": "Posted by {brand}",
+      "guarantee": "Guaranteed payment: the funds are already in escrow. You're paid as soon as your post is approved.",
+      "footer": "Bayele — the escrow-secured influencer marketplace.",
+      "learnMore": "Learn more",
+      "metaTitle": "{title} — {category} campaign · {pay}/creator",
+      "notFound": "Campaign not found",
+      "breadcrumbHome": "Home",
+      "breadcrumbCampaigns": "Campaigns"
+    }
+  },
+  "share": {
+    "whatsapp": "Share on WhatsApp",
+    "whatsappAria": "Share \"{title}\" on WhatsApp",
+    "message": "Creator offer on Bayele: \"{title}\" — {pay} per creator, budget already locked in escrow. See the offer: {url}",
+    "refNote": "Your share link carries your handle: creators who sign up through it are credited to you.",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "referralCountOne": "1 sign-up through your share links",
+    "referralCountMany": "{n} sign-ups through your share links"
+  },
+  "alerts": {
+    "title": "Tell me about new campaigns",
+    "country": "Country",
+    "category": "Category",
+    "allCountries": "All countries",
+    "allCategories": "All categories",
+    "submit": "Alert me",
+    "guestHint": "Free sign-up. Create your creator account to turn on the alert.",
+    "confirmTitle": "Turn on your alert",
+    "confirm": "Turn on alert",
+    "success": "Alert on",
+    "successBody": "We'll notify you in the app as soon as a matching campaign is posted.",
+    "duplicate": "You already have this alert.",
+    "limit": "Limit reached: {n} alerts maximum. Remove one to add another.",
+    "manage": "Manage my alerts",
+    "listTitle": "My alerts",
+    "listEmpty": "No alerts yet.",
+    "add": "Add an alert",
+    "remove": "Remove the {label} alert",
+    "invalid": "Pick a valid country and category.",
+    "inApp": "We'll notify you in the app.",
+    "remainingOne": "1 alert left",
+    "remainingMany": "{n} alerts left",
+    "limitTitle": "Limit reached",
+    "profileRequired": "Finish signing up to turn on an alert.",
+    "error": "The alert could not be saved. Try again.",
+    "removeError": "The alert could not be removed. Try again.",
+    "removed": "Alert removed.",
+    "fullCardLink": "Alert me about the next offers"
+  },
+  "common": {
+    "loading": "Loading…"
   }
 }

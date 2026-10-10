@@ -38,8 +38,8 @@ export async function createCampaignAction(_prev: CampaignState, formData: FormD
   const mandatoryTags = String(formData.get('mandatory_tags') ?? '').trim() || null;
   const deadlineRaw = String(formData.get('deadline') ?? '').trim();
   const deadline = /^\d{4}-\d{2}-\d{2}$/.test(deadlineRaw) ? deadlineRaw : null;
-  // Visibility: private by default (signed-in creators only); brand opts a campaign public.
-  const isPublic = String(formData.get('is_public') ?? '') === 'true';
+  // Visibility (D2): public by default; only an explicit 'false' from the form's toggle makes it private.
+  const isPublic = String(formData.get('is_public') ?? 'true') !== 'false';
 
   if (!title || !brief || !category) return { error: 'Titre, brief et catégorie sont requis.' };
   if (!platforms.length || !contentType) return { error: 'Indiquez au moins une plateforme et un type de contenu.' };

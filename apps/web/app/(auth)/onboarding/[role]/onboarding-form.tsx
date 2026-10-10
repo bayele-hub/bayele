@@ -32,10 +32,13 @@ export function OnboardingForm({
   role,
   userId,
   defaults,
+  next = null,
 }: {
   role: Role;
   userId: string;
   defaults: { displayName: string; handle: string; country: CC; companyName: string };
+  /** Validated return path from sign-up; re-validated by the action. */
+  next?: string | null;
 }) {
   const [state, formAction, pending] = useActionState<OnboardState, FormData>(onboardAction, { error: null });
   const [cats, setCats] = useState<string[]>([]);
@@ -52,6 +55,7 @@ export function OnboardingForm({
       </div>
 
       <input type="hidden" name="role" value={role} />
+      {next && <input type="hidden" name="next" value={next} />}
 
       <OnboardingAvatar userId={userId} name={defaults.displayName || defaults.companyName} />
 
