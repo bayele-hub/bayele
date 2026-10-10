@@ -7,7 +7,7 @@
 | **Owner roles** (`docs/SKILL.md` §2) | Head of Growth (funnel) · Mobile UX (field budget) · Frontend & Design Systems · Backend & DB (RPC/RLS) · Security · QA & Chaos (sign-off) |
 | **Design standard** | `epic-design/SKILL.md`, **Mode 2 — enhance existing site** (CSS-only motion system in `app/globals.css`, no GSAP/WebGL on the mobile budget) |
 | **Created** | 2026-10-10 |
-| **Status** | 🟠 Built, QA-passed, 0030 + 0031 live in production — waiting for `unsubscribe_campaign_alert` (SQL Editor), PR merge, then 0032 (see `docs/CAMPAIGNS-RELEASE-RUNBOOK.md`) |
+| **Status** | 🟢 Live in production (PR #7, 2026-10-10). Migrations 0030–0032 applied. Remaining: live smoke test (QA report, Round 2) |
 
 **How to use this file.** It is the single source of truth for this feature. Update the tracker
 (§9) in the same commit as the work it describes: `[ ]` todo · `[~]` in progress · `[x]` done ·
@@ -197,7 +197,7 @@ les campagnes ».
 - [x] `ItemList` JSON-LD + metadata/OG
 - [x] Screenshots: mobile + desktop, FR + EN (QA: $S/qa/shots, empty-DB states only)
 - [x] QA gates §8 (Phase 1 rows): QA round 2 PASS; staging smoke test after deploy listed in $S/qa/QA-REPORT.md
-- [ ] PR merged + Vercel production check
+- [x] PR merged (#7) + Vercel production deploy Ready; 0032 applied after deploy and verified (anon denied brief/budget/fee/tags; board + stats + safe columns still work for anon) — live smoke test pending
 
 ### Phase 2
 - [x] Migration `0031_signup_attribution` + rollback + tests (attribution in separate owner/admin-only table `signup_attribution`, written via `record_signup_attribution()` after onboarding; includes alerts + admin stats RPCs)
@@ -207,7 +207,7 @@ les campagnes ».
 - [x] Home "Campagnes ouvertes" strip
 - [x] Admin attribution counts
 - [x] QA gates §8 (Phase 2 rows): QA round 2 PASS; alert/attribution writes = staging smoke test after deploy
-- [ ] PR merged + production check
+- [x] PR merged (#7) + Vercel production deploy Ready; 0032 applied after deploy and verified (anon denied brief/budget/fee/tags; board + stats + safe columns still work for anon) — live smoke test pending
 
 ## 10. Risks & open questions
 
@@ -229,3 +229,4 @@ les campagnes ».
 | 2026-10-10 | UI/UX design spec added: docs/CAMPAIGNS-PUBLIC-PAGE-DESIGN.md |
 | 2026-10-10 | Owner decisions D1–D3 recorded; business council C1–C6; engineering decisions E1–E5. Backend, UI/UX, Frontend, QA (2 rounds, all local gates pass) and DevOps seats complete. QA report and release runbook added to docs/. Production DB step pending owner approval. |
 | 2026-10-10 | Production: 0030 and 0031 applied. Cause of the earlier time-outs found: the Supabase connector holds any statement containing DROP/DELETE for an owner confirmation that never reaches the session. The `DROP … IF EXISTS` lines were no-ops on production and were omitted there; `unsubscribe_campaign_alert` (contains DELETE) is applied by the owner in the SQL Editor. `MANIFEST.sha256` regenerated for 0001–0032. |
+| 2026-10-10 | PR #7 merged, production deploy Ready. 0032 applied (via apply_migration — no DROP/DELETE in it) and verified on production: anon cannot read `brief`, `total_budget_fcfa`, `platform_fee_rate`, `mandatory_tags` or write `campaigns`/`campaign_creators`; the board, stats and safe-column reads still work for anon; signed-in users unaffected. `unsubscribe_campaign_alert` applied by the owner in the SQL Editor. |
