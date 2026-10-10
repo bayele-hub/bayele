@@ -4,10 +4,10 @@ import { SiteFooter } from '@/components/site-footer';
 import { DirectoryView } from '@/components/directory-view';
 import { JsonLd } from '@/components/json-ld';
 import { getDictionary } from '@/i18n/dictionaries';
-import { listConsultants, type CountryCode } from '@/lib/data/talent';
+import { listConsultants } from '@/lib/data/talent';
+import { isCountryCode } from '@/lib/countries';
 import { itemListLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
 
-const COUNTRIES: CountryCode[] = ['CM', 'CI', 'GA'];
 
 export async function generateMetadata({
   searchParams,
@@ -15,7 +15,7 @@ export async function generateMetadata({
   searchParams: Promise<{ country?: string }>;
 }): Promise<Metadata> {
   const [{ t }, sp] = await Promise.all([getDictionary(), searchParams]);
-  const country = COUNTRIES.includes(sp.country as CountryCode) ? (sp.country as CountryCode) : undefined;
+  const country = isCountryCode(sp.country) ? sp.country : undefined;
   const title = country ? `Consultants · ${COUNTRY_NAME[country]}` : t.directoryPage.consultantsTitle;
   const description = t.directoryPage.consultantsLede;
   return {
@@ -32,7 +32,7 @@ export default async function ConsultantsPage({
   searchParams: Promise<{ country?: string }>;
 }) {
   const sp = await searchParams;
-  const country = COUNTRIES.includes(sp.country as CountryCode) ? (sp.country as CountryCode) : undefined;
+  const country = isCountryCode(sp.country) ? sp.country : undefined;
 
   const [{ locale, t }, people] = await Promise.all([
     getDictionary(),

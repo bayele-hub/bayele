@@ -7,4 +7,9 @@ describe('currencyFor (spec §0.1 #F)', () => {
     expect(currencyFor('CM')).toBe('XAF');
     expect(currencyFor('GA')).toBe('XAF');
   });
+  it('keeps FCFA (XAF) for the new markets until local-currency invoicing', () => {
+    expect(currencyFor('NG')).toBe('XAF');
+    expect(currencyFor('KE')).toBe('XAF');
+    expect(currencyFor('ZA')).toBe('XAF');
+  });
 });

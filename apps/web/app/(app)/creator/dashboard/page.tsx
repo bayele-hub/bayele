@@ -8,10 +8,10 @@ import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 import { ProofForm } from './proof-form';
+import { countryFlag } from '@/lib/countries';
 
 export const dynamic = 'force-dynamic';
 
-const COUNTRY_FR: Record<string, string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
 export default async function CreatorDashboard() {
   const session = await getSession();
@@ -159,7 +159,7 @@ export default async function CreatorDashboard() {
                     <div className="min-w-0">
                       <p className="font-bold text-ink">{camp?.title ?? 'Campagne'}</p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {camp?.category} · {COUNTRY_FR[camp?.target_country ?? ''] ?? camp?.target_country}
+                        {camp?.category} · {countryFlag(camp?.target_country ?? '')}
                       </p>
                     </div>
                     <div className="text-right">

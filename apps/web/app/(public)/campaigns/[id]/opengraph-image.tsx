@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { getPublicCampaign } from '@/lib/data/public-campaigns';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { COUNTRY_NAME } from '@/lib/seo';
+import { countryFlag, countryName as nameOfCountry } from '@/lib/countries';
 
 // Per-campaign social share card (WhatsApp / X / LinkedIn previews). System fonts only, no external
 // fetch, so it renders deterministically. Next wires this to OpenGraph + Twitter for the route.
@@ -9,7 +10,6 @@ export const alt = 'Campagne — Bayele';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const FLAG: Record<string, string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,7 +19,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   const category = c?.category ?? '';
   const country = c?.country ?? '';
   const payout = c ? fmtFcfa(c.payoutPerCreatorFcfa) : '';
-  const countryName = country ? COUNTRY_NAME[country as 'CM' | 'CI' | 'GA'] : '';
+  const countryName = country ? nameOfCountry(country) : '';
 
   return new ImageResponse(
     (
@@ -49,7 +49,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '1050px' }}>
-          <div style={{ display: 'flex', fontSize: '30px', color: 'rgba(255,255,255,0.82)' }}>{brand}{countryName ? ` · ${countryName} ${FLAG[country] ?? ''}` : ''}</div>
+          <div style={{ display: 'flex', fontSize: '30px', color: 'rgba(255,255,255,0.82)' }}>{brand}{countryName ? ` · ${countryName} ${countryFlag(country)}` : ''}</div>
           <div style={{ display: 'flex', fontSize: '62px', fontWeight: 800, letterSpacing: '-2px', lineHeight: 1.05 }}>{title}</div>
         </div>
 

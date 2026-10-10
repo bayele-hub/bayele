@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Bayele — Influence Nano & Séquestre Mobile Money",
-    "description": "La marketplace d'escrow où créateurs et marques grandissent ensemble au Cameroun, en Côte d'Ivoire et au Gabon."
+    "description": "La marketplace d'escrow où créateurs et marques grandissent ensemble au Cameroun, en Côte d'Ivoire, au Gabon, au Nigeria, au Kenya et en Afrique du Sud."
   },
   "announce": "Lancement — créez votre profil créateur gratuitement et soyez parmi les premiers proposés aux marques.",
   "nav": {
@@ -15,7 +15,7 @@
     "dashboard": "Mon espace"
   },
   "hero": {
-    "badge": "Cameroun · Côte d'Ivoire · Gabon",
+    "badge": "Présent dans 6 pays d'Afrique",
     "title": "Là où créateurs et marques grandissent ensemble",
     "titleLines": [
       "Là où créateurs et marques",
@@ -265,8 +265,8 @@
       "label": "des budgets bloqués sous séquestre"
     },
     {
-      "k": "3 pays",
-      "label": "Cameroun · Côte d'Ivoire · Gabon"
+      "k": "6 pays",
+      "label": "Cameroun · Côte d'Ivoire · Gabon · Nigeria · Kenya · Afrique du Sud"
     },
     {
       "k": "1 000 FCFA",
@@ -274,13 +274,16 @@
     },
     {
       "k": "OHADA",
-      "label": "factures conformes pour chaque campagne"
+      "label": "factures conformes en zone OHADA"
     }
   ],
   "countries": {
     "CM": "Cameroun",
     "CI": "Côte d'Ivoire",
-    "GA": "Gabon"
+    "GA": "Gabon",
+    "NG": "Nigeria",
+    "KE": "Kenya",
+    "ZA": "Afrique du Sud"
   },
   "directoryPage": {
     "creatorsTitle": "Créateurs",

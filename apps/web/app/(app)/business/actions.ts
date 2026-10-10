@@ -5,12 +5,12 @@ import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { feeRateForTier, computeBudget } from '@/lib/data/campaigns';
 import type { Database } from '@bayele/database';
+import { parseCountry } from '@/lib/countries';
 
 type Country = Database['public']['Enums']['country_code'];
 
 export type CampaignState = { error: string | null };
 
-const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
 
 export async function createCampaignAction(_prev: CampaignState, formData: FormData): Promise<CampaignState> {
   const session = await getSession();
@@ -22,8 +22,7 @@ export async function createCampaignAction(_prev: CampaignState, formData: FormD
   const title = String(formData.get('title') ?? '').trim();
   const brief = String(formData.get('brief') ?? '').trim();
   const category = String(formData.get('category') ?? '').trim();
-  const countryRaw = String(formData.get('country') ?? 'CM') as Country;
-  const country: Country = COUNTRIES.includes(countryRaw) ? countryRaw : 'CM';
+  const country: Country = parseCountry(formData.get('country'));
   const tier = String(formData.get('tier') ?? 'spark');
   const rate = feeRateForTier(tier);
   const payout = Math.round(Number(formData.get('payout') ?? 0));

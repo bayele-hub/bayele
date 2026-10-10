@@ -10,8 +10,8 @@ import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { getPublicCampaign } from '@/lib/data/public-campaigns';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { jobPostingLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
+import { countryFlag, countryIn } from '@/lib/countries';
 
-const FLAG: Record<'CM' | 'CI' | 'GA', string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const title = `${c.title} — Campagne ${c.category} · ${fmtFcfa(c.payoutPerCreatorFcfa)}/créateur`;
   const description =
     c.brief ||
-    `${c.brandName} recrute des créateurs pour une campagne ${c.category} en ${COUNTRY_NAME[c.country]}. ${fmtFcfa(c.payoutPerCreatorFcfa)} par créateur, paiement sécurisé par séquestre sur ${SITE_NAME}.`;
+    `${c.brandName} recrute des créateurs pour une campagne ${c.category} ${countryIn(c.country)}. ${fmtFcfa(c.payoutPerCreatorFcfa)} par créateur, paiement sécurisé par séquestre sur ${SITE_NAME}.`;
   return {
     title,
     description,
@@ -76,7 +76,7 @@ export default async function PublicCampaignPage({ params }: { params: Promise<{
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase text-brand-700">{c.category}</span>
               <span className="inline-flex items-center gap-1 text-[12px] text-muted">
-                <MapPin className="h-3.5 w-3.5" /> {COUNTRY_NAME[c.country]} {FLAG[c.country]}
+                <MapPin className="h-3.5 w-3.5" /> {COUNTRY_NAME[c.country]} {countryFlag(c.country)}
               </span>
             </div>
 

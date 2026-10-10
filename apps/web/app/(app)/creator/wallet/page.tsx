@@ -3,17 +3,10 @@ import Link from 'next/link';
 import { Wallet, Coins, Clock, Smartphone, CheckCircle2, ArrowUpRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
-import { fmtFcfa, ESCROW_STATUS_FR } from '@/lib/data/campaigns';
+import { fmtFcfa, ESCROW_STATUS_FR, providerLabel } from '@/lib/data/campaigns';
 
 export const dynamic = 'force-dynamic';
 
-const PROVIDER_FR: Record<string, string> = {
-  mtn_momo: 'MTN MoMo',
-  orange_money: 'Orange Money',
-  wave: 'Wave',
-  airtel_money: 'Airtel Money',
-  bank_wire: 'Virement',
-};
 const STATUS_CLASS: Record<string, string> = {
   paid_out: 'bg-emerald-50 text-emerald-700',
   releasable: 'bg-brand-50 text-brand-700',
@@ -73,7 +66,7 @@ export default async function CreatorWallet() {
             <div>
               <p className="text-xs font-semibold text-muted">Numéro Mobile Money</p>
               {momo ? (
-                <p className="font-bold text-ink">{momo} · {PROVIDER_FR[profile?.momo_provider ?? 'mtn_momo'] ?? 'MoMo'}</p>
+                <p className="font-bold text-ink">{momo} · {providerLabel(profile?.momo_provider ?? 'mtn_momo') || 'MoMo'}</p>
               ) : (
                 <p className="text-sm font-semibold text-accent">Non configuré</p>
               )}
@@ -111,7 +104,7 @@ export default async function CreatorWallet() {
                     </span>
                     <div className="min-w-0">
                       <p className="truncate font-bold text-ink">{title ?? 'Campagne'}</p>
-                      <p className="text-[11px] text-muted">{PROVIDER_FR[t.provider] ?? t.provider}</p>
+                      <p className="text-[11px] text-muted">{providerLabel(t.provider)}</p>
                     </div>
                   </div>
                   <div className="text-right">

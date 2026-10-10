@@ -11,8 +11,8 @@ import { ProfileContactCTA } from '@/components/profile-contact-cta';
 import { getConsultant, type ConsultantLink } from '@/lib/data/talent';
 import { getDictionary } from '@/i18n/dictionaries';
 import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
+import { countryFlag } from '@/lib/countries';
 
-const FLAG: Record<'CM' | 'CI' | 'GA', string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
@@ -91,7 +91,7 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
                 </div>
                 <p className="text-sm text-muted">@{c.handle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
-                  <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {c.city} {FLAG[c.country]}</span>
+                  <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {c.city} {countryFlag(c.country)}</span>
                   <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" /> {c.ratingAvg.toFixed(1)}</span>
                   <span className="inline-flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-brand" /> {c.yearsExperience} {t.profile.experience.toLowerCase()}</span>
                 </div>

@@ -6,19 +6,16 @@ import { onboardAction, type OnboardState } from '../actions';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
 import { OnboardingAvatar } from '@/components/onboarding-avatar';
 import { normalizeHandle } from '@/lib/handle';
+import { countryOptions, type CountryCode } from '@/lib/countries';
 
 type Role = 'creator' | 'consultant' | 'business';
-type CC = 'CM' | 'CI' | 'GA';
+type CC = CountryCode;
 
 // Curated primary networks for onboarding (the rest are addable later in Profil) — keeps signup fast.
 // Keep this list in sync with ONBOARD_SOCIALS in ../actions.ts, which persists these same keys.
 const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'youtube', 'linkedin'];
 
-const COUNTRIES: { code: CC; label: string }[] = [
-  { code: 'CM', label: '🇨🇲 Cameroun' },
-  { code: 'CI', label: "🇨🇮 Côte d'Ivoire" },
-  { code: 'GA', label: '🇬🇦 Gabon' },
-];
+const COUNTRIES = countryOptions('fr');
 
 const CATEGORIES = [
   'Beauté', 'Mode', 'Tech', 'Food', 'Musique', 'Sport',

@@ -5,13 +5,10 @@ import { Loader2, AlertCircle, Lock, ArrowRight, Globe, EyeOff } from 'lucide-re
 import { createCampaignAction, type CampaignState } from '../../actions';
 import { TIERS, computeBudget, fmtFcfa } from '@/lib/data/campaigns';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
+import { countryOptions } from '@/lib/countries';
 
 const CATEGORIES = ['Beauté', 'Mode', 'Tech', 'Food', 'Musique', 'Sport', 'Santé & Bien-être', 'Humour', 'Éducation', 'Voyage', 'Business'];
-const COUNTRIES = [
-  { code: 'CM', label: '🇨🇲 Cameroun' },
-  { code: 'CI', label: "🇨🇮 Côte d'Ivoire" },
-  { code: 'GA', label: '🇬🇦 Gabon' },
-];
+const COUNTRIES = countryOptions('fr');
 // Networks brands run creator campaigns on in-market (WhatsApp-first). Keys match SOCIAL_META.
 const CAMPAIGN_PLATFORMS: Platform[] = ['whatsapp', 'tiktok', 'instagram', 'facebook', 'youtube'];
 const CONTENT_TYPES = ['Statut / Story', 'Vidéo courte', 'Post photo', 'Reel', 'Carrousel', 'Live', 'Autre'];

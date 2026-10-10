@@ -73,11 +73,27 @@ export const RETAINER_STATUS_FR: Record<string, string> = {
   terminated: 'Annulé',
 };
 
-// Mobile Money / disbursement rails (matches the payment_provider enum).
+// Mobile Money / disbursement rails — must match the payment_provider enum (migrations 0001 + 0029).
+// MTN MoMo, Orange Money, Wave, Airtel Money: CM/CI/GA (MTN also NG). M-Pesa: Kenya.
+// OPay, PalmPay: Nigeria. Bank transfer: everywhere (South Africa mainly).
 export const PROVIDERS = [
   { id: 'mtn_momo', label: 'MTN MoMo' },
   { id: 'orange_money', label: 'Orange Money' },
   { id: 'wave', label: 'Wave' },
   { id: 'airtel_money', label: 'Airtel Money' },
-  { id: 'bank_wire', label: 'Virement' },
+  { id: 'mpesa', label: 'M-Pesa' },
+  { id: 'opay', label: 'OPay' },
+  { id: 'palmpay', label: 'PalmPay' },
+  { id: 'bank_wire', label: 'Virement bancaire' },
 ] as const;
+export type ProviderId = (typeof PROVIDERS)[number]['id'];
+export const PROVIDER_IDS: ProviderId[] = PROVIDERS.map((p) => p.id);
+
+/** Validate an untrusted provider value (form field); falls back to MTN MoMo. */
+export function parseProvider(v: unknown, fallback: ProviderId = 'mtn_momo'): ProviderId {
+  return typeof v === 'string' && (PROVIDER_IDS as string[]).includes(v) ? (v as ProviderId) : fallback;
+}
+
+export function providerLabel(id: string | null | undefined): string {
+  return PROVIDERS.find((p) => p.id === id)?.label ?? (id ?? '');
+}

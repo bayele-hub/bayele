@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-export type Country = 'CM' | 'GA' | 'CI';
+export type Country = 'CM' | 'GA' | 'CI' | 'NG' | 'KE' | 'ZA';
 
 export interface CreateInvoiceOptions {
   business: { id: string; companyName: string; email: string; taxId?: string; country: Country };
@@ -20,6 +20,8 @@ export interface SokoClickInvoice {
 /**
  * Currency follows the monetary union, not the word "FCFA" (production spec §0.1 #F):
  *   CM, GA -> XAF (CEMAC) ; CI -> XOF (UEMOA). Distinct ISO codes, never mixed.
+ * NG, KE, ZA (2026-10): campaigns there are still priced and invoiced in FCFA, as XAF — local
+ * currency invoicing (NGN / KES / ZAR) is a later step.
  */
 export function currencyFor(country: Country): 'XAF' | 'XOF' {
   return country === 'CI' ? 'XOF' : 'XAF';

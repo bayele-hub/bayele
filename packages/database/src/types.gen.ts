@@ -1304,7 +1304,7 @@ export type Database = {
         | "disputed"
         | "cancelled"
       conversation_context: "campaign_creator" | "retainer"
-      country_code: "CM" | "GA" | "CI"
+      country_code: "CM" | "GA" | "CI" | "NG" | "KE" | "ZA"
       creator_campaign_status:
         | "invited"
         | "applied"
@@ -1334,6 +1334,9 @@ export type Database = {
         | "wave"
         | "airtel_money"
         | "bank_wire"
+        | "mpesa"
+        | "opay"
+        | "palmpay"
       representation_status: "pending" | "active" | "declined" | "ended"
       retainer_status:
         | "draft"
@@ -1482,7 +1485,7 @@ export const Constants = {
         "disputed",
         "cancelled",
       ],
-      country_code: ["CM", "GA", "CI"],
+      country_code: ["CM", "GA", "CI", "NG", "KE", "ZA"],
       creator_campaign_status: [
         "invited",
         "applied",
@@ -1515,6 +1518,9 @@ export const Constants = {
         "wave",
         "airtel_money",
         "bank_wire",
+        "mpesa",
+        "opay",
+        "palmpay",
       ],
       representation_status: ["pending", "active", "declined", "ended"],
       retainer_status: [

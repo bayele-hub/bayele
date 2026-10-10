@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getSession } from '@/lib/auth/session';
 import { OnboardingForm } from './onboarding-form';
 import { onboardingPath, roleFromSlug, roleSlug } from '@/lib/roles';
+import { parseCountry } from '@/lib/countries';
 
 const VALID = ['creator', 'consultant', 'business'] as const;
 type Role = (typeof VALID)[number];
@@ -33,10 +34,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ rol
   const defaults = {
     displayName: (meta.display_name as string) ?? (meta.company_name as string) ?? '',
     handle: (meta.handle as string) ?? '',
-    country: (['CM', 'CI', 'GA'].includes(meta.country as string) ? (meta.country as string) : 'CM') as
-      | 'CM'
-      | 'CI'
-      | 'GA',
+    country: parseCountry(meta.country),
     companyName: (meta.company_name as string) ?? '',
   };
 

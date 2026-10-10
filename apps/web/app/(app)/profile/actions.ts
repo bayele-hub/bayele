@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import type { Database } from '@bayele/database';
+import { parseCountry } from '@/lib/countries';
+import { parseProvider } from '@/lib/data/campaigns';
 
 type Provider = Database['public']['Enums']['payment_provider'];
 type Country = Database['public']['Enums']['country_code'];
@@ -12,8 +14,6 @@ type CreatorPlatforms = Database['public']['Tables']['creator_profiles']['Update
 
 export type ProfileState = { error: string | null; ok?: boolean };
 
-const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money', 'bank_wire'];
-const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
 
 // Normalize a Mobile-Money number to E.164 (strip spaces/dashes/parens). Returns the normalized
 // string, or null for empty. Throws a sentinel for a non-empty but malformed number.
@@ -49,8 +49,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   const city = String(formData.get('city') ?? '').trim();
   if (!displayName) return { error: 'Le nom est requis.' };
   if (!city) return { error: 'La ville est requise.' };
-  const countryRaw = String(formData.get('country') ?? '') as Country;
-  const country: Country = COUNTRIES.includes(countryRaw) ? countryRaw : 'CM';
+  const country: Country = parseCountry(formData.get('country'));
 
   const supabase = await createClient();
 
@@ -61,8 +60,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   if (pErr) return { error: 'La mise à jour a échoué. Réessayez.' };
 
   if (session.roles.includes('creator')) {
-    const providerRaw = String(formData.get('momo_provider') ?? 'mtn_momo') as Provider;
-    const momoProvider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+    const momoProvider: Provider = parseProvider(formData.get('momo_provider'));
 
     let momoPhone: string | null;
     try {
@@ -93,8 +91,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   }
 
   if (session.roles.includes('consultant')) {
-    const partnerProviderRaw = String(formData.get('partner_momo_provider') ?? 'mtn_momo') as Provider;
-    const partnerProvider: Provider = PROVIDERS.includes(partnerProviderRaw) ? partnerProviderRaw : 'mtn_momo';
+    const partnerProvider: Provider = parseProvider(formData.get('partner_momo_provider'));
     let partnerPhone: string | null;
     try {
       partnerPhone = normalizeMomo(String(formData.get('partner_momo_phone') ?? ''));

@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { ArrowDownLeft, ArrowUpRight, Receipt } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
-import { fmtFcfa, ESCROW_STATUS_FR } from '@/lib/data/campaigns';
+import { fmtFcfa, ESCROW_STATUS_FR, providerLabel } from '@/lib/data/campaigns';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,13 +17,6 @@ const STATUS_CLASS: Record<string, string> = {
   refunded: 'bg-surface text-muted',
 };
 
-const PROVIDER_FR: Record<string, string> = {
-  mtn_momo: 'MTN MoMo',
-  orange_money: 'Orange Money',
-  wave: 'Wave',
-  airtel_money: 'Airtel Money',
-  bank_wire: 'Virement',
-};
 
 export default async function AdminLedger() {
   const session = await getSession();
@@ -78,7 +71,7 @@ export default async function AdminLedger() {
                     <div className="min-w-0">
                       <p className="truncate font-bold text-ink">{title ?? 'Campagne'}</p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {inbound ? 'Financement' : `Paiement → ${recipient ?? 'créateur'}`} · {PROVIDER_FR[t.provider] ?? t.provider}
+                        {inbound ? 'Financement' : `Paiement → ${recipient ?? 'créateur'}`} · {providerLabel(t.provider)}
                       </p>
                     </div>
                   </div>

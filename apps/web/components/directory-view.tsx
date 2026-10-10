@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { SlidersHorizontal } from 'lucide-react';
 import type { TalentSummary, CountryCode, Role } from '@/lib/data/talent';
+import { COUNTRY_CODES } from '@/lib/countries';
 import type { Dictionary } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
 import { CreatorCard, ConsultantCard } from '@/components/talent-cards';
 
-const COUNTRIES: CountryCode[] = ['CM', 'CI', 'GA'];
+const COUNTRIES: readonly CountryCode[] = COUNTRY_CODES;
 
 function buildHref(base: string, params: { country?: string; cat?: string }): string {
   const sp = new URLSearchParams();

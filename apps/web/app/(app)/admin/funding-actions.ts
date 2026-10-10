@@ -3,12 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@bayele/database';
+import { parseProvider } from '@/lib/data/campaigns';
 
 type Provider = Database['public']['Enums']['payment_provider'];
 
 export type FundState = { error: string | null; ok?: boolean };
 
-const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money', 'bank_wire'];
 
 /**
  * Admin confirms an inbound Mobile Money collection for a campaign (ADR-001). Authorization lives in
@@ -18,8 +18,7 @@ const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money
 export async function fundCampaignAction(_prev: FundState, formData: FormData): Promise<FundState> {
   const campaign = String(formData.get('campaign') ?? '');
   const invoice = String(formData.get('invoice') ?? '').trim();
-  const providerRaw = String(formData.get('provider') ?? 'mtn_momo') as Provider;
-  const provider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+  const provider: Provider = parseProvider(formData.get('provider'));
 
   if (!campaign) return { error: 'Campagne manquante.' };
   if (!invoice) return { error: 'Référence de facture SokoClick / MoMo requise.' };

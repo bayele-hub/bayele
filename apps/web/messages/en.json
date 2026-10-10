@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Bayele — Nano-influence & Mobile Money Escrow",
-    "description": "The escrow marketplace where creators and brands grow together in Cameroon, Côte d'Ivoire and Gabon."
+    "description": "The escrow marketplace where creators and brands grow together in Cameroon, Côte d'Ivoire, Gabon, Nigeria, Kenya and South Africa."
   },
   "announce": "Launch — create your free creator profile and be among the first proposed to brands.",
   "nav": {
@@ -15,7 +15,7 @@
     "dashboard": "My space"
   },
   "hero": {
-    "badge": "Cameroon · Côte d'Ivoire · Gabon",
+    "badge": "Live in 6 African countries",
     "title": "Where creators and brands grow together",
     "titleLines": [
       "Where creators and brands",
@@ -265,8 +265,8 @@
       "label": "of budgets locked in escrow"
     },
     {
-      "k": "3 countries",
-      "label": "Cameroon · Côte d'Ivoire · Gabon"
+      "k": "6 countries",
+      "label": "Cameroon · Côte d'Ivoire · Gabon · Nigeria · Kenya · South Africa"
     },
     {
       "k": "1,000 FCFA",
@@ -274,13 +274,16 @@
     },
     {
       "k": "OHADA",
-      "label": "compliant invoices for every campaign"
+      "label": "compliant invoices in the OHADA zone"
     }
   ],
   "countries": {
     "CM": "Cameroon",
     "CI": "Côte d'Ivoire",
-    "GA": "Gabon"
+    "GA": "Gabon",
+    "NG": "Nigeria",
+    "KE": "Kenya",
+    "ZA": "South Africa"
   },
   "directoryPage": {
     "creatorsTitle": "Creators",
