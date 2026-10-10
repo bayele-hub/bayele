@@ -8,18 +8,15 @@ import { createClient, isSupabaseConfigured } from '@bayele/database/client';
 import { Smartphone, Briefcase, Building2, ArrowRight, Loader2, AlertCircle, Info } from 'lucide-react';
 import { normalizeHandle } from '@/lib/handle';
 import { onboardingPath, roleFromSlug } from '@/lib/roles';
+import { countryOptions, type CountryCode } from '@/lib/countries';
 
 type Mode = 'signin' | 'signup';
 type Role = 'creator' | 'consultant' | 'business';
-type CC = 'CM' | 'CI' | 'GA';
+type CC = CountryCode;
 
 // Country is kept as a profile attribute (market + future MoMo payout). Phone-based
 // auth arrives in v2; email/password is the primary method today.
-const COUNTRIES: { code: CC; label: string }[] = [
-  { code: 'CM', label: '🇨🇲 Cameroun' },
-  { code: 'CI', label: "🇨🇮 Côte d'Ivoire" },
-  { code: 'GA', label: '🇬🇦 Gabon' },
-];
+const COUNTRIES = countryOptions('fr');
 
 // useSearchParams() forces client rendering; Next 15 requires it under a Suspense boundary, and the
 // fallback avoids a signup→signin flash for users arriving via ?mode=signin.
@@ -211,11 +208,11 @@ function AuthPageInner() {
 
               <div>
                 <label className="text-xs font-semibold text-ink">Pays</label>
-                <div className="mt-1 grid grid-cols-3 gap-2">
+                <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {COUNTRIES.map((c) => (
-                    <button key={c.code} type="button" onClick={() => setCountry(c.code)}
-                      className={`min-h-tap rounded-xl border text-[11px] font-bold transition ${country === c.code ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-white text-muted'}`}>
-                      {c.label.split(' ')[0]} {c.code}
+                    <button key={c.code} type="button" onClick={() => setCountry(c.code)} aria-pressed={country === c.code}
+                      className={`min-h-tap rounded-xl border px-2 text-[12px] font-bold transition ${country === c.code ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-white text-muted'}`}>
+                      {c.label}
                     </button>
                   ))}
                 </div>

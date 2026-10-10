@@ -3,17 +3,18 @@
 // NOTE: we intentionally do NOT emit aggregateRating — ratings aren't real user reviews yet, and a
 // fabricated ratingCount violates Google's rich-results policy and can suppress the whole result.
 
+import { COUNTRIES, COUNTRY_CODES, fcfaCurrency, type CountryCode } from '@/lib/countries';
+
 export const SITE_URL = 'https://bayele.com';
 export const SITE_NAME = 'Bayele';
 export const SITE_SLOGAN = "L'influence marketing, sécurisée par séquestre.";
 export const SITE_DESC =
-  "La marketplace d'escrow où créateurs, partenaires et marques grandissent ensemble au Cameroun, en Côte d'Ivoire et au Gabon. Paiements Mobile Money, facturation OHADA.";
+  "La marketplace d'escrow où créateurs, partenaires et marques grandissent ensemble au Cameroun, en Côte d'Ivoire, au Gabon, au Nigeria, au Kenya et en Afrique du Sud. Paiements Mobile Money, facturation OHADA.";
 
-export const COUNTRY_NAME: Record<'CM' | 'CI' | 'GA', string> = {
-  CM: 'Cameroun',
-  CI: "Côte d'Ivoire",
-  GA: 'Gabon',
-};
+/** French country names, derived from the single country list (lib/countries.ts). */
+export const COUNTRY_NAME = Object.fromEntries(
+  COUNTRY_CODES.map((c) => [c, COUNTRIES[c].fr]),
+) as Record<CountryCode, string>;
 
 type Json = Record<string, unknown>;
 
@@ -91,15 +92,16 @@ export interface PersonLdInput {
   bio?: string | null;
   avatarUrl?: string | null;
   city?: string;
-  country?: 'CM' | 'CI' | 'GA';
+  country?: CountryCode;
   role: 'creator' | 'consultant';
   tags?: string[];
   path: string; // e.g. /creators/awa_beauty
 }
 
 // FCFA is two currencies: XOF (West Africa — Côte d'Ivoire) and XAF (Central Africa — Cameroon, Gabon).
-export function currencyForCountry(country: 'CM' | 'CI' | 'GA'): 'XOF' | 'XAF' {
-  return country === 'CI' ? 'XOF' : 'XAF';
+// Campaigns in Nigeria, Kenya and South Africa are still priced in FCFA (XAF) for now.
+export function currencyForCountry(country: CountryCode): 'XOF' | 'XAF' {
+  return fcfaCurrency(country);
 }
 
 export interface JobPostingLdInput {
@@ -107,7 +109,7 @@ export interface JobPostingLdInput {
   title: string;
   description: string;
   datePosted: string; // ISO
-  country: 'CM' | 'CI' | 'GA';
+  country: CountryCode;
   payoutFcfa: number;
   brandName: string;
   path: string; // e.g. /campaigns/<id>

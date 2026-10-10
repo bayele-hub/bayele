@@ -5,10 +5,10 @@ import { getSession } from '@/lib/auth/session';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { ApplyButton } from './apply-button';
+import { countryLabel } from '@/lib/countries';
 
 export const dynamic = 'force-dynamic';
 
-const COUNTRY_FR: Record<string, string> = { CM: '🇨🇲 Cameroun', CI: "🇨🇮 Côte d'Ivoire", GA: '🇬🇦 Gabon' };
 
 export default async function CreatorCampaigns() {
   const session = await getSession();
@@ -50,7 +50,7 @@ export default async function CreatorCampaigns() {
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">{c.category}</span>
                     <span className="inline-flex items-center gap-1 text-[11px] text-muted">
-                      <MapPin className="h-3 w-3" /> {COUNTRY_FR[c.target_country] ?? c.target_country}
+                      <MapPin className="h-3 w-3" /> {countryLabel(c.target_country)}
                     </span>
                   </div>
                   <p className="mt-1.5 font-bold text-ink">{c.title}</p>

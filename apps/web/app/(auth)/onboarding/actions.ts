@@ -3,13 +3,13 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@bayele/database';
+import { parseCountry } from '@/lib/countries';
 
 type Role = Database['public']['Enums']['user_role'];
 type Country = Database['public']['Enums']['country_code'];
 type OnboardPlatforms = Database['public']['Functions']['onboard_profile']['Args']['p_platforms'];
 
 const ROLES: Role[] = ['creator', 'consultant', 'business'];
-const COUNTRIES: Country[] = ['CM', 'CI', 'GA'];
 // Keep in sync with ONBOARD_SOCIALS in [role]/onboarding-form.tsx (the fields rendered there).
 const ONBOARD_SOCIALS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'youtube', 'linkedin'] as const;
 
@@ -37,8 +37,7 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
   } = await supabase.auth.getUser();
   if (!user) redirect('/auth?mode=signin');
 
-  const countryRaw = String(formData.get('country') ?? 'CM') as Country;
-  const country: Country = COUNTRIES.includes(countryRaw) ? countryRaw : 'CM';
+  const country: Country = parseCountry(formData.get('country'));
 
   const csv = (k: string) =>
     String(formData.get(k) ?? '')

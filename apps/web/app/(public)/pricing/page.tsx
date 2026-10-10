@@ -283,7 +283,7 @@ export default async function PricingPage() {
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1.5 text-[12.5px] text-muted">
-          <span><b className="text-ink">Devise :</b> XAF (CM, GA) · XOF (CI)</span>
+          <span><b className="text-ink">Devise :</b> XAF (CM, GA, NG, KE, ZA) · XOF (CI)</span>
           <span><b className="text-ink">Retraits :</b> dès 1 000 FCFA vers MTN, Orange Money, Wave</span>
           <span><b className="text-ink">Facturation :</b> OHADA, générée automatiquement</span>
         </div>

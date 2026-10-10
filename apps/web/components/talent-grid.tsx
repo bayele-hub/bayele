@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Search, MapPin, Star, Users } from 'lucide-react';
+import { countryFlag } from '@/lib/countries';
 
 export interface TalentItem {
   handle: string;
@@ -15,7 +16,6 @@ export interface TalentItem {
   audienceSize?: number;
 }
 
-const FLAG: Record<string, string> = { CM: '🇨🇲', CI: '🇨🇮', GA: '🇬🇦' };
 
 function compactAudience(n?: number): string | null {
   if (!n) return null;
@@ -105,7 +105,7 @@ export function TalentGrid({ creators }: { creators: TalentItem[] }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-bold text-ink">{c.displayName}</p>
                     <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted">
-                      <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {c.city} {FLAG[c.country] ?? ''}</span>
+                      <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {c.city} {countryFlag(c.country)}</span>
                       <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-accent text-accent" /> {c.ratingAvg.toFixed(1)}</span>
                       {aud && <span className="inline-flex items-center gap-1"><Users className="h-3 w-3" /> {aud}</span>}
                     </div>

@@ -3,12 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@bayele/database';
+import { parseProvider } from '@/lib/data/campaigns';
 
 type Provider = Database['public']['Enums']['payment_provider'];
 
 export type PayoutState = { error: string | null; ok?: boolean };
 
-const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money', 'bank_wire'];
 
 /**
  * Admin confirms the outbound Mobile Money disbursement for a verified creator (ADR-001 — the launch
@@ -18,8 +18,7 @@ const PROVIDERS: Provider[] = ['mtn_momo', 'orange_money', 'wave', 'airtel_money
 export async function payoutAction(_prev: PayoutState, formData: FormData): Promise<PayoutState> {
   const cc = String(formData.get('cc') ?? '');
   const ref = String(formData.get('ref') ?? '').trim();
-  const providerRaw = String(formData.get('provider') ?? 'mtn_momo') as Provider;
-  const provider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+  const provider: Provider = parseProvider(formData.get('provider'));
 
   if (!cc) return { error: 'Assignation manquante.' };
   if (!ref) return { error: 'Référence de décaissement requise.' };
@@ -51,8 +50,7 @@ export async function payoutAction(_prev: PayoutState, formData: FormData): Prom
 export async function commissionPayoutAction(_prev: PayoutState, formData: FormData): Promise<PayoutState> {
   const id = String(formData.get('commission') ?? '');
   const ref = String(formData.get('ref') ?? '').trim();
-  const providerRaw = String(formData.get('provider') ?? 'mtn_momo') as Provider;
-  const provider: Provider = PROVIDERS.includes(providerRaw) ? providerRaw : 'mtn_momo';
+  const provider: Provider = parseProvider(formData.get('provider'));
 
   if (!id) return { error: 'Commission manquante.' };
   if (!ref) return { error: 'Référence de décaissement requise.' };

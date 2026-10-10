@@ -8,10 +8,10 @@ import { getDictionary } from '@/i18n/dictionaries';
 import { getSession } from '@/lib/auth/session';
 import { landingCtaHrefs } from '@/lib/auth/landing-ctas';
 import { getCreatorDirectoryGate } from '@/lib/data/launch-gate';
-import { listCreators, type CountryCode } from '@/lib/data/talent';
+import { listCreators } from '@/lib/data/talent';
+import { isCountryCode } from '@/lib/countries';
 import { itemListLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
 
-const COUNTRIES: CountryCode[] = ['CM', 'CI', 'GA'];
 
 export async function generateMetadata({
   searchParams,
@@ -28,7 +28,7 @@ export async function generateMetadata({
       robots: { index: false, follow: true },
     };
   }
-  const country = COUNTRIES.includes(sp.country as CountryCode) ? (sp.country as CountryCode) : undefined;
+  const country = isCountryCode(sp.country) ? sp.country : undefined;
   const parts = [sp.cat, country ? COUNTRY_NAME[country] : undefined].filter(Boolean);
   // Filter-tuned title for relevance; canonical consolidates to the base directory.
   const title = parts.length ? `Créateurs ${parts.join(' · ')}` : t.directoryPage.creatorsTitle;
@@ -60,7 +60,7 @@ export default async function CreatorsPage({
     );
   }
 
-  const country = COUNTRIES.includes(sp.country as CountryCode) ? (sp.country as CountryCode) : undefined;
+  const country = isCountryCode(sp.country) ? sp.country : undefined;
   const category = sp.cat || undefined;
 
   const [{ locale, t }, people] = await Promise.all([

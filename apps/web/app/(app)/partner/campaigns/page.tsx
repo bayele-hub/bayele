@@ -7,10 +7,10 @@ import { fmtFcfa } from '@/lib/data/campaigns';
 import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { ApplyForCreatorForm } from '@/components/representation-forms';
 import { formatPct, splitPayout } from '@/lib/founder';
+import { countryLabel } from '@/lib/countries';
 
 export const dynamic = 'force-dynamic';
 
-const COUNTRY_FR: Record<string, string> = { CM: '🇨🇲 Cameroun', CI: "🇨🇮 Côte d'Ivoire", GA: '🇬🇦 Gabon' };
 
 /**
  * Open campaigns, seen by a partner: apply on behalf of any creator they actively represent
@@ -75,7 +75,7 @@ export default async function PartnerCampaignsPage() {
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">{c.category}</span>
                   <span className="inline-flex items-center gap-1 text-[11px] text-muted">
-                    <MapPin className="h-3 w-3" /> {COUNTRY_FR[c.target_country] ?? c.target_country}
+                    <MapPin className="h-3 w-3" /> {countryLabel(c.target_country)}
                   </span>
                 </div>
                 <p className="mt-1.5 font-bold text-ink">{c.title}</p>

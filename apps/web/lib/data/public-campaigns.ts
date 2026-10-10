@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 
-export type CampaignCountry = 'CM' | 'CI' | 'GA';
+export type { CountryCode as CampaignCountry } from '@/lib/countries';
+import type { CountryCode as CampaignCountry } from '@/lib/countries';
 
 export interface PublicCampaign {
   id: string;

@@ -5,17 +5,14 @@ import { Loader2, Check, AlertCircle, Save } from 'lucide-react';
 import { updateProfileAction, type ProfileState } from './actions';
 import { PROVIDERS } from '@/lib/data/campaigns';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
+import { countryOptions, COUNTRIES as COUNTRY_INFO, parseCountry } from '@/lib/countries';
 
 // Display order for the social editor (WhatsApp first — the dominant channel in-market).
 export const SOCIAL_PLATFORMS: Platform[] = [
   'whatsapp', 'instagram', 'tiktok', 'youtube', 'facebook', 'x', 'snapchat', 'telegram', 'linkedin',
 ];
 
-const COUNTRIES: { code: string; label: string }[] = [
-  { code: 'CM', label: '🇨🇲 Cameroun' },
-  { code: 'CI', label: "🇨🇮 Côte d'Ivoire" },
-  { code: 'GA', label: '🇬🇦 Gabon' },
-];
+const COUNTRIES = countryOptions('fr');
 
 export type SocialsMap = Partial<Record<Platform, { url: string; followers: number }>>;
 
@@ -92,7 +89,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
           <Field label="Catégories (séparées par des virgules)" name="categories" defaultValue={initial.categories} placeholder="Mode, Beauté, Lifestyle" />
           <NumberField label="Taille d'audience" name="audience_size" defaultValue={initial.audienceSize} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Numéro Mobile Money" name="momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.momoPhone} placeholder="+237 6XX XXX XXX" />
+            <Field label="Numéro Mobile Money" name="momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.momoPhone} placeholder={`${COUNTRY_INFO[parseCountry(initial.country)].dial} …`} />
             <div>
               <label className="text-xs font-semibold text-ink">Opérateur</label>
               <select
@@ -130,7 +127,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
           <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
           <NumberField label="Années d'expérience" name="years_experience" defaultValue={initial.yearsExperience} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Mobile Money pour vos commissions" name="partner_momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.partnerMomoPhone} placeholder="+237 6XX XXX XXX" />
+            <Field label="Mobile Money pour vos commissions" name="partner_momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.partnerMomoPhone} placeholder={`${COUNTRY_INFO[parseCountry(initial.country)].dial} …`} />
             <div>
               <label className="text-xs font-semibold text-ink">Opérateur</label>
               <select

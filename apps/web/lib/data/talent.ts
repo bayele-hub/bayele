@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Platform } from '@/components/social-icons';
 
-export type CountryCode = 'CM' | 'CI' | 'GA';
+export type { CountryCode } from '@/lib/countries';
+import type { CountryCode } from '@/lib/countries';
 export type Role = 'creator' | 'consultant';
 
 export interface TalentSummary {
