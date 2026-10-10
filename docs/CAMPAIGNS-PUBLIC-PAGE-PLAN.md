@@ -7,7 +7,7 @@
 | **Owner roles** (`docs/SKILL.md` §2) | Head of Growth (funnel) · Mobile UX (field budget) · Frontend & Design Systems · Backend & DB (RPC/RLS) · Security · QA & Chaos (sign-off) |
 | **Design standard** | `epic-design/SKILL.md`, **Mode 2 — enhance existing site** (CSS-only motion system in `app/globals.css`, no GSAP/WebGL on the mobile budget) |
 | **Created** | 2026-10-10 |
-| **Status** | 🟡 Planned — waiting on decisions D1–D3 |
+| **Status** | 🟠 Built and QA-passed on branch `feat/campaign-board` — waiting for production DB step (0030/0031), PR merge, then 0032 (see `docs/CAMPAIGNS-RELEASE-RUNBOOK.md`) |
 
 **How to use this file.** It is the single source of truth for this feature. Update the tracker
 (§9) in the same commit as the work it describes: `[ ]` todo · `[~]` in progress · `[x]` done ·
@@ -40,15 +40,32 @@ changelog (§11). Nothing is "done" until its QA gate in §8 has run against sta
 
 | # | Question | Council recommendation | Decision | Date |
 |---|---|---|---|---|
-| D1 | Gate on card click: hard sign-up wall vs **soft wall** | **Soft wall**: title, brand, pay/creator, country, platforms, places left, deadline stay public; full brief, deliverables and *Postuler* need an account. Keeps WhatsApp shares and Google job results working. | _pending_ | |
-| D2 | `is_public` default for new campaigns | **On by default**, clear toggle to turn off at creation | _pending_ | |
-| D3 | Scope of the first release | Phase 1 now, Phase 2 right after (§6) | _pending_ | |
-| D4 | Ranking of the "top 10" | Pay per creator ↓, then places left ↓, then newest | proposed | 2026-10-10 |
-| D5 | Where "Voir toutes les campagnes" lands | Creator → `/creator/campaigns`; partner → `/partner/campaigns`; brand → "Lancer une campagne"; logged-out → sign-up then `/creator/campaigns` | proposed | 2026-10-10 |
+| D1 | Gate on card click: hard sign-up wall vs **soft wall** | **Soft wall**: title, brand, pay/creator, country, platforms, places left, deadline stay public; full brief, deliverables and *Postuler* need an account. Keeps WhatsApp shares and Google job results working. | **Soft wall** (owner) | 2026-10-10 |
+| D2 | `is_public` default for new campaigns | **On by default**, clear toggle to turn off at creation | **On by default** (owner) | 2026-10-10 |
+| D3 | Scope of the first release | Phase 1 now, Phase 2 right after (§6) | **Both phases together**, one agent per seat (owner) | 2026-10-10 |
+| D4 | Ranking of the "top 10" | Pay per creator ↓, then places left ↓, then newest | **Adopted**; amended by C1 (campaigns with places first) | 2026-10-10 |
+| D5 | Where "Voir toutes les campagnes" lands | Creator → `/creator/campaigns`; partner → `/partner/campaigns`; brand → "Lancer une campagne"; logged-out → sign-up then `/creator/campaigns` | **Adopted** (admin → `/admin/dashboard`) | 2026-10-10 |
 
-> If D1 is decided as **hard wall**: every card click for a logged-out visitor goes to sign-up
-> (with `next=/campaigns/<id>`); `/campaigns/[id]` itself stays public so shared links and
-> Google listings keep working. Only the list behaviour changes.
+### Business council decisions (2026-10-10 — seats: CEO, Growth, CFO, Legal, Creator Community; one independent agent per seat)
+
+| # | Question | Decision | Vote |
+|---|---|---|---|
+| C1 | Full campaigns (no places left) | Stay on the board with « Complet », ranked after campaigns with places; apply disabled; alert opt-in offered | 5/5 |
+| C2 | Alert channel at launch | In-app notifications only; copy says « dans l'application »; no email/WhatsApp promise | 5/5 |
+| C3 | Referral rewards | None at launch, no reward wording; referrers see a count only. If added later: only after the referred creator's first paid mission, written terms | 5/5 |
+| C4 | Attribution model | URL-only (no cookie), first touch, claims ignored > 7 days after sign-up | 5/5 |
+| C5 | Alerts per user | 5, with remaining count and « limite atteinte » message | 4/5 |
+| C6 | « Gratuit » | Say « inscription gratuite »; **owner to confirm** whether creator sign-up stays free with no time limit before any "sans limite" claim | — |
+
+### Engineering decisions recorded during the build
+
+| # | Decision | Owner |
+|---|---|---|
+| E1 | Attribution stored in a separate owner/admin-only table `signup_attribution`, written by `record_signup_attribution()` after onboarding (not columns on `profiles`, which signed-in users can read) | Backend |
+| E2 | Migration 0032: anon can no longer read `campaigns.brief`, `mandatory_tags`, `total_budget_fcfa`, `platform_fee_rate`; all anon writes on `campaigns` and `campaign_creators` revoked | Backend (QA D11) |
+| E3 | `disputed` deals occupy their place (counted in places left and applied) | Co-CTO (QA D6) |
+| E4 | Handles must be lowercase (`handle_lowercase` check); referrer lookup is case-insensitive; suspended/rejected referrers ignored | Backend (QA D3/D4) |
+| E5 | Pending (not yet approved) creators may use `/creator/campaigns` (browse, apply, alerts) — consistent with migration 0021; the rest of the creator workspace stays active-only. The sign-up `next` path survives email confirmation and onboarding | Co-CTO + Frontend |
 
 ## 3. User flows
 
@@ -147,29 +164,29 @@ les campagnes ».
 
 ## 8. Verification gates (QA & Chaos sign-off)
 
-- [ ] Anon sees only `is_public` + open campaigns; drafts, private, completed, cancelled never appear.
-- [ ] RPC never returns budget, fee, owner id (column-list assertion).
-- [ ] Card + "voir plus" hrefs correct for: logged-out, pending creator, active creator, partner, brand, admin.
-- [ ] Sign-up from a card returns to that campaign; from "voir plus" lands on `/creator/campaigns`.
-- [ ] `next` rejects external / protocol-relative URLs (`//evil.com`, `https://…`).
-- [ ] Soft wall: brief/apply absent from logged-out HTML (not just hidden by CSS).
-- [ ] Counts (`applied`, `places_left`) match the DB; hidden when zero/unknown; no invented figures.
-- [ ] Empty state with 0 campaigns and thin state with 1.
-- [ ] 360–414 px viewports, throttled 3G, reduced-motion, keyboard-only.
-- [ ] `/campagnes` 301 → `/campaigns`; sitemap + `ItemList` JSON-LD valid.
-- [ ] Phase 2: `referred_by` set once, immutable, not readable by other users; self-referral ignored.
+- [x] Anon sees only `is_public` + open campaigns; drafts, private, completed, cancelled never appear.
+- [x] RPC never returns budget, fee, owner id (column-list assertion).
+- [x] Card + "voir plus" hrefs correct for: logged-out, pending creator, active creator, partner, brand, admin.
+- [x] Sign-up from a card returns to that campaign; from "voir plus" lands on `/creator/campaigns`.
+- [x] `next` rejects external / protocol-relative URLs (`//evil.com`, `https://…`).
+- [x] Soft wall: brief/apply absent from logged-out HTML (not just hidden by CSS).
+- [x] Counts (`applied`, `places_left`) match the DB; hidden when zero/unknown; no invented figures.
+- [~] Empty state with 0 campaigns ✅; thin state with 1 → staging smoke test after deploy.
+- [~] 360–414 px viewports, reduced-motion, keyboard-only ✅; throttled 3G → staging smoke test.
+- [x] `/campagnes` 301 → `/campaigns`; sitemap + `ItemList` JSON-LD valid.
+- [x] Phase 2: `referred_by` set once, immutable, not readable by other users; self-referral ignored.
 
 ## 9. Progress tracker
 
 ### Decisions
-- [ ] D1 soft wall vs hard wall
-- [ ] D2 `is_public` default
-- [ ] D3 release scope
+- [x] D1 soft wall
+- [x] D2 `is_public` on by default
+- [x] D3 both phases together
 
 ### Phase 1
 - [x] Migration `0030_public_campaign_board` + rollback + local DB tests
 - [x] Migration 0032 anon column lockdown on campaigns + tests
-- [!] Apply 0030 to production (after review) — blocked 2026-10-10: pre-checks pass (prod at 0029, 0 mixed-case handles), but `apply_migration` timed out twice with no change (needs owner approval); run per RELEASE-RUNBOOK §3. 0031 same; 0032 only after the production web deploy
+- [!] Apply 0030 to production (after review) — blocked 2026-10-10: pre-checks pass (prod at 0029, 0 mixed-case handles), but `apply_migration` timed out twice with no change (needs owner approval); run per `docs/CAMPAIGNS-RELEASE-RUNBOOK.md` §3. 0031 same; 0032 only after the production web deploy
 - [x] `types.gen.ts` updated
 - [x] `listCampaignBoard()` data helper (+ `getCampaignStats`, `getPublicCampaign` anon-safe columns only, `getCampaignBriefForMember` for signed-in viewers — 0032-ready)
 - [x] `lib/auth/campaign-ctas.ts` + unit tests
@@ -210,3 +227,4 @@ les campagnes ».
 | 2026-10-10 | Plan created from the council review; decisions D1–D3 pending. |
 | 2026-10-10 | Backend: migration 0032 (anon column lockdown on `campaigns`: no brief/budget/fee/tags for anon, anon writes revoked); business council decisions C1–C6 applied (full campaigns ranked last, in-app alerts only, no referral rewards, URL-only first-touch attribution ≤ 7 days, max 5 alerts, « inscription gratuite » wording). |
 | 2026-10-10 | UI/UX design spec added: docs/CAMPAIGNS-PUBLIC-PAGE-DESIGN.md |
+| 2026-10-10 | Owner decisions D1–D3 recorded; business council C1–C6; engineering decisions E1–E5. Backend, UI/UX, Frontend, QA (2 rounds, all local gates pass) and DevOps seats complete. QA report and release runbook added to docs/. Production DB step pending owner approval. |
