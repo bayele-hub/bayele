@@ -124,6 +124,38 @@ export type Database = {
           },
         ]
       }
+      campaign_alerts: {
+        Row: {
+          category: string | null
+          country: Database["public"]["Enums"]["country_code"] | null
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          country?: Database["public"]["Enums"]["country_code"] | null
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          country?: Database["public"]["Enums"]["country_code"] | null
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_creators: {
         Row: {
           agreed_payout_fcfa: number
@@ -909,6 +941,42 @@ export type Database = {
           },
         ]
       }
+      signup_attribution: {
+        Row: {
+          created_at: string
+          referred_by: string | null
+          signup_source: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          referred_by?: string | null
+          signup_source?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          referred_by?: string | null
+          signup_source?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signup_attribution_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "signup_attribution_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -1290,6 +1358,88 @@ export type Database = {
           p_rejection_reason?: string
         }
         Returns: undefined
+      }
+      public_campaign_board: {
+        Args: {
+          p_category?: string
+          p_country?: Database["public"]["Enums"]["country_code"]
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          title: string
+          category: string
+          target_country: Database["public"]["Enums"]["country_code"]
+          payout_per_creator_fcfa: number
+          creator_count_target: number
+          platforms: string[]
+          content_type: string | null
+          deliverable_quantity: number | null
+          deadline: string | null
+          created_at: string
+          brand_name: string | null
+          brand_handle: string | null
+          applied_count: number
+          places_left: number
+        }[]
+      }
+      public_campaign_stats: {
+        Args: {
+          p_campaign_id: string
+        }
+        Returns: {
+          applied_count: number
+          places_left: number
+          brand_name: string | null
+          brand_handle: string | null
+        }[]
+      }
+      record_signup_attribution: {
+        Args: {
+          p_referrer_handle?: string
+          p_source?: string
+        }
+        Returns: boolean
+      }
+      admin_signup_attribution_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          kind: string
+          signup_source: string | null
+          referrer_handle: string | null
+          referrer_display_name: string | null
+          signups: number
+        }[]
+      }
+      my_referral_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      subscribe_campaign_alert: {
+        Args: {
+          p_category?: string
+          p_country?: Database["public"]["Enums"]["country_code"]
+        }
+        Returns: string
+      }
+      campaign_alert_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      unsubscribe_campaign_alert: {
+        Args: {
+          p_alert_id: string
+        }
+        Returns: boolean
+      }
+      my_campaign_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          country: Database["public"]["Enums"]["country_code"] | null
+          category: string | null
+          created_at: string
+        }[]
       }
     }
     Enums: {
