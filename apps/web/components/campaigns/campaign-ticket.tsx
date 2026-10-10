@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
-import { ArrowRight, Bell, CalendarClock, Lock, Users } from 'lucide-react';
+import { ArrowRight, Bell, CalendarClock, Lock, Package, Users } from 'lucide-react';
 import type { Dictionary } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
 import { formatFcfa } from '@/i18n/format';
 import { fill, type BoardCampaign } from '@/lib/campaign-board';
 import { whatsappHref } from '@/lib/auth/campaign-ctas';
-import { ByBrand, PlacesMeter, PlatformTiles, WhatsAppIconLink, cardCopy, d } from './card-parts';
+import { BrandLine, PlacesMeter, PlatformTiles, WhatsAppIconLink, cardCopy, d } from './card-parts';
 import { shareMessage, type CardLinks } from './campaign-card';
 
 /**
@@ -52,10 +52,7 @@ export function CampaignTicket({ c, t, locale, links }: { c: BoardCampaign; t: D
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {copy.category && <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-bold uppercase">{copy.category}</span>}
               {copy.countryName && (
-                <span className="text-[13px] text-white/80">
-                  <span aria-hidden>{copy.countryFlag} </span>
-                  {copy.countryName}
-                </span>
+                <span className="text-[13px] text-white/80">{copy.countryName}</span>
               )}
             </div>
 
@@ -64,7 +61,24 @@ export function CampaignTicket({ c, t, locale, links }: { c: BoardCampaign; t: D
                 {c.title}
               </Link>
             </h3>
-            {copy.by && <ByBrand template={k.by} brand={copy.by} className="mt-1 text-[14px] text-white/70" strongClassName="font-semibold text-white" />}
+            {copy.by && (
+              <BrandLine
+                brand={copy.by}
+                city={copy.brandCity}
+                managed={copy.managed}
+                byTemplate={k.by}
+                badgeLabel={t.managed.badge}
+                tone="dark"
+                className="mt-1 text-[14px] text-white/70"
+              />
+            )}
+
+            {copy.deliverables && (
+              <p className="mt-3 flex items-center gap-1.5 text-[14px] font-semibold text-white">
+                <Package className="h-4 w-4 text-accent" aria-hidden />
+                {copy.deliverables}
+              </p>
+            )}
 
             <PlatformTiles platforms={c.platforms} label={k.platforms} tone="ink" className="mt-4" />
 

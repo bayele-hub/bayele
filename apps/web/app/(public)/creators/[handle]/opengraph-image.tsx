@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { getCreator } from '@/lib/data/talent';
-import { countryFlag } from '@/lib/countries';
+import { countryName } from '@/lib/countries';
 
 // Per-creator social share card (WhatsApp / X / LinkedIn previews). Next wires this to OpenGraph +
 // Twitter for this route. System fonts only + initials (no external image fetch), so it renders
@@ -45,7 +45,7 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '168px', height: '168px', borderRadius: '84px', background: 'rgba(255,255,255,0.12)', border: '3px solid rgba(255,255,255,0.35)', fontSize: '68px', fontWeight: 800 }}>{initials}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '760px' }}>
             <div style={{ display: 'flex', fontSize: '64px', fontWeight: 800, letterSpacing: '-2px', lineHeight: 1.05 }}>{name}</div>
-            <div style={{ display: 'flex', fontSize: '30px', color: 'rgba(255,255,255,0.82)' }}>@{at}{city ? ` · ${city} ${countryFlag(country)}` : ''}</div>
+            <div style={{ display: 'flex', fontSize: '30px', color: 'rgba(255,255,255,0.82)' }}>@{at}{city ? ` · ${[city, countryName(country)].filter(Boolean).join(', ')}` : ''}</div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
               {tags.map((tag) => (
                 <div key={tag} style={{ display: 'flex', padding: '8px 18px', borderRadius: '999px', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)', fontSize: '24px', fontWeight: 600 }}>{tag}</div>

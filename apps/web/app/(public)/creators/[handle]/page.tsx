@@ -14,7 +14,7 @@ import { getCreator } from '@/lib/data/talent';
 import { getCreatorDirectoryGate } from '@/lib/data/launch-gate';
 import { getDictionary, formatFollowers } from '@/i18n/dictionaries';
 import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
-import { countryFlag } from '@/lib/countries';
+import { countryName } from '@/lib/countries';
 
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
@@ -91,7 +91,7 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
                 </div>
                 <p className="text-sm text-muted">@{creator.handle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
-                  <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {creator.city} {countryFlag(creator.country)}</span>
+                  <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {[creator.city, countryName(creator.country)].filter(Boolean).join(', ')}</span>
                   <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" /> {creator.ratingAvg.toFixed(1)}</span>
                   <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5 text-brand" /> {formatFollowers(creator.audienceSize ?? 0, locale)} {t.directory.followers}</span>
                 </div>

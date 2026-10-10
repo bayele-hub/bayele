@@ -15,6 +15,11 @@ export const CAMPAIGN_CATEGORIES = [
   { slug: 'education', fr: 'Éducation' },
   { slug: 'voyage', fr: 'Voyage' },
   { slug: 'business', fr: 'Business' },
+  // Council R8 (2026-10-11): appended at the end so existing indices (EN labels) stay stable.
+  { slug: 'ong-impact-social', fr: 'ONG / Impact social' },
+  { slug: 'immobilier', fr: 'Immobilier' },
+  { slug: 'hotellerie', fr: 'Hôtellerie' },
+  { slug: 'finance-fintech', fr: 'Finance / Fintech' },
 ] as const;
 
 export type CategorySlug = (typeof CAMPAIGN_CATEGORIES)[number]['slug'];
@@ -50,4 +55,16 @@ export function categoryLabel(value: string | null | undefined, locale: 'fr' | '
   const slug = categorySlugOf(raw);
   const i = CAMPAIGN_CATEGORIES.findIndex((c) => c.slug === slug);
   return i >= 0 && labels[i] ? labels[i] : raw;
+}
+
+/**
+ * Council R8 + Legal: categories whose claims (price, yield, health…) must be substantiated before a
+ * managed campaign is published. Exactly the strings private.category_needs_claims_check compares
+ * (trimmed, case-insensitive) — the publish RPC raises `claims_not_verified` otherwise.
+ */
+export const CLAIMS_CHECK_CATEGORIES = ['Immobilier', 'Finance / Fintech', 'Santé & Bien-être'] as const;
+
+export function categoryNeedsClaims(value: string | null | undefined): boolean {
+  const v = (value ?? '').trim().toLowerCase();
+  return CLAIMS_CHECK_CATEGORIES.some((c) => c.toLowerCase() === v);
 }

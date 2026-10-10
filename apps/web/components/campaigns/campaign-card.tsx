@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
-import { ArrowRight, Bell, CalendarClock, Coins, Users } from 'lucide-react';
+import { ArrowRight, Bell, CalendarClock, Coins, Package, Users } from 'lucide-react';
 import type { Dictionary } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
 import { formatFcfa } from '@/i18n/format';
 import { fill, type BoardCampaign } from '@/lib/campaign-board';
 import { whatsappHref } from '@/lib/auth/campaign-ctas';
-import { ByBrand, PlacesMeter, PlatformTiles, WhatsAppIconLink, cardCopy } from './card-parts';
+import { BrandLine, PlacesMeter, PlatformTiles, WhatsAppIconLink, cardCopy } from './card-parts';
 
 export interface CardLinks {
   /** Campaign page link (campaign-ctas.campaignCardHref). */
@@ -61,10 +61,7 @@ export function CampaignCard({
         <div className="flex min-w-0 items-center gap-2">
           {copy.category && <span className="truncate rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase text-brand-700">{copy.category}</span>}
           {copy.countryName && (
-            <span className="truncate text-[12px] text-muted">
-              <span aria-hidden>{copy.countryFlag} </span>
-              {copy.countryName}
-            </span>
+            <span className="truncate text-[12px] text-muted">{copy.countryName}</span>
           )}
         </div>
         {copy.pillLabel && (
@@ -77,13 +74,29 @@ export function CampaignCard({
           {c.title}
         </Link>
       </H>
-      {copy.by && <ByBrand template={k.by} brand={copy.by} className="mt-0.5 text-[13px] text-muted" />}
+      {copy.by && (
+        <BrandLine
+          brand={copy.by}
+          city={copy.brandCity}
+          managed={copy.managed}
+          byTemplate={k.by}
+          badgeLabel={t.managed.badge}
+          className="mt-0.5 text-[13px] text-muted"
+        />
+      )}
 
       {c.payoutPerCreatorFcfa > 0 && (
         <p className="mt-3 flex items-baseline gap-1.5">
           <Coins className="h-4 w-4 self-center text-accent" aria-hidden />
           <span className="whitespace-nowrap font-display text-xl font-extrabold tabular-nums text-ink">{formatFcfa(c.payoutPerCreatorFcfa, locale)}</span>
           <span className="text-[12px] text-muted">{k.perCreatorShort}</span>
+        </p>
+      )}
+
+      {copy.deliverables && (
+        <p className="mt-2 flex items-center gap-1.5 text-[13px] font-medium text-ink">
+          <Package className="h-4 w-4 text-brand" aria-hidden />
+          {copy.deliverables}
         </p>
       )}
 

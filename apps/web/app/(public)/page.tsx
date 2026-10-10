@@ -15,6 +15,8 @@ import { AudienceSwitch, type Audience } from '@/components/home/audience-switch
 import { HeroScene } from '@/components/home/hero-scene';
 import { RevealRoot } from '@/components/home/reveal-root';
 import { HomeCampaignsStrip } from '@/components/campaigns/home-campaigns-strip';
+import { PublishWhatsAppCta } from '@/components/publish-whatsapp-cta';
+import { bayeleWhatsappNumber, publishMessage } from '@/lib/whatsapp';
 
 const STAT_ICONS = [Lock, MapPin, Smartphone, Receipt] as const;
 const ESCROW_ICONS = [Lock, Megaphone, Wallet] as const;
@@ -45,6 +47,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   // Which scene the hero visual brings forward: the switch updates this attribute client-side;
   // signed-in brands see their own side.
   const heroAudience: Audience = authed ? (cont.key === 'business' ? 'brand' : 'creator') : initialAudience;
+  const showPublishWa = !session.primary || session.primary === 'business' || session.primary === 'consultant';
+  const waHref = bayeleWhatsappNumber();
 
   return (
     <div className="bg-white">
@@ -207,9 +211,20 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                   </li>
                 ))}
               </ol>
-              <Link href={cta.brief} className="mt-7 inline-flex min-h-tap items-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95">
-                {h.brand.cta} <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
+              <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                <Link href={cta.brief} className="inline-flex min-h-tap items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white transition hover:bg-brand-600 active:scale-95">
+                  {h.brand.cta} <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+                {/* K5 « Publiez par WhatsApp » — secondary; not for signed-in creators / admins. */}
+                {showPublishWa && (
+                  <PublishWhatsAppCta
+                    label={t.publishWhatsapp.cta}
+                    ariaSuffix={t.publishWhatsapp.ariaSuffix}
+                    message={publishMessage(t.publishWhatsapp.message, {}, 'home')}
+                  />
+                )}
+              </div>
+              {showPublishWa && waHref && <p className="mt-2 text-[13px] text-muted">{t.publishWhatsapp.homeHint}</p>}
             </div>
           </div>
 

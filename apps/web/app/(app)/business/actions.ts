@@ -3,72 +3,45 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
-import { feeRateForTier, computeBudget } from '@/lib/data/campaigns';
-import type { Database } from '@bayele/database';
-import { parseCountry } from '@/lib/countries';
+import { getDictionary } from '@/i18n/dictionaries';
+import { doualaToday } from '@/lib/campaign-board';
+import { parseBrandCampaign } from '@/lib/brand-campaign';
+import { publicFloorMap } from '@/lib/data/managed-briefs';
 
-type Country = Database['public']['Enums']['country_code'];
+export type CampaignState = { error: string | null; field?: string | null };
 
-export type CampaignState = { error: string | null };
-
-
+/**
+ * Brand self-serve campaign (design §7, council R4/R5). The brand states a TOTAL budget; the creator
+ * net is floor(total × (1 − tier fee) ÷ creators) — or, advanced, the net is typed and the total is
+ * grossed up. Validation + money mapping live in lib/brand-campaign.ts (unit-tested); the DB re-checks
+ * budget_math_check and valid_fee_rate, and the campaigns guard forces owner_role to a role the caller
+ * holds (E9). Pay floors are a warning + acknowledgement here, never a block (R5).
+ */
 export async function createCampaignAction(_prev: CampaignState, formData: FormData): Promise<CampaignState> {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
-  if (!session.roles.includes('business') && session.primary !== 'super_admin') {
-    return { error: 'La création de campagne est réservée aux marques.' };
-  }
+  const { locale, t } = await getDictionary();
+  const e = t.brandForm.errors;
+  if (!session.roles.includes('business') && session.primary !== 'super_admin') return { error: e.notBrand };
 
-  const title = String(formData.get('title') ?? '').trim();
-  const brief = String(formData.get('brief') ?? '').trim();
-  const category = String(formData.get('category') ?? '').trim();
-  const country: Country = parseCountry(formData.get('country'));
-  const tier = String(formData.get('tier') ?? 'spark');
-  const rate = feeRateForTier(tier);
-  const payout = Math.round(Number(formData.get('payout') ?? 0));
-  const count = Math.round(Number(formData.get('count') ?? 0));
-
-  // Structured deliverable fields — these make expectations explicit (what proof-of-post is judged on).
-  const platforms = String(formData.get('platforms') ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const contentType = String(formData.get('content_type') ?? '').trim() || null;
-  const quantity = Math.max(1, Math.round(Number(formData.get('quantity') ?? 1))) || 1;
-  const mandatoryTags = String(formData.get('mandatory_tags') ?? '').trim() || null;
-  const deadlineRaw = String(formData.get('deadline') ?? '').trim();
-  const deadline = /^\d{4}-\d{2}-\d{2}$/.test(deadlineRaw) ? deadlineRaw : null;
-  // Visibility (D2): public by default; only an explicit 'false' from the form's toggle makes it private.
-  const isPublic = String(formData.get('is_public') ?? 'true') !== 'false';
-
-  if (!title || !brief || !category) return { error: 'Titre, brief et catégorie sont requis.' };
-  if (!platforms.length || !contentType) return { error: 'Indiquez au moins une plateforme et un type de contenu.' };
-  if (payout <= 0 || count <= 0) return { error: 'Indiquez un paiement par créateur et un nombre de créateurs.' };
-
-  const { total } = computeBudget(payout, count, rate);
+  // R5: floors that are set (pay_floors_public, any signed-in user) — warning + tick, never a block.
+  const floors = await publicFloorMap();
+  const parsed = parseBrandCampaign(Object.fromEntries(formData.entries()), {
+    today: doualaToday(),
+    floors,
+    locale,
+    copy: { autoTitle: t.brandForm.autoTitle, generatedBrief: t.brandForm.generatedBrief, briefPlace: t.brandForm.briefPlace },
+  });
+  if (!parsed.ok) return { error: e[parsed.error], field: parsed.field };
 
   const supabase = await createClient();
   const { error } = await supabase.from('campaigns').insert({
     owner_id: session.userId,
     owner_role: 'business',
-    title,
-    brief,
-    category,
-    target_country: country,
-    total_budget_fcfa: total,
-    payout_per_creator_fcfa: payout,
-    creator_count_target: count,
-    platform_fee_rate: rate,
     status: 'draft',
-    platforms,
-    content_type: contentType,
-    deliverable_quantity: quantity,
-    mandatory_tags: mandatoryTags,
-    deadline,
-    is_public: isPublic,
+    ...parsed.values,
   });
-
-  if (error) return { error: 'La création a échoué. Vérifiez les montants et réessayez.' };
+  if (error) return { error: e.generic };
 
   redirect('/business/dashboard');
 }

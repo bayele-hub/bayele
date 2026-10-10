@@ -14,6 +14,13 @@ export interface BoardCampaign {
   brandName: string | null;
   appliedCount: number;
   placesLeft: number;
+  /** « Géré par Bayele »: brandName is then the public brand_label (never the admin's name). */
+  isManaged: boolean;
+  /** Managed only: the city shown next to the label (« Restaurant · Douala »). */
+  brandCity: string | null;
+  /** Council R1: deliverable count + type are public on every listing. */
+  contentType: string | null;
+  deliverableQuantity: number | null;
 }
 
 export type Meter =
@@ -51,7 +58,8 @@ export function daysUntil(deadline: string | null | undefined, now: Date = new D
 /** At most one pill: Complet › Bientôt complet (≤ 20 % left) › Nouveau (< 7 days). */
 export function cardPill(c: Pick<BoardCampaign, 'placesLeft' | 'creatorCountTarget' | 'createdAt'>, now: Date = new Date()): Pill {
   if (c.creatorCountTarget > 0 && c.placesLeft <= 0) return 'full';
-  if (c.placesLeft >= 1 && c.creatorCountTarget > 0 && c.placesLeft <= Math.ceil(c.creatorCountTarget * 0.2)) return 'almostFull';
+  // Only once someone has been selected: a 1-place managed listing nobody has taken is not « bientôt complet ».
+  if (c.placesLeft >= 1 && c.creatorCountTarget > 0 && c.placesLeft < c.creatorCountTarget && c.placesLeft <= Math.ceil(c.creatorCountTarget * 0.2)) return 'almostFull';
   const created = Date.parse(c.createdAt);
   if (!Number.isNaN(created) && now.getTime() - created < 7 * DAY) return 'new';
   return null;

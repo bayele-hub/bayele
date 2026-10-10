@@ -1,5 +1,7 @@
 import { Package, Tags, CalendarClock } from 'lucide-react';
 import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icons';
+import type { Locale } from '@/i18n/config';
+import { contentTypeLabel } from '@/lib/managed-listing';
 
 export interface CampaignBrief {
   platforms: string[];
@@ -11,13 +13,27 @@ export interface CampaignBrief {
 
 const KNOWN: Platform[] = ['whatsapp', 'facebook', 'instagram', 'tiktok', 'youtube', 'x', 'linkedin', 'snapchat', 'telegram'];
 
-function fmtDeadline(d: string | null): string | null {
+/** Labels (dictionary `briefDetails.*`). French defaults keep the signed-in app pages unchanged. */
+export interface BriefDetailsLabels {
+  title: string;
+  deliverable: string;
+  mandatory: string;
+  deadline: string;
+}
+
+const FR_LABELS: BriefDetailsLabels = {
+  title: 'Ce qui est attendu',
+  deliverable: 'Livrable\u00a0:',
+  mandatory: 'Obligatoire\u00a0:',
+  deadline: 'À publier avant le\u00a0:',
+};
+
+/** YYYY-MM-DD → « 28 oct. 2026 » / « Oct 28, 2026 » in the page locale (UTC: no day shift). */
+export function fmtDeadline(d: string | null, locale: Locale = 'fr'): string | null {
   if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return null;
-  const [y, m, day] = d.split('-').map(Number);
-  // Build a label without Date parsing surprises; month names in French.
-  const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-  if (!y || !m || !day || m < 1 || m > 12) return null;
-  return `${day} ${MONTHS[m - 1]} ${y}`;
+  const t = Date.parse(`${d}T00:00:00Z`);
+  if (Number.isNaN(t)) return null;
+  return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(t);
 }
 
 /**
@@ -25,18 +41,18 @@ function fmtDeadline(d: string | null): string | null {
  * elements, deadline). Shared by the public campaign page, the creator's campaign list, and the
  * brand's own campaign detail so "what's expected" reads identically everywhere.
  */
-export function CampaignBriefDetails({ brief }: { brief: CampaignBrief }) {
+export function CampaignBriefDetails({ brief, locale = 'fr', labels = FR_LABELS }: { brief: CampaignBrief; locale?: Locale; labels?: BriefDetailsLabels }) {
   const platforms = (brief.platforms ?? []).filter((p): p is Platform => (KNOWN as string[]).includes(p));
-  const deadline = fmtDeadline(brief.deadline);
+  const deadline = fmtDeadline(brief.deadline, locale);
   const qty = brief.deliverableQuantity && brief.deliverableQuantity > 0 ? brief.deliverableQuantity : null;
-  const deliverable = [qty ? `${qty} ×` : null, brief.contentType].filter(Boolean).join(' ');
+  const deliverable = [qty ? `${qty} ×` : null, brief.contentType ? contentTypeLabel(brief.contentType, locale) : null].filter(Boolean).join(' ');
 
   const hasAny = platforms.length || deliverable || brief.mandatoryTags || deadline;
   if (!hasAny) return null;
 
   return (
     <div className="grid gap-2.5 rounded-2xl border border-line bg-surface p-4">
-      <p className="text-xs font-bold text-ink">Ce qui est attendu</p>
+      <p className="text-xs font-bold text-ink">{labels.title}</p>
 
       {platforms.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5">
@@ -53,19 +69,19 @@ export function CampaignBriefDetails({ brief }: { brief: CampaignBrief }) {
 
       {deliverable && (
         <p className="flex items-center gap-2 text-[13px] text-ink">
-          <Package className="h-4 w-4 shrink-0 text-brand" /> <span className="font-semibold">Livrable :</span> {deliverable}
+          <Package className="h-4 w-4 shrink-0 text-brand" /> <span className="font-semibold">{labels.deliverable}</span> {deliverable}
         </p>
       )}
 
       {brief.mandatoryTags && (
         <p className="flex items-start gap-2 text-[13px] text-ink">
-          <Tags className="mt-0.5 h-4 w-4 shrink-0 text-brand" /> <span><span className="font-semibold">Obligatoire :</span> {brief.mandatoryTags}</span>
+          <Tags className="mt-0.5 h-4 w-4 shrink-0 text-brand" /> <span><span className="font-semibold">{labels.mandatory}</span> {brief.mandatoryTags}</span>
         </p>
       )}
 
       {deadline && (
         <p className="flex items-center gap-2 text-[13px] text-ink">
-          <CalendarClock className="h-4 w-4 shrink-0 text-brand" /> <span className="font-semibold">À publier avant le :</span> {deadline}
+          <CalendarClock className="h-4 w-4 shrink-0 text-brand" /> <span className="font-semibold">{labels.deadline}</span> {deadline}
         </p>
       )}
     </div>

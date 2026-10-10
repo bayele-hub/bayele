@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getDictionary } from '@/i18n/dictionaries';
 import { getSession } from '@/lib/auth/session';
 
 export type ApplyState = { error: string | null; ok?: boolean };
@@ -15,20 +16,22 @@ export type ProofState = { error: string | null; ok?: boolean };
  * only relays the caller's session. The DB is the boundary, never a client-trusted check.
  */
 export async function applyAction(_prev: ApplyState, formData: FormData): Promise<ApplyState> {
+  const { t } = await getDictionary();
+  const e = t.applyCta.errors;
   const campaign = String(formData.get('campaign') ?? '');
-  if (!campaign) return { error: 'Campagne manquante.' };
+  if (!campaign) return { error: e.missing };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc('apply_to_campaign', { p_campaign_id: campaign });
 
   if (error) {
     const msg = (error.message ?? '').trim();
-    if (msg === 'not_a_creator') return { error: 'Seuls les créateurs peuvent postuler.' };
-    if (msg === 'profile_not_eligible') return { error: "Votre compte n'est pas éligible pour postuler." };
-    if (msg === 'already_applied') return { error: 'Vous avez déjà postulé à cette campagne.' };
-    if (msg === 'campaign_not_open') return { error: "Cette campagne n'accepte plus de candidatures." };
-    if (msg === 'campaign_not_found') return { error: 'Campagne introuvable.' };
-    return { error: 'La candidature a échoué. Réessayez.' };
+    if (msg === 'not_a_creator') return { error: e.notCreator };
+    if (msg === 'profile_not_eligible') return { error: e.notEligible };
+    if (msg === 'already_applied') return { error: e.alreadyApplied };
+    if (msg === 'campaign_not_open') return { error: e.notOpen };
+    if (msg === 'campaign_not_found') return { error: e.notFound };
+    return { error: e.generic };
   }
 
   revalidatePath('/creator/campaigns');

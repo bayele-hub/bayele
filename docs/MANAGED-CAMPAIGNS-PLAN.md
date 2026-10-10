@@ -5,7 +5,7 @@
 | **Feature** | Publish and run campaigns for brands that have no account and want Bayele to manage everything, including paying creators |
 | **Objective** | More real, funded offers on `/campaigns` (creator sign-ups) without breaking creator trust |
 | **Council** | 6 independent seats, one agent each: CEO, Growth, CFO, Legal, Creator Community, Campaign Operations (2026-10-10) |
-| **Status** | 🟡 Decided, not built — waiting on owner decisions O1–O4 (§8) |
+| **Status** | 🟢 Built; migration 0033 applied to production (2026-10-11), web release pending PR + Vercel deploy — runbook: docs/MANAGED-CAMPAIGNS-RELEASE-RUNBOOK.md. No brief published yet (owner decisions O1–O4 still open, §8) |
 
 **How to use this file.** Single source of truth for managed campaigns. Track every brief in §5,
 tick §9 as work lands, log changes in §10. A managed listing goes public only when every
@@ -139,16 +139,28 @@ Plus trust signals for first-time brands: plain-words escrow explainer (« le cr
 - [ ] Contact the 20 brands: fill §5 gaps, counter-offers for #6, #7, #9, #20
 
 ### Build
-- [ ] Migration: managed fields + board/stats changes + `managed_briefs`
-- [ ] Admin managed-campaign form + funded gate
-- [ ] « Géré par Bayele » badge + brand descriptor on board and campaign page
-- [ ] « Publiez par WhatsApp » CTA
-- [ ] Industry templates; brand form trimmed to 6 required fields
-- [ ] EN leftovers on `/campaigns/[id]`; flag fallback on Windows
-- [ ] QA + release
+- [x] Migration: managed fields + board/stats changes + `managed_briefs` — `20261011090000_0033_managed_campaigns.sql` (+ rollback); **applied to production 2026-10-11** (`0033_managed_campaigns`, version 20261010190148; post-checks pass, see release runbook)
+  - campaigns: `is_managed`, `brand_label`, `brand_consent` (internal, not anon), `brand_city`, `language`, `usage_rights`, `creator_requirements`, `equipment`; CHECK managed ⇒ fields + deadline + super_admin owner + 25 %; guard: non-admins can never set managed/brand fields
+  - board/stats: new `public_campaign_board_v2` / `public_campaign_stats_v2` (K8: no DROP); v1 unchanged — Frontend must switch to v2
+  - `pay_floors` (K1, ships empty) + `admin_set_pay_floor` / `admin_clear_pay_floor` / `pay_floor_list`; `below_pay_floor` enforced at publish
+  - `managed_briefs` (admin-only) + `admin_upsert_managed_brief` / `admin_list_managed_briefs` / `admin_publish_managed_brief` → campaign in `pending_funding`, public only after `admin_confirm_campaign_funding`
+  - Round 2: E2 funding notification → /admin/briefs; E3 `managed_net_preview` (rounding remainder); E4 `admin_decline_managed_brief`; E5 live-brief lock (`brief_locked`); E6 manual status draft/awaiting_order/declined; E7 `brand_consent_proof`; E8 cancelled → draft, re-publishable; E9 owner_role forced to real role; Legal `claims_verified` + `claims_not_verified`
+  - K8 grep clean; local: t33 141 checks (round 1: 104), t30, mc-test + t28, qa30 pass; single-transaction apply → rollback → re-apply OK. Contract: `briefs/BACKEND-CONTRACT-MANAGED.md`
+- [x] Admin managed-campaign form + funded gate — `/admin/briefs` tracker (derived « Prête à publier », E6), editor (templates, net preview + « Reste d'arrondi » E3, floor verdict K1, 15-item checklist, K3 consent + proof E7, « Allégations vérifiées » R8, order form FR/EN, « OUI », publish → `/admin/funding?campaign=` pinned, decline E4, lock E5), `/admin/pay-floors` (ships empty); Frontend
+- [x] « Géré par Bayele » badge + brand descriptor on board and campaign page — public reads on v2; R1 deliverable count public; R3 lines; « L'essentiel de l'offre »; no total budget (R2); OG + JSON-LD; Frontend
+- [x] « Publiez par WhatsApp » CTA — `NEXT_PUBLIC_BAYELE_WHATSAPP` (hidden if unset, K5); home, `/campaigns` footer link only (R6), brand sign-up, brand form, pricing Agency; Frontend
+- [x] Industry templates; brand form trimmed to 6 required fields — 13 text-only templates; TOTAL budget + live net (R4); floor warning + tick (R5); R7 languages; R8 categories; Frontend
+- [x] EN leftovers on `/campaigns/[id]`; flag fallback on Windows — brief details + apply CTA localized (role notices), dates in page locale, country names instead of flags everywhere; Frontend
+- [~] QA + release: QA gates PASS locally (no Blocker/Major; 3 Minor: claims-category string match, private.campaign_owner_role oracle, /auth tap targets); release pending staging smoke test after deploy, see $S/qa/QA-REPORT-MANAGED.md
+  - [x] Release prep (DevOps): commits + patch verified on a fresh clone; MANIFEST.sha256 regenerated with 0033; 0033 applied to production with matching object fingerprints vs the local dry-run
+  - [ ] PR merged + Vercel production deploy + smoke list (runbook §5)
+  - [ ] `NEXT_PUBLIC_BAYELE_WHATSAPP` set in Vercel once the owner has a number (CTA hidden until then)
+  - [ ] Retire v1 board/stats in the SQL editor after the deploy (QA D3)
 
 ## 10. Changelog
 
 | Date | Change |
 |---|---|
 | 2026-10-10 | Council (6 seats) decided M1–M10; Operations + Growth seats ranked easy-publishing levers; 20 briefs normalised; owner decisions O1–O4 opened. |
+| 2026-10-11 | UI/UX design spec added: docs/MANAGED-CAMPAIGNS-DESIGN.md |
+| 2026-10-11 | Release: migration 0033 applied to production before the web deploy (pre-checks and post-checks pass); release runbook added: docs/MANAGED-CAMPAIGNS-RELEASE-RUNBOOK.md. |

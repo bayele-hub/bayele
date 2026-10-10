@@ -25,6 +25,14 @@ export interface PublicCampaign {
   contentType: string | null;
   deliverableQuantity: number | null;
   deadline: string | null;
+  /** « Géré par Bayele » listing (managed campaigns: brandName = brand_label, brandHandle = null). */
+  isManaged: boolean;
+  brandCity: string | null;
+  /** Listing-standard fields (anon-readable since 0033; public before sign-up, design §5.5). */
+  language: string | null;
+  usageRights: string | null;
+  creatorRequirements: string | null;
+  equipment: string | null;
 }
 
 /** Members-only part of a campaign (D1 soft wall): read only with a signed-in session. */
@@ -35,19 +43,21 @@ export interface CampaignBrief {
 
 // Only these two states are publicly shareable: a funded, open campaign creators can still join.
 const SHAREABLE = ['published', 'in_progress'] as const;
-// Exactly the anon-readable columns (see migration 0032). Never add brief / mandatory_tags here.
+// Exactly the anon-readable columns (migrations 0032 + 0033). Never add brief / mandatory_tags /
+// total_budget_fcfa (R2) / brand_consent / claims_verified (anon gets 42501 and the query fails).
 const PUBLIC_COLUMNS =
-  'id, title, category, target_country, status, payout_per_creator_fcfa, creator_count_target, created_at, platforms, content_type, deliverable_quantity, deadline';
+  'id, title, category, target_country, status, payout_per_creator_fcfa, creator_count_target, created_at, platforms, content_type, deliverable_quantity, deadline, is_managed, brand_label, brand_city, language, usage_rights, creator_requirements, equipment';
 
 /**
- * One row of public_campaign_stats for a public + open campaign (SECURITY DEFINER): live counts plus
- * the owner's public brand name/handle. Brands' profiles are not anon-readable through RLS, so the
- * brand MUST come from here (QA D2), never from a direct profiles read. Cached per request.
+ * One row of public_campaign_stats_v2 for a public + open campaign (SECURITY DEFINER): live counts plus
+ * the public brand name/handle. Brands' profiles are not anon-readable through RLS, so the brand MUST
+ * come from here (QA D2), never from a direct profiles read. v2 returns brand_label (and a null handle)
+ * for managed campaigns, so the owning admin's name never reaches a public page. Cached per request.
  */
 const statsRow = cache(async (id: string) => {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.rpc('public_campaign_stats', { p_campaign_id: id });
+    const { data, error } = await supabase.rpc('public_campaign_stats_v2', { p_campaign_id: id });
     return (!error && data?.[0]) || null;
   } catch {
     return null;
@@ -81,8 +91,9 @@ export const getPublicCampaign = cache(async (id: string): Promise<PublicCampaig
       .maybeSingle();
     if (error || !data) return null;
 
-    // Brand identity from public_campaign_stats (definer RPC), same source as the board cards.
+    // Brand identity from public_campaign_stats_v2 (definer RPC), same source as the board cards.
     const row = await statsRow(id);
+    const managed = !!(row?.is_managed ?? data.is_managed);
 
     return {
       id: data.id,
@@ -93,12 +104,19 @@ export const getPublicCampaign = cache(async (id: string): Promise<PublicCampaig
       creatorCountTarget: data.creator_count_target,
       status: data.status as 'published' | 'in_progress',
       createdAt: data.created_at,
-      brandName: row?.brand_name?.trim() || BRAND_FALLBACK,
-      brandHandle: row?.brand_handle ?? null,
+      // Managed: the label from v2 (or the anon-readable column); never the owner's profile name.
+      brandName: (managed ? row?.brand_name?.trim() || data.brand_label?.trim() : row?.brand_name?.trim()) || BRAND_FALLBACK,
+      brandHandle: managed ? null : (row?.brand_handle ?? null),
       platforms: data.platforms ?? [],
       contentType: data.content_type ?? null,
       deliverableQuantity: data.deliverable_quantity ?? null,
       deadline: data.deadline ?? null,
+      isManaged: managed,
+      brandCity: managed ? (row?.brand_city ?? data.brand_city ?? null) : null,
+      language: data.language ?? null,
+      usageRights: data.usage_rights ?? null,
+      creatorRequirements: data.creator_requirements ?? null,
+      equipment: data.equipment ?? null,
     };
   } catch {
     return null;
@@ -135,13 +153,13 @@ export const getCampaignStats = cache(async (id: string): Promise<{ appliedCount
 });
 
 /**
- * The public board: open + public campaigns, already ranked by the RPC (D4 + C1: campaigns with
+ * The public board (public_campaign_board_v2): open + public campaigns, already ranked by the RPC (D4 + C1: campaigns with
  * places first, full ones last, then pay ↓, places ↓, newest). Best-effort: any error → [] (empty state).
  */
 export async function listCampaignBoard(opts: { country?: CampaignCountry | null; category?: string | null; limit?: number } = {}): Promise<BoardCampaign[]> {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.rpc('public_campaign_board', {
+    const { data, error } = await supabase.rpc('public_campaign_board_v2', {
       p_country: opts.country ?? undefined,
       p_category: opts.category ?? undefined,
       p_limit: opts.limit ?? 10,
@@ -160,6 +178,10 @@ export async function listCampaignBoard(opts: { country?: CampaignCountry | null
       brandName: r.brand_name ?? null,
       appliedCount: Number(r.applied_count) || 0,
       placesLeft: Number(r.places_left) || 0,
+      isManaged: !!r.is_managed,
+      brandCity: r.is_managed ? (r.brand_city ?? null) : null,
+      contentType: r.content_type ?? null,
+      deliverableQuantity: r.deliverable_quantity ?? null,
     }));
   } catch {
     return [];

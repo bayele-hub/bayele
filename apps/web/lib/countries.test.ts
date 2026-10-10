@@ -16,9 +16,16 @@ describe('countries', () => {
   });
 
   it('labels per locale', () => {
-    expect(countryLabel('ZA', 'fr')).toBe('🇿🇦 Afrique du Sud');
+    expect(countryLabel('ZA', 'fr')).toBe('Afrique du Sud');
+    expect(countryLabel('NG', 'en')).toBe('Nigeria');
     expect(countryName('ZA', 'en')).toBe('South Africa');
     expect(countryName('XX')).toBe('XX');
+  });
+
+  it('design §8.2: no flag emoji (regional indicators) in any label', () => {
+    for (const locale of ['fr', 'en'] as const) {
+      for (const o of countryOptions(locale)) expect(o.label).not.toMatch(/[\u{1F1E6}-\u{1F1FF}]/u);
+    }
   });
 
   it('keeps FCFA currencies: XOF for CI, XAF otherwise', () => {

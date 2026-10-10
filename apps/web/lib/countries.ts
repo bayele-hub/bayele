@@ -1,4 +1,6 @@
-// Countries Bayele operates in — the single list every form, filter, flag and label reads from.
+// Countries Bayele operates in — the single list every form, filter and label reads from.
+// No flag emoji in the UI (design §8.2): Windows renders 🇨🇲 as the letters « CM », so every
+// meaning-bearing string shows the country NAME only.
 // Must match the `country_code` enum in Postgres (migrations 0001 + 0029). Add a country here and
 // in a migration; nothing else should hardcode country codes.
 //
@@ -12,7 +14,6 @@ export const COUNTRY_CODES = ['CM', 'CI', 'GA', 'NG', 'KE', 'ZA'] as const;
 export type CountryCode = (typeof COUNTRY_CODES)[number];
 
 interface CountryInfo {
-  flag: string;
   fr: string;
   en: string;
   /** French with its preposition ("au Nigeria", "en Afrique du Sud"). */
@@ -22,12 +23,12 @@ interface CountryInfo {
 }
 
 export const COUNTRIES: Record<CountryCode, CountryInfo> = {
-  CM: { flag: '🇨🇲', fr: 'Cameroun', en: 'Cameroon', frIn: 'au Cameroun', dial: '+237' },
-  CI: { flag: '🇨🇮', fr: "Côte d'Ivoire", en: "Côte d'Ivoire", frIn: "en Côte d'Ivoire", dial: '+225' },
-  GA: { flag: '🇬🇦', fr: 'Gabon', en: 'Gabon', frIn: 'au Gabon', dial: '+241' },
-  NG: { flag: '🇳🇬', fr: 'Nigeria', en: 'Nigeria', frIn: 'au Nigeria', dial: '+234' },
-  KE: { flag: '🇰🇪', fr: 'Kenya', en: 'Kenya', frIn: 'au Kenya', dial: '+254' },
-  ZA: { flag: '🇿🇦', fr: 'Afrique du Sud', en: 'South Africa', frIn: 'en Afrique du Sud', dial: '+27' },
+  CM: { fr: 'Cameroun', en: 'Cameroon', frIn: 'au Cameroun', dial: '+237' },
+  CI: { fr: "Côte d'Ivoire", en: "Côte d'Ivoire", frIn: "en Côte d'Ivoire", dial: '+225' },
+  GA: { fr: 'Gabon', en: 'Gabon', frIn: 'au Gabon', dial: '+241' },
+  NG: { fr: 'Nigeria', en: 'Nigeria', frIn: 'au Nigeria', dial: '+234' },
+  KE: { fr: 'Kenya', en: 'Kenya', frIn: 'au Kenya', dial: '+254' },
+  ZA: { fr: 'Afrique du Sud', en: 'South Africa', frIn: 'en Afrique du Sud', dial: '+27' },
 };
 
 export const DEFAULT_COUNTRY: CountryCode = 'CM';
@@ -46,18 +47,14 @@ export function countryName(code: string | null | undefined, locale: Locale = 'f
   return isCountryCode(code) ? COUNTRIES[code][locale] : (code ?? '');
 }
 
-export function countryFlag(code: string | null | undefined): string {
-  return isCountryCode(code) ? COUNTRIES[code].flag : '';
-}
-
 /** "au Nigeria" / "en Afrique du Sud" — for French sentences. */
 export function countryIn(code: string | null | undefined): string {
   return isCountryCode(code) ? COUNTRIES[code].frIn : '';
 }
 
-/** "🇳🇬 Nigeria" — for selects and campaign cards. */
+/** "Nigeria" — for selects, filter chips and campaign cards (name only, no flag emoji). */
 export function countryLabel(code: string | null | undefined, locale: Locale = 'fr'): string {
-  return isCountryCode(code) ? `${COUNTRIES[code].flag} ${COUNTRIES[code][locale]}` : (code ?? '');
+  return countryName(code, locale);
 }
 
 /** Options for a <select>, in display order. */

@@ -9,6 +9,8 @@ import { SiteFooter } from '@/components/site-footer';
 import { JsonLd } from '@/components/json-ld';
 import { breadcrumbLd } from '@/lib/seo';
 import { computeBudget, fmtFcfa } from '@/lib/data/campaigns';
+import { PublishWhatsAppCta } from '@/components/publish-whatsapp-cta';
+import { publishMessage } from '@/lib/whatsapp';
 import { COMMISSION_TIERS, PRO_PLANS, MATCH_PASS_FCFA, SPOTLIGHT_WEEKLY_FCFA } from '@/lib/data/pricing';
 
 export const metadata: Metadata = {
@@ -44,6 +46,8 @@ export default async function PricingPage() {
   const authed = !!session.userId;
   // Session-aware CTAs so a signed-in visitor is never pushed back into the signup funnel.
   const cta = landingCtaHrefs(authed);
+  // K5: brands-only CTA (not for signed-in creators / admins); absent when the env number is unset.
+  const showPublishWa = !session.primary || session.primary === 'business' || session.primary === 'consultant';
 
   // Worked example, computed from the real money math (not hardcoded) — Managed tier, 100k pool.
   const managedRate = COMMISSION_TIERS.find((x) => x.id === 'managed')?.rate ?? 0.15;
@@ -132,6 +136,17 @@ export default async function PricingPage() {
                   {authed ? t.hero.ctaDashboard : 'Lancer une campagne'} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <p className={`mt-3 text-center text-[11px] ${featured ? 'text-white/70' : 'text-muted'}`}>{tier.footnote}</p>
+                {tier.id === 'agency' && showPublishWa && (
+                  <div className="mt-4 border-t border-line pt-4 text-center">
+                    <PublishWhatsAppCta
+                      fullWidth
+                      label={t.publishWhatsapp.cta}
+                      ariaSuffix={t.publishWhatsapp.ariaSuffix}
+                      message={publishMessage(t.publishWhatsapp.message, {}, 'pricing')}
+                    />
+                    <p className="mt-2 text-[12px] text-muted">{t.publishWhatsapp.pricingHint}</p>
+                  </div>
+                )}
               </div>
             );
           })}
