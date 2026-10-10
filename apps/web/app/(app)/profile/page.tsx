@@ -30,7 +30,7 @@ export default async function ProfilePage() {
   const isBusiness = session.roles.includes('business');
 
   const supabase = await createClient();
-  const [creatorRes, payoutRes, consultantRes, businessRes, founderNumber] = await Promise.all([
+  const [creatorRes, payoutRes, consultantRes, businessRes, founderNumber, partnerPayoutRes] = await Promise.all([
     isCreator
       ? supabase.from('creator_profiles').select('categories, audience_size, platforms').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -43,7 +43,10 @@ export default async function ProfilePage() {
       ? supabase.from('business_profiles').select('company_name, industry, billing_email, website').eq('user_id', session.userId).maybeSingle()
       : Promise.resolve({ data: null }),
     isCreator ? getFounderNumber(session.userId) : Promise.resolve(null),
+    // Partner payout number for commissions — private columns, own read via definer RPC (0028).
+    isConsultant ? supabase.rpc('get_my_partner_payout_settings').maybeSingle() : Promise.resolve({ data: null }),
   ]);
+  const partnerPayout = partnerPayoutRes.data as { momo_payout_phone_e164: string | null; momo_provider: string | null } | null;
 
   const cp = creatorRes.data as
     | { categories: string[]; audience_size: number; platforms: unknown }
@@ -78,6 +81,8 @@ export default async function ProfilePage() {
     socials,
     specialties: (kp?.specialties ?? []).join(', '),
     yearsExperience: kp?.years_experience ?? 0,
+    partnerMomoPhone: partnerPayout?.momo_payout_phone_e164 ?? '',
+    partnerMomoProvider: partnerPayout?.momo_provider ?? 'mtn_momo',
     companyName: bp?.company_name ?? '',
     industry: bp?.industry ?? '',
     billingEmail: bp?.billing_email ?? '',

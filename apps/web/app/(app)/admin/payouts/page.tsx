@@ -45,27 +45,19 @@ export default async function AdminPayouts() {
       };
     });
 
-  const { data: commissions } = await supabase
-    .from('partner_commissions')
-    .select('id, commission_fcfa, commission_rate, gross_payout_fcfa, created_at, partner:profiles!partner_commissions_partner_id_fkey(display_name, phone_e164), creator:profiles!partner_commissions_creator_id_fkey(display_name), cc:campaign_creators!partner_commissions_campaign_creator_id_fkey(campaign:campaigns!campaign_creators_campaign_id_fkey(title))')
-    .eq('status', 'owed')
-    .order('created_at', { ascending: true })
-    .limit(200);
-  const one = <T,>(v: T | T[] | null | undefined): T | undefined => (Array.isArray(v) ? v[0] : (v ?? undefined));
-  const commissionRows: CommissionRow[] = (commissions ?? []).map((c) => {
-    const partner = one(c.partner as { display_name: string; phone_e164: string | null } | null);
-    const cc = one(c.cc as { campaign: { title: string } | { title: string }[] | null } | null);
-    return {
-      id: c.id,
-      partnerName: partner?.display_name ?? 'Partenaire',
-      partnerPhone: partner?.phone_e164 ?? null,
-      creatorName: one(c.creator as { display_name: string } | null)?.display_name ?? 'Créateur',
-      campaignTitle: one(cc?.campaign)?.title ?? 'Campagne',
-      amount: c.commission_fcfa,
-      rate: c.commission_rate,
-      gross: c.gross_payout_fcfa,
-    };
-  });
+  // Owed partner commissions with the partner's private payout number (admin-only definer RPC, 0028).
+  const { data: commissions } = await supabase.rpc('admin_owed_commissions');
+  const commissionRows: CommissionRow[] = (commissions ?? []).map((c) => ({
+    id: c.id,
+    partnerName: c.partner_name,
+    payoutPhone: c.payout_phone,
+    payoutProvider: c.payout_provider,
+    creatorName: c.creator_name,
+    campaignTitle: c.campaign_title,
+    amount: c.commission_fcfa,
+    rate: c.commission_rate,
+    gross: c.gross_payout_fcfa,
+  }));
 
   return (
     <section className="space-y-4">

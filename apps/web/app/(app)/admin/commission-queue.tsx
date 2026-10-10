@@ -8,7 +8,9 @@ import { fmtFcfa, PROVIDERS } from '@/lib/data/campaigns';
 export interface CommissionRow {
   id: string;
   partnerName: string;
-  partnerPhone: string | null;
+  /** Partner's Mobile Money payout number (private, from their profile), or null if not set. */
+  payoutPhone: string | null;
+  payoutProvider: string | null;
   creatorName: string;
   campaignTitle: string;
   amount: number;
@@ -44,8 +46,14 @@ function CommissionCard({ row }: { row: CommissionRow }) {
           <p className="font-bold text-ink">{row.partnerName}</p>
           <p className="mt-0.5 text-xs text-muted">
             {row.creatorName} · {row.campaignTitle}
-            {row.partnerPhone && <> · {row.partnerPhone}</>}
           </p>
+          {row.payoutPhone ? (
+            <p className="mt-1 text-xs font-semibold text-ink">
+              Envoyer à {row.payoutPhone} · {PROVIDERS.find((p) => p.id === row.payoutProvider)?.label ?? row.payoutProvider}
+            </p>
+          ) : (
+            <p className="mt-1 text-xs font-semibold text-accent">Numéro de paiement non renseigné : contactez le partenaire.</p>
+          )}
         </div>
         <div className="text-right">
           <span className="font-display font-extrabold text-ink">{fmtFcfa(row.amount)}</span>
@@ -64,7 +72,7 @@ function CommissionCard({ row }: { row: CommissionRow }) {
             className="mt-0.5 min-h-tap w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
           />
         </div>
-        <select name="provider" className="min-h-tap rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none">
+        <select name="provider" defaultValue={row.payoutProvider ?? 'mtn_momo'} className="min-h-tap rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none">
           {PROVIDERS.map((p) => (
             <option key={p.id} value={p.id}>{p.label}</option>
           ))}

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Users, Coins, Clock, Megaphone, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Users, Coins, Clock, Megaphone, ArrowRight, CheckCircle2, Wallet } from 'lucide-react';
 import { SmartAvatar } from '@/components/smart-avatar';
 import { InviteCreatorForm, EndRepresentationButton } from '@/components/representation-forms';
 import { createClient } from '@/lib/supabase/server';
@@ -21,10 +21,12 @@ export default async function PartnerCreatorsPage() {
   if (!session.userId) redirect('/auth?mode=signin');
 
   const supabase = await createClient();
-  const [{ data: linkRows }, { data: dealRows }] = await Promise.all([
+  const [{ data: linkRows }, { data: dealRows }, { data: payout }] = await Promise.all([
     supabase.rpc('my_partner_links'),
     supabase.rpc('partner_deals'),
+    supabase.rpc('get_my_partner_payout_settings').maybeSingle(),
   ]);
+  const payoutConfigured = !!payout?.momo_payout_phone_e164;
   const links = (linkRows ?? []).filter((l) => l.my_side === 'partner');
   const active = links.filter((l) => l.status === 'active');
   const pending = links.filter((l) => l.status === 'pending');
@@ -47,6 +49,19 @@ export default async function PartnerCreatorsPage() {
           Les créateurs que vous représentez. Vous postulez aux campagnes pour eux ; votre commission est calculée à chaque paiement.
         </p>
       </div>
+
+      {!payoutConfigured && (
+        <Link href="/profile" className="flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent-soft p-4 transition hover:border-accent/50">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-accent"><Wallet className="h-4 w-4" /></span>
+            <div>
+              <p className="text-sm font-bold text-ink">Ajoutez votre numéro Mobile Money</p>
+              <p className="text-[11px] text-muted">Bayele y verse vos commissions. Sans numéro, elles ne peuvent pas être payées.</p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-accent" />
+        </Link>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat icon={Users} label="Créateurs représentés" value={String(active.length)} />

@@ -371,6 +371,8 @@ export type Database = {
       consultant_profiles: {
         Row: {
           agency_access: boolean
+          momo_payout_phone_e164: string | null
+          momo_provider: Database["public"]["Enums"]["payment_provider"] | null
           specialties: string[]
           tax_id: string | null
           user_id: string
@@ -378,6 +380,8 @@ export type Database = {
         }
         Insert: {
           agency_access?: boolean
+          momo_payout_phone_e164?: string | null
+          momo_provider?: Database["public"]["Enums"]["payment_provider"] | null
           specialties?: string[]
           tax_id?: string | null
           user_id: string
@@ -385,6 +389,8 @@ export type Database = {
         }
         Update: {
           agency_access?: boolean
+          momo_payout_phone_e164?: string | null
+          momo_provider?: Database["public"]["Enums"]["payment_provider"] | null
           specialties?: string[]
           tax_id?: string | null
           user_id?: string
@@ -1033,6 +1039,30 @@ export type Database = {
           p_provider?: Database["public"]["Enums"]["payment_provider"]
         }
         Returns: undefined
+      }
+      get_my_partner_payout_settings: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          momo_payout_phone_e164: string | null
+          momo_provider: Database["public"]["Enums"]["payment_provider"] | null
+        }[]
+      }
+      admin_owed_commissions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          partner_id: string
+          partner_name: string
+          partner_handle: string
+          payout_phone: string | null
+          payout_provider: Database["public"]["Enums"]["payment_provider"] | null
+          creator_name: string
+          campaign_title: string
+          commission_fcfa: number
+          commission_rate: number
+          gross_payout_fcfa: number
+          created_at: string
+        }[]
       }
       admin_confirm_retainer_funding: {
         Args: {
