@@ -955,12 +955,53 @@
         "label": "Manual status",
         "hint": "Only Draft, Waiting for \"YES\" and Declined can be set by hand; payment and publishing update automatically."
       },
+      "tips": {
+        "aria": "Help: {section}",
+        "template": "A starting point by sector. The template fills in text (service, deliverables, profile, rights), never the brand, city, budget or quantities. No prices: those come from the brand.",
+        "brand": "Who is ordering and how to reach them. The internal name and contact are for the order form and reminders; they are never published. The public only sees the label and the city.",
+        "consent": "The brand's real name is published only with its written consent (a screenshot of the WhatsApp \"OK\" is enough), kept as proof. Otherwise, an honest descriptor. The listing always says \"Managed by Bayele\".",
+        "service": "What creators read first: the service, title and category. The category feeds the filters and alerts. The brand's total budget is never shown, only the net pay per creator.",
+        "claims": "Real estate, finance, health: the brand's claims (prices, returns, effects) must be backed up. Tick only after seeing the evidence; without this box, publishing is blocked.",
+        "deliverables": "The main deliverable and its count per spot are public before sign-up (e.g. \"3 short videos\"); the detail stays members-only. The pay floor is checked on this deliverable.",
+        "deadline": "Latest delivery date, the one on the order form. It must be in the future: a listing whose date has passed cannot be published.",
+        "budget": "The total amount the brand pays, Bayele's 25% fee included, and the number of spots. This total stays internal: it never appears on the listing.",
+        "netPay": "The figure shown on the listing: 75% of the total divided by the number of spots, rounded down. It is exactly what escrow pays; the rounding remainder stays in escrow.",
+        "floor": "The minimum net amount per delivered unit. Below a set floor, publishing is blocked: offer a bigger budget or fewer deliverables. With no floor set, publishing is allowed.",
+        "rights": "Where and for how long the brand can use the content. By default: its own channels, in the campaign country, 6 months. Paid ads are an option, with the creator's written agreement.",
+        "profile": "What it takes to succeed: style, experience, content language, equipment only if essential. Public before sign-up so creators can judge for themselves. Never physical or age criteria.",
+        "application": "How the choice works: Bayele proposes 2 to 3 creators per spot, the brand approves within 48 h. This text is fixed and shown as is on the listing.",
+        "checklist": "The fields the listing standard requires. \"Publish\" stays greyed out while a line is missing: it is the same list the server checks.",
+        "order": "The order form sets the scope, budget, fee and rights. Send it, then record the brand's written \"YES\" with its proof: without that \"YES\", nothing is published.",
+        "publish": "Publishing creates the campaign, invisible. It goes live only once the funding is confirmed. No more than 2 to 3 listings a week, across sectors. After that, the listing is locked.",
+        "deposit": "Internal tracking of the deposit. It funds nothing: only the confirmation in Funding, with the exact receipt reference, puts the money in escrow and publishes the listing.",
+        "notes": "Internal notes, never published. The manual status only offers Draft or Waiting for \"YES\"; the others follow the campaign. Declining also cancels the unfunded campaign.",
+        "brandLocked": "The listing exists, so its fields are locked. Only the contact, the proofs (consent, \"YES\"), the deposit and the notes can still change. To change it: decline, then duplicate.",
+        "preview": "What the campaign board will show: label, city, \"Managed by Bayele\" badge, service, net per spot and deadline. Never the internal name or the total budget.",
+        "fundingCard": "Confirm here a payment that has actually arrived, provider receipt in hand. Confirming puts the budget in escrow and publishes the campaign: never before the money is in.",
+        "fundingRef": "Copy the exact SokoClick or Mobile Money receipt reference for this payment. A reference already used for another campaign is refused. Never a screenshot or an example.",
+        "fundingProvider": "How the money arrived, as shown on the receipt. It is recorded with the escrow and used to reconcile the accounts."
+      },
       "funding": {
         "managedChip": "Managed",
         "briefLink": "Brief",
         "viewPublic": "View the public listing",
         "backToBrief": "Back to the brief",
-        "highlight": "Managed campaign to fund"
+        "highlight": "Managed campaign to fund",
+        "refLabel": "SokoClick / MoMo invoice ref.",
+        "refPlaceholder": "Exact SokoClick / MoMo receipt reference",
+        "providerLabel": "Payment method",
+        "submit": "Confirm escrow",
+        "success": "Escrow active — the campaign is published.",
+        "empty": "No campaigns waiting for funding.",
+        "errors": {
+          "invoiceAlreadyUsed": "This reference is already used for another campaign. Enter the exact reference received for this payment.",
+          "notPublished": "The funding was not recorded: the campaign is not published. Check the reference and try again.",
+          "missing": "Campaign missing.",
+          "refRequired": "SokoClick / MoMo invoice reference required.",
+          "notAuthorized": "You are not authorised.",
+          "alreadyFunded": "This campaign is already funded.",
+          "generic": "The confirmation failed. Try again."
+        }
       }
     }
   },

@@ -203,3 +203,49 @@ describe('pay floors — who reads what (round 2)', () => {
     expect(fn).not.toMatch(/error: '[^']/);
   });
 });
+
+describe('section tooltips (design §13, F4)', () => {
+  const TIP_KEYS = ['template', 'brand', 'consent', 'service', 'claims', 'deliverables', 'deadline', 'budget', 'netPay', 'floor', 'rights', 'profile',
+    'application', 'checklist', 'order', 'publish', 'deposit', 'notes', 'brandLocked', 'preview', 'fundingCard', 'fundingRef', 'fundingProvider'] as const;
+  it('23 tips, FR + EN, each ≤ 220 characters', () => {
+    for (const d of [fr, en]) {
+      for (const k of TIP_KEYS) {
+        const text = d.admin.briefs.tips[k];
+        expect(text, k).toBeTruthy();
+        expect(text.length, k).toBeLessThanOrEqual(220);
+      }
+      expect(Object.keys(d.admin.briefs.tips).sort()).toEqual([...TIP_KEYS, 'aria'].sort());
+    }
+    expect(fr.admin.briefs.tips.aria).toBe('Aide : {section}');
+  });
+  it('every tip is wired where §13.2 puts it', () => {
+    const editor = src('../app/(app)/admin/briefs/_components/brief-editor.tsx');
+    for (const k of TIP_KEYS.filter((k) => !k.startsWith('funding'))) expect(editor, k).toContain(`tip('${k}'`);
+    const queue = src('../app/(app)/admin/funding-queue.tsx');
+    for (const k of ['fundingCard', 'fundingRef', 'fundingProvider']) expect(queue, k).toContain(`tips.${k}`);
+    // headings stay outside the disabled scope (tips work on locked / pending briefs)
+    expect(editor).not.toMatch(/<fieldset disabled=\{locked \|\| pending\} className="space-y-4">/);
+    expect(editor).toMatch(/<fieldset disabled=\{disabled\} className="mt-3 min-w-0 space-y-3">/);
+  });
+  it('funding placeholder is not a realistic reference (FINEX incident)', () => {
+    const queue = src('../app/(app)/admin/funding-queue.tsx');
+    expect(queue).not.toContain('SOKO-2026');
+    expect(queue).toContain('placeholder={labels.refPlaceholder}');
+  });
+});
+
+describe('QA D2/D3 — tips never block taps; the reference input is not auto-corrected', () => {
+  it('the bubble ignores pointer events and any tap except on the trigger closes it', () => {
+    const tip = src('../components/admin/section-tip.tsx');
+    expect(tip).toContain('pointer-events-none absolute');
+    expect(tip).toMatch(/!btn\.current\?\.contains\(e\.target\)\) hide\(\)/);
+  });
+  it('funding-card tips open upwards, away from the form row', () => {
+    const q = src('../app/(app)/admin/funding-queue.tsx');
+    expect((q.match(/<SectionTip[^>]*placement="top"/g) ?? []).length).toBe(3);
+  });
+  it('the reference input disables auto-capitalisation, auto-correct, spellcheck and autocomplete', () => {
+    const q = src('../app/(app)/admin/funding-queue.tsx');
+    for (const a of ['autoComplete="off"', 'autoCapitalize="off"', 'autoCorrect="off"', 'spellCheck={false}']) expect(q).toContain(a);
+  });
+});
