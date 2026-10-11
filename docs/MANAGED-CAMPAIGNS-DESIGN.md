@@ -1239,3 +1239,210 @@ labels live in their TS libraries (§9) with `fr`/`en` fields, not in the dictio
    consider restricting the upsert to those.
 7. Consent proof (K3) has no column in 0033; the editor prepends it to `notes` (« [Consentement] … »).
    A `brand_consent_proof text` column would make it auditable.
+
+---
+
+## 13. Section tooltips (internal) — brief F4 « §10 Section tooltips »
+
+> Numbered 13 because §10 of this file is already the copy table. Scope: the internal creation
+> flow only — `/admin/briefs/new`, `/admin/briefs/[id]` and the funding card in
+> `app/(app)/admin/funding-queue.tsx`. **No public page changes (F5).**
+
+**Why.** The FINEX incident (CONTEXT-FIX-FUNDING) happened because a field looked self-explanatory
+and wasn't. Each section heading gets one small « ? » that says, in plain words, **what the section
+is, why it matters, and the rule it enforces**. The copy never cites rule codes and never contains a
+figure the council did not decide (the only figures used: 25 % fee, 75 % to creators, 6 months
+default rights, 2 to 3 creators per place, 48 h approval, 2 to 3 listings per week — all from
+M4, M6, M7, M10, K7).
+
+### 13.1 Component — `SectionTip`
+
+File `components/admin/section-tip.tsx` (client component, no library, ~60 lines).
+`<SectionTip label={section title} text={tip text} ariaTemplate={L.tips.aria} />`.
+
+**Markup**
+```html
+<span class="relative inline-flex" data-tip-root>
+  <button type="button"
+          aria-label="Aide : Marque"            <!-- fill(L.tips.aria, { section }) -->
+          aria-expanded="false|true"
+          aria-controls="tip-brand"
+          aria-describedby="tip-brand"           <!-- only while open -->
+          class="…trigger…">
+    <CircleHelp class="h-5 w-5" aria-hidden />   <!-- lucide, 20 px -->
+  </button>
+  <span id="tip-brand" role="tooltip" data-open="false|true" class="…bubble…">{text}</span>
+</span>
+```
+- The bubble is always in the DOM (so it can transition) but `visibility: hidden` when closed, so
+  screen readers never read a closed tip.
+- `id` = `tip-${key}` (stable, from the i18n key's last segment; the funding card appends the
+  campaign id: `tip-fundingRef-${row.id}`, since cards repeat).
+
+**Trigger (20 px icon, 44 px hit area)**
+```
+relative inline-grid h-5 w-5 shrink-0 place-items-center rounded-full text-muted transition-colors
+hover:text-brand-700 aria-expanded:text-brand-700
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+before:absolute before:-inset-3 before:content-['']          ← 20 + 2×12 = 44 px hit area
+```
+Placed **at the end of the heading text**, `ml-1.5`, vertically centred (`items-center` on the
+heading). The invisible 44 px area must not overlap another control: headings have nothing to their
+right except the checklist count (`ml-auto`), which is ≥ 24 px away.
+
+**Bubble**
+```
+absolute left-0 top-full z-30 mt-2 w-[min(18rem,calc(100vw-2rem))]
+rounded-xl bg-ink px-3 py-2.5 text-left text-[12px] font-normal normal-case leading-relaxed
+tracking-normal text-white shadow-cardHover
+invisible opacity-0 -translate-y-1
+transition-[opacity,transform,visibility] duration-150 ease-out
+data-[open=true]:visible data-[open=true]:opacity-100 data-[open=true]:translate-y-0
+motion-reduce:transition-none
+```
+- Tokens: `bg-ink` / `text-white` (17:1), `shadow-cardHover`, `rounded-xl`; no new token. `z-30`
+  sits above the mobile sticky bar (`z-20`) and below the app header (`z-30` sibling, earlier in DOM —
+  the bubble never reaches it because it opens downwards).
+- **Placement:** below the heading, left edge aligned with the trigger's root. Max width 18 rem
+  (288 px), and never wider than the viewport minus the 16 px gutters. **Edge rule:** when the root's
+  right edge is in the right half of the viewport (aside cards on desktop, the funding card's
+  provider select), add `right-0 left-auto` instead — computed once on open from
+  `getBoundingClientRect()` (`data-align="end"`). No flip upwards (headings are near the top of
+  their card; the card scrolls).
+- No arrow (keeps it CSS-simple and avoids misalignment on the 44 px hit area).
+- Inherited styles reset (`font-normal normal-case tracking-normal`) because some headings are
+  uppercase / bold (net-pay panel label, aside preview label).
+
+**Motion (epic-design Mode 2, CSS only).** Depth 5 (foreground UI). Fade + 4 px rise, 150 ms,
+`ease-out`; only `opacity`, `transform`, `visibility` are animated (GPU-safe); no `will-change`.
+`prefers-reduced-motion`: `motion-reduce:transition-none` + the global reduced-motion rule → appears
+instantly. No loop, no delay chains.
+
+**Interaction**
+| Input | Behaviour |
+|---|---|
+| Mouse hover (`pointerType === 'mouse'`) | Opens 120 ms after `pointerenter` on the trigger; stays open while the pointer is on the trigger **or** the bubble; closes 200 ms after leaving both |
+| Keyboard focus (`:focus-visible`) | Opens immediately on focus; closes on blur |
+| Tap / click | Toggles (`aria-expanded`). Touch `pointerenter` is ignored so a tap doesn't open-then-close |
+| `Esc` | Closes the open tip from anywhere (document `keydown`); focus returns to its trigger if focus was on it |
+| Outside tap / click | Document `pointerdown` outside `[data-tip-root]` closes it |
+| Another tip opens | Only one tip open at a time: opening dispatches `window` event `section-tip:open` with the id; others close |
+| Scroll | Stays open (anchored, scrolls with the card) |
+
+`type="button"` always (it lives inside forms). Listeners are attached only while open.
+
+**Disabled fieldsets (must-fix for implementation).** `brief-editor.tsx` wraps the sections in
+`<fieldset disabled={locked || pending}>`, which would also disable the tip buttons — exactly when
+the team most needs the explanation (locked brief). Change `Section` so the heading sits **outside**
+the disabled scope: the outer wrapper becomes a `<div>`, and each section body
+(`div.mt-3.space-y-3`) becomes `<fieldset disabled={disabled} className="mt-3 min-w-0 space-y-3">`
+(`disabled` passed as a prop). Tips stay usable on locked and pending briefs.
+
+**Accessibility checklist**
+- [ ] Button name = « Aide : {section} » / "Help: {section}" (unique per page; the section title is
+      the visible heading next to it).
+- [ ] `aria-expanded` reflects state; `aria-describedby` points to the bubble only while open.
+- [ ] Bubble has no focusable content (plain text only — no links, so no focus trap needed).
+- [ ] 44 × 44 px hit area; visible focus ring; icon colour `text-muted` (5.5:1) → `text-brand-700`.
+- [ ] Works at 360 px: bubble width `calc(100vw - 2rem)` max, no horizontal scroll.
+- [ ] Text ≤ 220 characters in both languages (measured below) so the bubble stays ≤ 6 lines.
+
+### 13.2 Where each tip goes (real headings in the code)
+
+| # | Heading (FR) in code | Rendered by | Key (`admin.briefs.tips.*`) |
+|---|---|---|---|
+| 1 | « Partir d'un modèle » (template rail label) | `brief-editor.tsx` template rail `<p>` | `template` |
+| 2 | ① « Marque » (internal name, contact, display) | `Section n={1}` | `brand` |
+| 3 | « Consentement écrit reçu » box (real-name mode) — tip after the box's checkbox label | brand section, `#field-consent` | `consent` |
+| 4 | ② « Service » (service, title, category) | `Section n={2}` | `service` |
+| 5 | « Allégations vérifiées » box (sensitive categories only) | service section, `claimsNeeded` | `claims` |
+| 6 | ③ « Livrables » | `Section n={3}` | `deliverables` |
+| 7 | ④ « Date limite » | `Section n={4}` | `deadline` |
+| 8 | ⑤ « Budget » | `Section n={5}` | `budget` |
+| 9 | « Net par place » label of the dark panel | `net-pay-panel.tsx` | `netPay` |
+| 10 | Pay-floor verdict title (« Seuil non défini » / « Au-dessus du seuil » / « Sous le seuil… ») | `pay-floor-verdict.tsx` | `floor` |
+| 11 | ⑥ « Droits d'usage » | `Section n={6}` | `rights` |
+| 12 | ⑦ « Profil créateur » | `Section n={7}` | `profile` |
+| 13 | ⑧ « Candidature » | `Section n={8}` | `application` |
+| 14 | « Avant publication » (checklist title, before the count) | `mandatory-checklist.tsx` | `checklist` |
+| 15 | « Bon de commande » | `Section title={L.section.order}` | `order` |
+| 16 | « Publication » | `Section title={L.section.publish}` | `publish` |
+| 17 | « Acompte reçu » label (inside Publication, after creation) | publish section | `deposit` |
+| 18 | « Notes internes » (notes, manual status, decline) | `Section title={L.section.notes}` | `notes` |
+| 19 | « Marque » section shown **on a locked brief** (contact + proofs) | `Section title={L.section.brand}` when `locked` | `brandLocked` |
+| 20 | « Aperçu public » (desktop aside) | aside preview card | `preview` |
+| 21 | Funding card — tip next to the campaign title row (whole card) | `funding-queue.tsx` `FundingCard` | `fundingCard` |
+| 22 | Funding card — « Réf. facture SokoClick / MoMo » label | `funding-queue.tsx` | `fundingRef` |
+| 23 | Funding card — provider select (tip after a new visible label « Moyen de paiement ») | `funding-queue.tsx` | `fundingProvider` |
+
+Funding card notes: the provider `<select>` has no visible label today — add
+`<label class="text-[11px] font-semibold text-muted">Moyen de paiement</label>` (key
+`admin.briefs.funding.providerLabel`) so the tip has a heading to sit on and the select gets an
+accessible name. The funding page is used for **all** campaigns (self-serve and managed), so its tips
+are written for both. `FundingQueue` already receives `labels` from the page; extend `FundingLabels`
+with the new keys (for self-serve-only renders the page must now always pass `labels`).
+
+### 13.3 Copy — tooltips (FR / EN)
+
+Placeholders: `{section}` only in `aria`. Lengths measured after French typography (U+00A0 / U+202F
+count as one character); the longest is 210.
+
+| Key | FR | EN |
+|---|---|---|
+| `admin.briefs.tips.aria` | Aide : {section} | Help: {section} |
+| `admin.briefs.tips.template` | Point de départ par secteur. Le modèle remplit le texte (service, livrables, profil, droits), jamais la marque, la ville, le budget ni les quantités. Aucun prix : il vient de la marque. | A starting point by sector. The template fills in text (service, deliverables, profile, rights), never the brand, city, budget or quantities. No prices: those come from the brand. |
+| `admin.briefs.tips.brand` | Qui commande et comment la joindre. Le nom interne et le contact servent au bon de commande et aux relances ; ils ne sont jamais publiés. Le public voit seulement le libellé et la ville. | Who is ordering and how to reach them. The internal name and contact are for the order form and reminders; they are never published. The public only sees the label and the city. |
+| `admin.briefs.tips.consent` | Le vrai nom de la marque n'est publié qu'avec son accord écrit (une capture du « OK » WhatsApp suffit), gardé en preuve. Sinon, un descripteur honnête. L'annonce porte toujours « Géré par Bayele ». | The brand's real name is published only with its written consent (a screenshot of the WhatsApp "OK" is enough), kept as proof. Otherwise, an honest descriptor. The listing always says "Managed by Bayele". |
+| `admin.briefs.tips.service` | Ce que les créateurs lisent en premier : le service, le titre et la catégorie. La catégorie alimente les filtres et les alertes. Le budget total de la marque n'est jamais affiché, seulement le net par créateur. | What creators read first: the service, title and category. The category feeds the filters and alerts. The brand's total budget is never shown, only the net pay per creator. |
+| `admin.briefs.tips.claims` | Immobilier, finance, santé : les promesses de la marque (prix, rendement, effets) doivent être justifiées. Cochez seulement après avoir vu les preuves ; sans cette case, la publication est bloquée. | Real estate, finance, health: the brand's claims (prices, returns, effects) must be backed up. Tick only after seeing the evidence; without this box, publishing is blocked. |
+| `admin.briefs.tips.deliverables` | Le livrable principal et son nombre par place sont publics avant inscription (ex. « 3 vidéos courtes ») ; le détail reste réservé aux membres. Le seuil de rémunération se vérifie sur ce livrable. | The main deliverable and its count per spot are public before sign-up (e.g. "3 short videos"); the detail stays members-only. The pay floor is checked on this deliverable. |
+| `admin.briefs.tips.deadline` | Date de livraison au plus tard, celle du bon de commande. Elle doit être à venir : une annonce dont la date est passée ne peut pas être publiée. | Latest delivery date, the one on the order form. It must be in the future: a listing whose date has passed cannot be published. |
+| `admin.briefs.tips.budget` | Le montant total que la marque paie, frais Bayele de 25 % inclus, et le nombre de places. Ce total reste interne : il n'apparaît jamais sur l'annonce. | The total amount the brand pays, Bayele's 25% fee included, and the number of spots. This total stays internal: it never appears on the listing. |
+| `admin.briefs.tips.netPay` | Le chiffre affiché sur l'annonce : 75 % du total divisé par le nombre de places, arrondi vers le bas. C'est exactement ce que le séquestre verse ; le reste d'arrondi reste dans le séquestre. | The figure shown on the listing: 75% of the total divided by the number of spots, rounded down. It is exactly what escrow pays; the rounding remainder stays in escrow. |
+| `admin.briefs.tips.floor` | Montant net minimum par unité livrée. Sous un seuil défini, la publication est bloquée : proposez plus de budget ou moins de livrables. Sans seuil défini, la publication est autorisée. | The minimum net amount per delivered unit. Below a set floor, publishing is blocked: offer a bigger budget or fewer deliverables. With no floor set, publishing is allowed. |
+| `admin.briefs.tips.rights` | Où et combien de temps la marque peut utiliser les contenus. Par défaut : ses propres réseaux, dans le pays de la campagne, 6 mois. La publicité payante est une option, avec l'accord écrit du créateur. | Where and for how long the brand can use the content. By default: its own channels, in the campaign country, 6 months. Paid ads are an option, with the creator's written agreement. |
+| `admin.briefs.tips.profile` | Ce qu'il faut pour réussir : style, expérience, langue du contenu, matériel s'il est indispensable. Public avant inscription pour que chacun se juge. Jamais de critère physique ni d'âge. | What it takes to succeed: style, experience, content language, equipment only if essential. Public before sign-up so creators can judge for themselves. Never physical or age criteria. |
+| `admin.briefs.tips.application` | Comment se passe le choix : Bayele propose 2 à 3 créateurs par place, la marque valide sous 48 h. Ce texte est fixe et repris tel quel sur l'annonce. | How the choice works: Bayele proposes 2 to 3 creators per spot, the brand approves within 48 h. This text is fixed and shown as is on the listing. |
+| `admin.briefs.tips.checklist` | Les champs exigés par le standard d'annonce. « Publier » reste grisé tant qu'une ligne manque : c'est la même liste que celle vérifiée par le serveur. | The fields the listing standard requires. "Publish" stays greyed out while a line is missing: it is the same list the server checks. |
+| `admin.briefs.tips.order` | Le bon de commande fixe le périmètre, le budget, les frais et les droits. Envoyez-le, puis enregistrez le « OUI » écrit de la marque avec sa preuve : sans ce « OUI », rien n'est publié. | The order form sets the scope, budget, fee and rights. Send it, then record the brand's written "YES" with its proof: without that "YES", nothing is published. |
+| `admin.briefs.tips.publish` | Publier crée la campagne, invisible. Elle passe en ligne seulement après la confirmation du financement. Pas plus de 2 à 3 annonces par semaine, de secteurs variés. Ensuite l'annonce est verrouillée. | Publishing creates the campaign, invisible. It goes live only once the funding is confirmed. No more than 2 to 3 listings a week, across sectors. After that, the listing is locked. |
+| `admin.briefs.tips.deposit` | Suivi interne de l'acompte. Il ne finance rien : seule la confirmation dans Financement, avec la référence exacte du reçu, place l'argent sous séquestre et publie l'annonce. | Internal tracking of the deposit. It funds nothing: only the confirmation in Funding, with the exact receipt reference, puts the money in escrow and publishes the listing. |
+| `admin.briefs.tips.notes` | Notes internes, jamais publiées. Le statut manuel ne propose que Brouillon ou En attente du « OUI » ; les autres suivent la campagne. Refuser annule aussi la campagne non financée. | Internal notes, never published. The manual status only offers Draft or Waiting for "YES"; the others follow the campaign. Declining also cancels the unfunded campaign. |
+| `admin.briefs.tips.brandLocked` | L'annonce est créée : ses champs sont verrouillés. Seuls le contact, les preuves (accord, « OUI »), l'acompte et les notes restent modifiables. Pour la changer : refusez, puis dupliquez. | The listing exists, so its fields are locked. Only the contact, the proofs (consent, "YES"), the deposit and the notes can still change. To change it: decline, then duplicate. |
+| `admin.briefs.tips.preview` | Ce que montrera le tableau des campagnes : libellé, ville, badge « Géré par Bayele », service, net par place et date limite. Jamais le nom interne ni le budget total. | What the campaign board will show: label, city, "Managed by Bayele" badge, service, net per spot and deadline. Never the internal name or the total budget. |
+| `admin.briefs.tips.fundingCard` | Confirmez ici un paiement réellement reçu, reçu du fournisseur en main. La confirmation place le budget sous séquestre et publie la campagne : jamais avant que l'argent soit arrivé. | Confirm here a payment that has actually arrived, provider receipt in hand. Confirming puts the budget in escrow and publishes the campaign: never before the money is in. |
+| `admin.briefs.tips.fundingRef` | Copiez la référence exacte du reçu SokoClick ou Mobile Money de ce paiement. Une référence déjà utilisée pour une autre campagne est refusée. Jamais une capture ni un exemple. | Copy the exact SokoClick or Mobile Money receipt reference for this payment. A reference already used for another campaign is refused. Never a screenshot or an example. |
+| `admin.briefs.tips.fundingProvider` | Le moyen par lequel l'argent est arrivé, tel qu'il figure sur le reçu. Il est enregistré avec le séquestre et sert au rapprochement des comptes. | How the money arrived, as shown on the receipt. It is recorded with the escrow and used to reconcile the accounts. |
+
+### 13.4 Copy — funding field, placeholder and errors (F2, F3)
+
+| Key | FR | EN |
+|---|---|---|
+| `admin.briefs.funding.refLabel` | Réf. facture SokoClick / MoMo | SokoClick / MoMo invoice ref. |
+| `admin.briefs.funding.refPlaceholder` | Référence exacte du reçu SokoClick / MoMo | Exact SokoClick / MoMo receipt reference |
+| `admin.briefs.funding.providerLabel` | Moyen de paiement | Payment method |
+| `admin.briefs.funding.errors.invoiceAlreadyUsed` | Cette référence est déjà utilisée pour une autre campagne. Saisissez la référence exacte reçue pour ce paiement. | This reference is already used for another campaign. Enter the exact reference received for this payment. |
+| `admin.briefs.funding.errors.notPublished` | Le financement n'a pas été enregistré : la campagne n'est pas publiée. Vérifiez la référence et réessayez. | The funding was not recorded: the campaign is not published. Check the reference and try again. |
+
+Rules for the field (implementation notes, not copy):
+- The placeholder is guidance, not a value: it contains **no digits and no realistic reference
+  pattern** (the old `SOKO-2026-000123` caused the incident). Placeholder colour `placeholder:text-muted`
+  (5.5:1) so it never reads as typed text.
+- `invoice_already_used` → `errors.invoiceAlreadyUsed`, shown under the form in
+  `role="alert" text-xs text-rose-600`, the input gets `aria-invalid="true"` and focus returns to it;
+  the typed value is kept so the admin can correct it.
+- F3: the success line « Séquestre activé — la campagne est publiée. » shows **only** when the
+  action re-read a `published` / `in_progress` status; otherwise `errors.notPublished`.
+
+### 13.5 Acceptance (QA)
+
+- [ ] All 23 tips render at the headings listed in §13.2; FR/EN key parity test passes; French
+      typography test passes (no plain space before `: ? ! ; %`, none inside « »); the no-reward-words
+      test passes (the copy avoids « gagner » / "earn").
+- [ ] Every tip text ≤ 220 characters in FR and EN (the copy above measures 210 at most).
+- [ ] Hover (mouse), keyboard focus and tap each open a tip; `Esc` and an outside tap close it; only
+      one tip is open at a time; tips work on a **locked** brief and while a save is pending.
+- [ ] 360 px: no tip overflows the viewport; the bubble does not hide the mobile sticky bar's buttons
+      after closing; reduced motion shows it without transition.
+- [ ] Funding card: placeholder has no digits; reusing a reference already used for another campaign
+      shows `errors.invoiceAlreadyUsed` and no success line.

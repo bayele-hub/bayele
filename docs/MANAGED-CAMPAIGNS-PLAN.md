@@ -5,7 +5,7 @@
 | **Feature** | Publish and run campaigns for brands that have no account and want Bayele to manage everything, including paying creators |
 | **Objective** | More real, funded offers on `/campaigns` (creator sign-ups) without breaking creator trust |
 | **Council** | 6 independent seats, one agent each: CEO, Growth, CFO, Legal, Creator Community, Campaign Operations (2026-10-10) |
-| **Status** | 🟢 Built; migration 0033 applied to production (2026-10-11), web release pending PR + Vercel deploy — runbook: docs/MANAGED-CAMPAIGNS-RELEASE-RUNBOOK.md. No brief published yet (owner decisions O1–O4 still open, §8) |
+| **Status** | 🟢 Built; migration 0033 applied to production (2026-10-11), web release pending PR + Vercel deploy — runbook: docs/MANAGED-CAMPAIGNS-RELEASE-RUNBOOK.md. No brief published yet (owner decisions O1–O3 still open, §8; O4 decided: future phase) |
 
 **How to use this file.** Single source of truth for managed campaigns. Track every brief in §5,
 tick §9 as work lands, log changes in §10. A managed listing goes public only when every
@@ -125,12 +125,13 @@ Plus trust signals for first-time brands: plain-words escrow explainer (« le cr
 - **O2** Which of the 20 briefs are confirmed by the brand and paid? Only those can be published (M10).
 - **O3** Written consent to name FINEX SARL (#1); otherwise « Entreprise · produits ».
 - **O4** Referral reward for **agents/partners who bring brands** (Growth seat suggests one, paid only once the campaign is funded). This is separate from council decision C3 (no reward for creator referrals) and needs your call.
+  - **Decided 2026-10-11 (owner):** yes — agents/consultants who bring brands will get a reward, but **not now**; it is a future phase. Nothing is built or promised publicly until the amount and rules are set (K4 stays: out of scope for this build).
 
 ## 9. Tracker
 
 ### Decisions
 - [x] M1–M10 council decisions (2026-10-10)
-- [ ] O1 pay floor  - [ ] O2 confirmed/paid briefs  - [ ] O3 FINEX consent  - [ ] O4 agent referral reward
+- [ ] O1 pay floor  - [ ] O2 confirmed/paid briefs  - [ ] O3 FINEX consent  - [x] O4 agent referral reward — yes, deferred to a future phase (2026-10-11)
 
 ### Operations (no code)
 - [ ] WhatsApp Business number + 6-question script
@@ -153,9 +154,14 @@ Plus trust signals for first-time brands: plain-words escrow explainer (« le cr
 - [x] EN leftovers on `/campaigns/[id]`; flag fallback on Windows — brief details + apply CTA localized (role notices), dates in page locale, country names instead of flags everywhere; Frontend
 - [~] QA + release: QA gates PASS locally (no Blocker/Major; 3 Minor: claims-category string match, private.campaign_owner_role oracle, /auth tap targets); release pending staging smoke test after deploy, see $S/qa/QA-REPORT-MANAGED.md
   - [x] Release prep (DevOps): commits + patch verified on a fresh clone; MANIFEST.sha256 regenerated with 0033; 0033 applied to production with matching object fingerprints vs the local dry-run
-  - [ ] PR merged + Vercel production deploy + smoke list (runbook §5)
+  - [x] PR #8 merged + Vercel production deploy (2026-10-11); owner smoke: creator home + /admin/briefs (empty state) render on production
+  - [ ] Full smoke list with a test-titled brief (runbook §5)
   - [ ] `NEXT_PUBLIC_BAYELE_WHATSAPP` set in Vercel once the owner has a number (CTA hidden until then)
-  - [ ] Retire v1 board/stats in the SQL editor after the deploy (QA D3)
+  - [x] Retire v1 board/stats in the SQL editor after the deploy (QA D3) — owner ran it 2026-10-11; verified: only `_v2` remain, board returns Joyjoy
+
+- [x] Incident 2026-10-11 — FINEX funding reported success but stayed `pending_funding`. Root cause: `admin_confirm_campaign_funding` idempotency keyed on the invoice ref alone; ref `SOKO-2026-000123` (same text as the field placeholder) already belonged to another campaign, so the RPC silently returned that campaign's txn. Fix: migration `0034_funding_ref_per_campaign` (per-campaign idempotency, `invoice_already_used`) — **applied to production 2026-10-11**; web maps the error, re-reads status before showing success, neutral placeholder. FINEX re-funded by the owner with a fresh ref → live. QA: PASS (`$S/qa/QA-REPORT-FIX-FUNDING.md`)
+- [x] Section tooltips in the internal creation flow (23 tips, FR/EN, accessible `SectionTip`) — design §13; Frontend; QA PASS
+- [ ] Follow-ups (Minor): N1 keep tooltip hoverable for mouse; N2 duplicate consent-proof id; D3-db normalise invoice refs (case) in DB; webhook `handle_sokoclick_invoice_paid` same per-campaign check
 
 ## 10. Changelog
 
@@ -164,3 +170,6 @@ Plus trust signals for first-time brands: plain-words escrow explainer (« le cr
 | 2026-10-10 | Council (6 seats) decided M1–M10; Operations + Growth seats ranked easy-publishing levers; 20 briefs normalised; owner decisions O1–O4 opened. |
 | 2026-10-11 | UI/UX design spec added: docs/MANAGED-CAMPAIGNS-DESIGN.md |
 | 2026-10-11 | Release: migration 0033 applied to production before the web deploy (pre-checks and post-checks pass); release runbook added: docs/MANAGED-CAMPAIGNS-RELEASE-RUNBOOK.md. |
+| 2026-10-11 | O4 decided: agent/consultant brand-referral reward approved in principle, deferred to a future phase. Production migrations re-checked: 0001–0033 all applied, nothing pending. |
+| 2026-10-11 | Released: PR #8 merged and deployed; v1 `public_campaign_board`/`public_campaign_stats` dropped by the owner in the SQL editor; post-check OK. |
+| 2026-10-11 | Funding-ref incident fixed (0034 applied to prod) + internal section tooltips. |
