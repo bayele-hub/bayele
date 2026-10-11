@@ -54,7 +54,7 @@ export default async function AdminFunding({ searchParams }: { searchParams: Pro
           dépositaire ; SokoClick facture, MoMo transporte les fonds).
         </p>
       </div>
-      <FundingQueue rows={rows} highlight={highlight} labels={t.admin.briefs.funding} />
+      <FundingQueue rows={rows} highlight={highlight} labels={{ ...t.admin.briefs.funding, tips: t.admin.briefs.tips }} />
     </section>
   );
 }

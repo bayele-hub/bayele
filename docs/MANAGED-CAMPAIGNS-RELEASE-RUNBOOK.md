@@ -147,3 +147,26 @@ Do not use `supabase db push` on this project. Production history versions are a
   - turn on leaked-password protection in Auth.
 - QA Minor (pre-existing): /auth logo is 28 px tall and the CGU checkbox is 20×20. The bundle flag is unchanged (shared code is 102 kB).
 - Owner decisions O1–O4 are still open. No brief is published by this release (K2).
+
+## 9. Follow-up release: funding-ref fix + section tooltips (branch `fix/funding-ref-and-brief-tooltips`, 2026-10-11)
+
+**Incident:** on 2026-10-11 the FINEX managed campaign showed « Séquestre activé » but stayed `pending_funding`. Its invoice reference had already been used by another campaign. The idempotency check matched on the reference alone and silently returned the other campaign's transaction.
+
+| Item | State |
+|---|---|
+| Migration `20261011120000_0034_funding_ref_per_campaign.sql` | **ALREADY APPLIED to production** by the Co-CTO on 2026-10-11 at 07:59 UTC (history `20261011075929 0034_funding_ref_per_campaign`). **Do not re-apply.** DevOps re-checked it read-only: the production body of `admin_confirm_campaign_funding` matches the repo file (whitespace and comments ignored); anon has no EXECUTE, authenticated does (grants unchanged). |
+| What 0034 does | Idempotency is now per campaign. A reference already attached to *this* campaign returns its transaction (a real double-submit). A reference attached to another campaign raises `invoice_already_used`. Same signature, CREATE OR REPLACE, K8-clean. |
+| Web | The funding card maps `invoice_already_used` to the F2 message. The placeholder is guidance with no digits. The action re-reads the campaign status and reports success only when it is `published` / `in_progress` (F3). The reference inputs disable autocapitalise and autocorrect. A « ? » section tooltip is added to the brief editor and the funding card (F4). No public page changed (F5). |
+| Patch | `funding-fix-tooltips.patch`, 3 commits on top of main after PR #8. Apply it with the same Git Bash steps as §1, using branch `fix/funding-ref-and-brief-tooltips`. |
+| QA | Final verdict PASS (no Blocker or Major). Open Minor items: N1 (the tooltip bubble can't be hovered) and N2 (duplicate `field-consent-proof` id, pre-existing). |
+| Deferred | D3-db: references are compared exactly, so a re-cased reference (`soko-…`) could still fund a second campaign. Follow-up migration (K8-clean): normalise to `upper(btrim(ref))` in the RPC and the unique index. |
+
+**Smoke test after deploy:**
+1. On /admin/funding, a reused reference shows « Cette référence est déjà utilisée pour une autre campagne… » and the campaign stays `pending_funding`. A fresh reference publishes it and the card leaves the queue.
+2. On a locked brief on a phone, every « ? » opens and closes with tap and with Esc.
+3. `SOKO-2026-000123` is attached only to campaign bee9c557…; FINEX is funded with its own reference.
+
+**Rollback:**
+- Web: promote the previous Vercel deployment.
+- DB: only if really needed. Run `rollback/20261011120000_0034_funding_ref_per_campaign.rollback.sql`, which restores the 0033 body (the ref-only check that caused the incident, so avoid it).
+- If you do run it, remove the history row by name: `0034_funding_ref_per_campaign`. Production's version is `20261011075929`, not the file version.

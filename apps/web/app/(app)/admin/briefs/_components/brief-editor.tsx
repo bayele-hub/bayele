@@ -31,6 +31,7 @@ import { PayFloorVerdict } from './pay-floor-verdict';
 import { MandatoryChecklist } from './mandatory-checklist';
 import { OrderFormCopy } from './order-form-copy';
 import { StatusPill } from './brief-bits';
+import { SectionTip } from '@/components/admin/section-tip';
 
 type Row = Database['public']['Tables']['managed_briefs']['Row'];
 type CampaignStatus = Database['public']['Enums']['campaign_status'];
@@ -441,6 +442,9 @@ export function BriefEditor({
     'mt-1 w-full min-h-tap rounded-xl border border-line bg-white px-3 text-[16px] text-ink focus:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 disabled:bg-surface disabled:text-muted sm:text-sm';
   const area = input.replace('min-h-tap', 'min-h-[5rem] py-2.5');
   const vl = L.editor.vis;
+  type TipKey = Exclude<keyof L['tips'], 'aria'>;
+  // `suffix` keeps ids unique where a block renders twice (mobile body + desktop aside).
+  const tip = (key: TipKey, label: string, suffix = '') => <SectionTip id={`${key}${suffix}`} label={label} text={L.tips[key]} ariaTemplate={L.tips.aria} />;
   const Vis = (v: 'public' | 'members' | 'internal') => <VisTag v={v} labels={vl} />;
 
   const brandLine = (
@@ -491,7 +495,7 @@ export function BriefEditor({
           {/* Template rail */}
           {!locked && (
             <div>
-              <p className="text-xs font-semibold text-ink">{L.template.title}</p>
+              <p className="flex items-center text-xs font-semibold text-ink">{L.template.title}{tip('template', L.template.title)}</p>
               <div className="no-scrollbar -mx-4 mt-1.5 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
                 {[{ key: '', label: L.template.none }, ...MANAGED_TEMPLATES.map((t) => ({ key: t.key, label: t.label[locale] }))].map((t) => (
                   <button key={t.key || 'none'} type="button" onClick={() => pickTemplate(t.key)} aria-pressed={f.templateKey === t.key}
@@ -513,9 +517,12 @@ export function BriefEditor({
             </div>
           )}
 
-          <fieldset disabled={locked || pending} className="space-y-4">
+          {/* The listing sections: `disabled` sits on each section body so the headings' tips stay usable on
+              locked / pending briefs (design §13.1); what is editable is unchanged (E5). */}
+          <div className="space-y-4">
             {/* ① Marque */}
-            <Section n={1} title={L.section.brand}>
+            <Section n={1} title={L.section.brand} tip={tip('brand', L.section.brand)} raw>
+              <Group disabled={locked || pending}>
               <div>
                 <FieldLabel labels={vl} htmlFor="field-brand-name" vis="internal">{L.brand.internalName}</FieldLabel>
                 <input id="field-brand-name" className={input} value={f.brandName} onChange={(e) => set('brandName', e.target.value)} maxLength={160} required aria-describedby="h-brand-name" />
@@ -547,21 +554,24 @@ export function BriefEditor({
                 <Help id="h-brand-label">{f.realName ? L.brand.labelHintReal : L.brand.labelHintDescriptor}</Help>
                 {labelClash && <p className="mt-1 text-[11px] text-rose-600">{L.brand.labelEqualsName}</p>}
               </div>
+              </Group>
+              {/* Outside the disabled group so its tip stays usable on locked / pending briefs (QA D1). */}
               {f.realName && (
                 <div id="field-consent" className="space-y-3 rounded-xl border border-line bg-surface p-3">
                   <label className="flex min-h-tap cursor-pointer items-center gap-3 text-xs font-semibold text-ink">
-                    <input type="checkbox" className="h-5 w-5 accent-brand" checked={f.brandConsent} onChange={(e) => set('brandConsent', e.target.checked)} />
-                    {L.brand.consent} {Vis('internal')}
+                    <input type="checkbox" className="h-5 w-5 accent-brand" checked={f.brandConsent} disabled={locked || pending} onChange={(e) => set('brandConsent', e.target.checked)} />
+                    {L.brand.consent} {Vis('internal')}{tip('consent', L.brand.consent)}
                   </label>
                   <Help>{L.brand.consentHint}</Help>
                   {f.brandConsent && (
                     <div>
                       <FieldLabel labels={vl} htmlFor="field-consent-proof" vis="internal">{L.brand.consentProof}</FieldLabel>
-                      <input id="field-consent-proof" className={input} value={f.brandConsentProof} onChange={(e) => set('brandConsentProof', e.target.value)} maxLength={2000} placeholder={L.brand.consentProofHint} />
+                      <input id="field-consent-proof" className={input} value={f.brandConsentProof} disabled={locked || pending} onChange={(e) => set('brandConsentProof', e.target.value)} maxLength={2000} placeholder={L.brand.consentProofHint} />
                     </div>
                   )}
                 </div>
               )}
+              <Group disabled={locked || pending}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <FieldLabel labels={vl} htmlFor="field-city" vis="public">{L.brand.city}</FieldLabel>
@@ -578,10 +588,12 @@ export function BriefEditor({
                 </div>
               </div>
               <p className="flex flex-wrap items-center gap-2 text-xs text-muted">{L.brand.preview} {brandLine}</p>
+              </Group>
             </Section>
 
             {/* ② Service */}
-            <Section n={2} title={L.section.service}>
+            <Section n={2} title={L.section.service} tip={tip('service', L.section.service)} raw>
+              <Group disabled={locked || pending}>
               <div>
                 <FieldLabel labels={vl} htmlFor="field-service" vis="public">{L.service.service}</FieldLabel>
                 <input id="field-service" className={input} value={f.service} onChange={(e) => set('service', e.target.value)} maxLength={90} placeholder={tpl?.service[locale]} />
@@ -601,11 +613,12 @@ export function BriefEditor({
                   ))}
                 </select>
               </div>
+              </Group>
               {claimsNeeded && (
                 <div className="rounded-xl border border-accent/30 bg-accent-soft p-3">
                   <label className="flex min-h-tap cursor-pointer items-center gap-3 text-xs font-bold text-ink">
-                    <input type="checkbox" className="h-5 w-5 accent-brand" checked={f.claimsVerified} onChange={(e) => set('claimsVerified', e.target.checked)} />
-                    {L.deliv.claims} {Vis('internal')}
+                    <input type="checkbox" className="h-5 w-5 accent-brand" checked={f.claimsVerified} disabled={locked || pending} onChange={(e) => set('claimsVerified', e.target.checked)} />
+                    {L.deliv.claims} {Vis('internal')}{tip('claims', L.deliv.claims)}
                   </label>
                   <p className="mt-1 text-[12px] text-ink">{L.deliv.claimsHint}</p>
                 </div>
@@ -613,7 +626,7 @@ export function BriefEditor({
             </Section>
 
             {/* ③ Livrables */}
-            <Section n={3} title={L.section.deliverables} id="field-deliverables">
+            <Section n={3} title={L.section.deliverables} tip={tip('deliverables', L.section.deliverables)} disabled={locked || pending} id="field-deliverables">
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-2">
                   <FieldLabel labels={vl} htmlFor="field-deliv-type" vis="public">{L.deliv.main}</FieldLabel>
@@ -658,7 +671,7 @@ export function BriefEditor({
             </Section>
 
             {/* ④ Date limite */}
-            <Section n={4} title={L.section.deadline}>
+            <Section n={4} title={L.section.deadline} tip={tip('deadline', L.section.deadline)} disabled={locked || pending}>
               <div>
                 <FieldLabel labels={vl} htmlFor="field-deadline" vis="public">{L.deadline.label}</FieldLabel>
                 <input id="field-deadline" type="date" min={today} className={input} value={f.deadline} onChange={(e) => set('deadline', e.target.value)} aria-describedby="h-deadline" />
@@ -667,7 +680,8 @@ export function BriefEditor({
             </Section>
 
             {/* ⑤ Budget */}
-            <Section n={5} title={L.section.budget} id="field-budget">
+            <Section n={5} title={L.section.budget} tip={tip('budget', L.section.budget)} raw id="field-budget">
+              <Group disabled={locked || pending}>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <FieldLabel labels={vl} htmlFor="field-total" vis="internal">{L.budget.total}</FieldLabel>
@@ -680,16 +694,17 @@ export function BriefEditor({
               </div>
               <Help id="h-total">{L.budget.totalHint}</Help>
               <p className="text-[12px] text-muted">{L.budget.plan}</p>
+              </Group>
               <div className="lg:hidden">
-                <NetPayPanel preview={net} type={f.deliverableType} labels={L.pay} locale={locale} />
+                <NetPayPanel preview={net} type={f.deliverableType} labels={L.pay} locale={locale} tip={tip('netPay', L.pay.netLabel)} />
               </div>
               <div className="lg:hidden">
-                <PayFloorVerdict state={floor} type={f.deliverableType} units={units} available={floorsAvailable} labels={L.floor} floorsLink={L.floorsLink} locale={locale} counterOfferText={counterText} />
+                <PayFloorVerdict state={floor} type={f.deliverableType} units={units} available={floorsAvailable} labels={L.floor} floorsLink={L.floorsLink} locale={locale} counterOfferText={counterText} tip={tip('floor', L.floor.undefinedTitle)} />
               </div>
             </Section>
 
             {/* ⑥ Droits d'usage */}
-            <Section n={6} title={L.section.rights} id="field-rights">
+            <Section n={6} title={L.section.rights} tip={tip('rights', L.section.rights)} disabled={locked || pending} id="field-rights">
               <fieldset>
                 <legend className="flex items-center text-xs font-semibold text-ink">{L.rights.label} {Vis('public')}</legend>
                 <div className="mt-1.5 grid gap-1.5">
@@ -702,22 +717,6 @@ export function BriefEditor({
                 </div>
               </fieldset>
 
-          {/* E5: on a live brief only contact, consent proof, « OUI » proof, deposit and notes stay editable. */}
-          {locked && (
-            <Section title={L.section.brand}>
-              {contactFields()}
-              {f.realName && (
-                <div>
-                  <FieldLabel labels={vl} htmlFor="field-consent-proof" vis="internal">{L.brand.consentProof}</FieldLabel>
-                  <input id="field-consent-proof" className={input} value={f.brandConsentProof} onChange={(e) => set('brandConsentProof', e.target.value)} maxLength={2000} placeholder={L.brand.consentProofHint} disabled={pending} />
-                </div>
-              )}
-              <div>
-                <label htmlFor="field-yes-proof" className="text-xs font-semibold text-ink">{L.order.proof}</label>
-                <input id="field-yes-proof" className={input} value={f.orderProof} onChange={(e) => set('orderProof', e.target.value)} maxLength={2000} placeholder={L.order.proofHint} disabled={pending} />
-              </div>
-            </Section>
-          )}
               {f.rightsKey === 'custom' && (
                 <textarea aria-label={L.rights.custom} className={area} rows={3} value={f.rightsCustom} onChange={(e) => set('rightsCustom', e.target.value)} maxLength={500} placeholder={L.rights.customPlaceholder} />
               )}
@@ -725,7 +724,7 @@ export function BriefEditor({
             </Section>
 
             {/* ⑦ Profil créateur */}
-            <Section n={7} title={L.section.profile}>
+            <Section n={7} title={L.section.profile} tip={tip('profile', L.section.profile)} disabled={locked || pending}>
               <div>
                 <FieldLabel labels={vl} htmlFor="field-requirements" vis="public">{L.profile.requirements}</FieldLabel>
                 <textarea id="field-requirements" className={area} rows={2} value={f.creatorRequirements} onChange={(e) => set('creatorRequirements', e.target.value)} maxLength={1000} aria-describedby="h-req" />
@@ -752,20 +751,37 @@ export function BriefEditor({
             </Section>
 
             {/* ⑧ Candidature (fixed text, as printed on the public page) */}
-            <Section n={8} title={L.section.application}>
+            <Section n={8} title={L.section.application} tip={tip('application', L.section.application)} disabled={locked || pending}>
               <p className="flex items-start gap-2 rounded-xl bg-surface p-3 text-[13px] text-ink">
                 <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden /> {L.application.text}
               </p>
             </Section>
-          </fieldset>
+          </div>
+
+          {/* E5: on a live brief only contact, consent proof, « OUI » proof, deposit and notes stay editable. */}
+          {locked && (
+            <Section title={L.section.brand} tip={tip('brandLocked', L.section.brand)} disabled={pending}>
+              {contactFields()}
+              {f.realName && (
+                <div>
+                  <FieldLabel labels={vl} htmlFor="field-consent-proof" vis="internal">{L.brand.consentProof}</FieldLabel>
+                  <input id="field-consent-proof" className={input} value={f.brandConsentProof} onChange={(e) => set('brandConsentProof', e.target.value)} maxLength={2000} placeholder={L.brand.consentProofHint} disabled={pending} />
+                </div>
+              )}
+              <div>
+                <label htmlFor="field-yes-proof" className="text-xs font-semibold text-ink">{L.order.proof}</label>
+                <input id="field-yes-proof" className={input} value={f.orderProof} onChange={(e) => set('orderProof', e.target.value)} maxLength={2000} placeholder={L.order.proofHint} disabled={pending} />
+              </div>
+            </Section>
+          )}
 
           <div className="lg:hidden">
-            <MandatoryChecklist id="checklist" checks={checks} title={L.checklist.title} items={L.checklist.items} doneLabel={L.checklist.done} todoLabel={L.checklist.todo} />
+            <MandatoryChecklist id="checklist" checks={checks} title={L.checklist.title} items={L.checklist.items} doneLabel={L.checklist.done} todoLabel={L.checklist.todo} tip={tip('checklist', L.checklist.title)} />
           </div>
 
           {/* Bon de commande (internal) */}
           {!locked && (
-            <Section title={L.section.order}>
+            <Section title={L.section.order} tip={tip('order', L.section.order)}>
               <OrderFormCopy texts={orderTexts} contactWhatsapp={normalizePhone(f.contactWhatsapp)} enabled={orderReady} lang={orderLang} onLang={setOrderLang}
                 missing={orderReady ? null : fill(L.checklist.missing, { fields: missingItems })} labels={L.order} />
               {id && row?.status === 'draft' && !declined && (
@@ -798,7 +814,7 @@ export function BriefEditor({
 
           {/* Publication + Paiement */}
           {id && (
-            <Section title={L.section.publish} id="publish">
+            <Section title={L.section.publish} id="publish" tip={tip('publish', L.section.publish)}>
               <ol className="flex flex-wrap gap-2 text-[12px] font-semibold">
                 {L.publish.steps.map((s, i) => {
                   const done = i === 0 ? live || row?.status === 'published' : row?.status === 'published';
@@ -830,7 +846,7 @@ export function BriefEditor({
                   <p className="flex items-center gap-1.5 text-sm font-bold text-ink"><Clock className="h-4 w-4 text-brand" aria-hidden /> {L.publish.step2Title}</p>
                   <p className="text-[12px] text-muted">{L.publish.step2Body}</p>
                   <div>
-                    <p className="text-xs font-semibold text-ink">{L.payment.deposit}</p>
+                    <p className="flex items-center text-xs font-semibold text-ink">{L.payment.deposit}{tip('deposit', L.payment.deposit)}</p>
                     <div className="mt-1.5 inline-flex gap-1 rounded-xl border border-line bg-surface p-1">
                       {(['none', 'partial', 'full'] as const).map((d, i) => (
                         <button key={d} type="button" aria-pressed={f.depositStatus === d} onClick={() => set('depositStatus', d)}
@@ -879,7 +895,7 @@ export function BriefEditor({
           )}
 
           {/* Notes + status + decline */}
-          <Section title={L.section.notes}>
+          <Section title={L.section.notes} tip={tip('notes', L.section.notes)}>
             <div>
               <FieldLabel labels={vl} htmlFor="field-notes" vis="internal">{L.notes.label}</FieldLabel>
               <textarea id="field-notes" className={area} rows={3} value={f.notes} onChange={(e) => set('notes', e.target.value)} maxLength={4000} disabled={pending} aria-describedby="h-notes" />
@@ -939,7 +955,7 @@ export function BriefEditor({
         {/* Desktop aside */}
         <aside className="hidden space-y-4 lg:sticky lg:top-4 lg:block lg:self-start">
           <div className="rounded-2xl border border-line bg-white p-4 shadow-card">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-muted">{L.section.preview}</p>
+            <p className="flex items-center text-[11px] font-bold uppercase tracking-wide text-muted">{L.section.preview}{tip('preview', L.section.preview)}</p>
             <div className="mt-2">{brandLine}</div>
             <p className="mt-1 line-clamp-2 font-display text-[15px] font-bold text-ink">{service || '—'}</p>
             <p className="mt-1 text-[13px] text-muted">
@@ -948,9 +964,9 @@ export function BriefEditor({
               {f.deadline && ` · ${f.deadline.split('-').reverse().join('/')}`}
             </p>
           </div>
-          <NetPayPanel preview={net} type={f.deliverableType} labels={L.pay} locale={locale} />
-          <PayFloorVerdict state={floor} type={f.deliverableType} units={units} available={floorsAvailable} labels={L.floor} floorsLink={L.floorsLink} locale={locale} counterOfferText={counterText} />
-          <MandatoryChecklist checks={checks} title={L.checklist.title} items={L.checklist.items} doneLabel={L.checklist.done} todoLabel={L.checklist.todo} />
+          <NetPayPanel preview={net} type={f.deliverableType} labels={L.pay} locale={locale} tip={tip('netPay', L.pay.netLabel, '-aside')} />
+          <PayFloorVerdict state={floor} type={f.deliverableType} units={units} available={floorsAvailable} labels={L.floor} floorsLink={L.floorsLink} locale={locale} counterOfferText={counterText} tip={tip('floor', L.floor.undefinedTitle, '-aside')} />
+          <MandatoryChecklist checks={checks} title={L.checklist.title} items={L.checklist.items} doneLabel={L.checklist.done} todoLabel={L.checklist.todo} tip={tip('checklist', L.checklist.title, '-aside')} />
         </aside>
       </div>
 
@@ -1051,14 +1067,21 @@ function Help({ children, id }: { children: ReactNode; id?: string }) {
   return <p id={id} className="mt-1 text-[11px] text-muted">{children}</p>;
 }
 
-function Section({ n, title, children, id }: { n?: number; title: string; children: ReactNode; id?: string }) {
+/** Section card. The heading (and its « ? » tip) sits outside the `disabled` scope (design §13.1). */
+function Section({ n, title, children, id, tip, disabled = false, raw = false }: { n?: number; title: string; children: ReactNode; id?: string; tip?: ReactNode; disabled?: boolean; raw?: boolean }) {
   return (
     <section id={id} className="scroll-mt-4 rounded-2xl border border-line bg-white p-4 shadow-card">
       <h3 className="flex items-center gap-2 text-sm font-bold text-ink">
         {n !== undefined && <span className="grid h-6 w-6 place-items-center rounded-lg bg-brand text-[12px] font-extrabold text-white">{n}</span>}
-        {title}
+        <span className="flex items-center">{title}{tip}</span>
       </h3>
-      <div className="mt-3 space-y-3">{children}</div>
+      {/* `raw`: the body manages its own disabled <Group>s, so tip-bearing blocks can sit outside them. */}
+      {raw ? <div className="mt-3 min-w-0 space-y-3">{children}</div> : <fieldset disabled={disabled} className="mt-3 min-w-0 space-y-3">{children}</fieldset>}
     </section>
   );
+}
+
+/** A disabled scope inside a `raw` section. Never put a SectionTip inside one (QA D1). */
+function Group({ disabled, children }: { disabled: boolean; children: ReactNode }) {
+  return <fieldset disabled={disabled} className="min-w-0 space-y-3">{children}</fieldset>;
 }

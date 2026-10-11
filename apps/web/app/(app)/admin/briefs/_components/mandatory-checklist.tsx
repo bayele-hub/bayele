@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { CheckCircle2, Circle } from 'lucide-react';
 import { CHECKLIST_FIELD, CHECKLIST_KEYS, type ChecklistKey } from '@/lib/managed-listing';
 
@@ -5,12 +6,12 @@ import { CHECKLIST_FIELD, CHECKLIST_KEYS, type ChecklistKey } from '@/lib/manage
  * « Avant publication » (design §2.8): 15 items; 1–14 mirror the publish RPC's checks so the UI never
  * offers a button the server will refuse. Unmet items link to their field.
  */
-export function MandatoryChecklist({ checks, title, items, doneLabel, todoLabel, id }: { checks: Record<ChecklistKey, boolean>; title: string; items: string[]; doneLabel: string; todoLabel: string; id?: string }) {
+export function MandatoryChecklist({ checks, title, items, doneLabel, todoLabel, id, tip }: { checks: Record<ChecklistKey, boolean>; title: string; items: string[]; doneLabel: string; todoLabel: string; id?: string; tip?: ReactNode }) {
   const done = CHECKLIST_KEYS.filter((k) => checks[k]).length;
   return (
     <div id={id} className="rounded-2xl border border-line bg-white p-4 shadow-card">
-      <p className="flex items-baseline justify-between text-sm font-bold text-ink">
-        {title} <span className="tabular-nums text-muted">{done}/{CHECKLIST_KEYS.length}</span>
+      <p className="flex items-center justify-between text-sm font-bold text-ink">
+        <span className="flex items-center">{title}{tip}</span> <span className="tabular-nums text-muted">{done}/{CHECKLIST_KEYS.length}</span>
       </p>
       <ul className="mt-2 grid gap-0.5">
         {CHECKLIST_KEYS.map((k, i) => (

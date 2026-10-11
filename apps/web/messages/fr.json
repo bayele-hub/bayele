@@ -955,12 +955,53 @@
         "label": "Statut manuel",
         "hint": "Seuls Brouillon, En attente du « OUI » et Refusée se choisissent à la main ; le paiement et la publication sont mis à jour automatiquement."
       },
+      "tips": {
+        "aria": "Aide : {section}",
+        "template": "Point de départ par secteur. Le modèle remplit le texte (service, livrables, profil, droits), jamais la marque, la ville, le budget ni les quantités. Aucun prix : il vient de la marque.",
+        "brand": "Qui commande et comment la joindre. Le nom interne et le contact servent au bon de commande et aux relances ; ils ne sont jamais publiés. Le public voit seulement le libellé et la ville.",
+        "consent": "Le vrai nom de la marque n'est publié qu'avec son accord écrit (une capture du « OK » WhatsApp suffit), gardé en preuve. Sinon, un descripteur honnête. L'annonce porte toujours « Géré par Bayele ».",
+        "service": "Ce que les créateurs lisent en premier : le service, le titre et la catégorie. La catégorie alimente les filtres et les alertes. Le budget total de la marque n'est jamais affiché, seulement le net par créateur.",
+        "claims": "Immobilier, finance, santé : les promesses de la marque (prix, rendement, effets) doivent être justifiées. Cochez seulement après avoir vu les preuves ; sans cette case, la publication est bloquée.",
+        "deliverables": "Le livrable principal et son nombre par place sont publics avant inscription (ex. « 3 vidéos courtes ») ; le détail reste réservé aux membres. Le seuil de rémunération se vérifie sur ce livrable.",
+        "deadline": "Date de livraison au plus tard, celle du bon de commande. Elle doit être à venir : une annonce dont la date est passée ne peut pas être publiée.",
+        "budget": "Le montant total que la marque paie, frais Bayele de 25 % inclus, et le nombre de places. Ce total reste interne : il n'apparaît jamais sur l'annonce.",
+        "netPay": "Le chiffre affiché sur l'annonce : 75 % du total divisé par le nombre de places, arrondi vers le bas. C'est exactement ce que le séquestre verse ; le reste d'arrondi reste dans le séquestre.",
+        "floor": "Montant net minimum par unité livrée. Sous un seuil défini, la publication est bloquée : proposez plus de budget ou moins de livrables. Sans seuil défini, la publication est autorisée.",
+        "rights": "Où et combien de temps la marque peut utiliser les contenus. Par défaut : ses propres réseaux, dans le pays de la campagne, 6 mois. La publicité payante est une option, avec l'accord écrit du créateur.",
+        "profile": "Ce qu'il faut pour réussir : style, expérience, langue du contenu, matériel s'il est indispensable. Public avant inscription pour que chacun se juge. Jamais de critère physique ni d'âge.",
+        "application": "Comment se passe le choix : Bayele propose 2 à 3 créateurs par place, la marque valide sous 48 h. Ce texte est fixe et repris tel quel sur l'annonce.",
+        "checklist": "Les champs exigés par le standard d'annonce. « Publier » reste grisé tant qu'une ligne manque : c'est la même liste que celle vérifiée par le serveur.",
+        "order": "Le bon de commande fixe le périmètre, le budget, les frais et les droits. Envoyez-le, puis enregistrez le « OUI » écrit de la marque avec sa preuve : sans ce « OUI », rien n'est publié.",
+        "publish": "Publier crée la campagne, invisible. Elle passe en ligne seulement après la confirmation du financement. Pas plus de 2 à 3 annonces par semaine, de secteurs variés. Ensuite l'annonce est verrouillée.",
+        "deposit": "Suivi interne de l'acompte. Il ne finance rien : seule la confirmation dans Financement, avec la référence exacte du reçu, place l'argent sous séquestre et publie l'annonce.",
+        "notes": "Notes internes, jamais publiées. Le statut manuel ne propose que Brouillon ou En attente du « OUI » ; les autres suivent la campagne. Refuser annule aussi la campagne non financée.",
+        "brandLocked": "L'annonce est créée : ses champs sont verrouillés. Seuls le contact, les preuves (accord, « OUI »), l'acompte et les notes restent modifiables. Pour la changer : refusez, puis dupliquez.",
+        "preview": "Ce que montrera le tableau des campagnes : libellé, ville, badge « Géré par Bayele », service, net par place et date limite. Jamais le nom interne ni le budget total.",
+        "fundingCard": "Confirmez ici un paiement réellement reçu, reçu du fournisseur en main. La confirmation place le budget sous séquestre et publie la campagne : jamais avant que l'argent soit arrivé.",
+        "fundingRef": "Copiez la référence exacte du reçu SokoClick ou Mobile Money de ce paiement. Une référence déjà utilisée pour une autre campagne est refusée. Jamais une capture ni un exemple.",
+        "fundingProvider": "Le moyen par lequel l'argent est arrivé, tel qu'il figure sur le reçu. Il est enregistré avec le séquestre et sert au rapprochement des comptes."
+      },
       "funding": {
         "managedChip": "Gérée",
         "briefLink": "Brief",
         "viewPublic": "Voir l'annonce publique",
         "backToBrief": "Retour au brief",
-        "highlight": "Campagne gérée à financer"
+        "highlight": "Campagne gérée à financer",
+        "refLabel": "Réf. facture SokoClick / MoMo",
+        "refPlaceholder": "Référence exacte du reçu SokoClick / MoMo",
+        "providerLabel": "Moyen de paiement",
+        "submit": "Confirmer le séquestre",
+        "success": "Séquestre activé — la campagne est publiée.",
+        "empty": "Aucune campagne en attente de financement.",
+        "errors": {
+          "invoiceAlreadyUsed": "Cette référence est déjà utilisée pour une autre campagne. Saisissez la référence exacte reçue pour ce paiement.",
+          "notPublished": "Le financement n'a pas été enregistré : la campagne n'est pas publiée. Vérifiez la référence et réessayez.",
+          "missing": "Campagne manquante.",
+          "refRequired": "Référence de facture SokoClick / MoMo requise.",
+          "notAuthorized": "Vous n'êtes pas autorisé.",
+          "alreadyFunded": "Cette campagne est déjà financée.",
+          "generic": "La confirmation a échoué. Réessayez."
+        }
       }
     }
   },
