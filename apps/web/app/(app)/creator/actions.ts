@@ -77,3 +77,27 @@ export async function submitProofAction(_prev: ProofState, formData: FormData): 
   revalidatePath('/creator/dashboard');
   return { error: null, ok: true };
 }
+
+export type ShotInput = { path: string; sha256: string };
+
+/**
+ * G8 (low priority, P6): submit the WhatsApp screenshots already uploaded to the private `proofs`
+ * bucket. First submission goes through the existing money path (submit_proof_of_post inside the RPC);
+ * after « Demander une nouvelle capture » the same proof gets a new round.
+ */
+export async function submitWhatsappProofAction(cc: string, posted: ShotInput, views: ShotInput, extra: ShotInput | null): Promise<ProofState> {
+  const { t } = await getDictionary();
+  const E = t.proofShots.errors as Record<string, string>;
+  if (!posted?.path || !views?.path) return { error: E.screenshots_required! };
+  if (posted.sha256 === views.sha256) return { error: t.proofShots.identicalClient };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('creator_submit_whatsapp_proof', {
+    p_campaign_creator_id: cc,
+    p_posted_path: posted.path, p_posted_sha256: posted.sha256,
+    p_views_path: views.path, p_views_sha256: views.sha256,
+    p_extra_path: extra?.path || undefined, p_extra_sha256: extra?.sha256 || undefined,
+  });
+  if (error) return { error: E[(error.message ?? '').trim()] ?? E.generic! };
+  revalidatePath('/creator/dashboard');
+  return { error: null, ok: true };
+}

@@ -6,6 +6,7 @@ import { getSession } from '@/lib/auth/session';
 import { fmtFcfa, CAMPAIGN_STATUS_FR } from '@/lib/data/campaigns';
 import { ApplicantRow, type Applicant } from './applicant-row';
 import { ProofRow, type ProofItem } from './proof-row';
+import { getDictionary } from '@/i18n/dictionaries';
 import { CancelCampaignButton } from './cancel-campaign-button';
 import { ShareCampaignButton } from '@/components/share-campaign-button';
 import { CampaignBriefDetails } from '@/components/campaign-brief-details';
@@ -41,9 +42,28 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
   const { data: proofRows } = ccIds.length
     ? await supabase
         .from('proof_of_post')
-        .select('id, campaign_creator_id, media_storage_path, verification_score, is_valid')
+        .select('id, campaign_creator_id, media_storage_path, media_type, verification_score, is_valid, recapture_requested_at, resubmitted_at, recapture_count')
         .in('campaign_creator_id', ccIds)
-    : { data: [] as { id: string; campaign_creator_id: string; media_storage_path: string; verification_score: number | null; is_valid: boolean | null }[] };
+    : { data: [] as { id: string; campaign_creator_id: string; media_storage_path: string; media_type: string; verification_score: number | null; is_valid: boolean | null; recapture_requested_at: string | null; resubmitted_at: string | null; recapture_count: number }[] };
+
+  // G8: WhatsApp screenshot proofs — latest round only, opened via short-lived signed links (private bucket).
+  const shotIds = (proofRows ?? []).filter((p) => p.media_type === 'whatsapp_screenshots').map((p) => p.id);
+  const { data: mediaRows } = shotIds.length
+    ? await supabase.from('proof_media').select('proof_id, storage_path, kind, round').in('proof_id', shotIds)
+    : { data: [] as { proof_id: string; storage_path: string; kind: 'posted' | 'views' | 'extra'; round: number }[] };
+  const latest = new Map<string, number>();
+  for (const m of mediaRows ?? []) latest.set(m.proof_id, Math.max(latest.get(m.proof_id) ?? 0, m.round));
+  const current = (mediaRows ?? []).filter((m) => m.round === latest.get(m.proof_id));
+  const signedList = current.length ? (await supabase.storage.from('proofs').createSignedUrls(current.map((m) => m.storage_path), 900)).data ?? [] : [];
+  const shotsByProof = new Map<string, { kind: 'posted' | 'views' | 'extra'; url: string | null }[]>();
+  current.forEach((m, i) => {
+    const order = { posted: 0, views: 1, extra: 2 } as const;
+    const list = shotsByProof.get(m.proof_id) ?? [];
+    list.push({ kind: m.kind, url: signedList[i]?.signedUrl ?? null });
+    list.sort((a, b) => order[a.kind] - order[b.kind]);
+    shotsByProof.set(m.proof_id, list);
+  });
+  const { t: dict } = await getDictionary();
 
   const nameByCc = new Map(
     rows.map((r) => {
@@ -78,6 +98,9 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
     url: p.media_storage_path,
     score: p.verification_score,
     isValid: p.is_valid,
+    shots: p.media_type === 'whatsapp_screenshots' ? shotsByProof.get(p.id) ?? [] : undefined,
+    recapturePending: !!p.recapture_requested_at && (!p.resubmitted_at || p.resubmitted_at < p.recapture_requested_at),
+    recapturesLeft: Math.max(0, 3 - (p.recapture_count ?? 0)),
   }));
 
   const pendingApps = applicants.filter((a) => a.status === 'applied').length;
@@ -152,7 +175,7 @@ export default async function CampaignDetail({ params }: { params: Promise<{ id:
         ) : (
           <ul className="grid gap-3">
             {proofs.map((p) => (
-              <ProofRow key={p.proofId} p={p} />
+              <ProofRow key={p.proofId} p={p} P={dict.proofShots} aria={dict.admin.briefs.tips.aria} />
             ))}
           </ul>
         )}

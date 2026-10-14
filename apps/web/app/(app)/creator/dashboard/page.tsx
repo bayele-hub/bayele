@@ -9,6 +9,7 @@ import { getSession } from '@/lib/auth/session';
 import { creatorAllowed } from '@/lib/auth/creator-gate';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 import { ProofForm } from './proof-form';
+import { WhatsappProof } from './whatsapp-proof';
 import { countryName } from '@/lib/countries';
 import { getDictionary } from '@/i18n/dictionaries';
 import { SectionTip } from '@/components/admin/section-tip';
@@ -27,7 +28,7 @@ export default async function CreatorDashboard() {
   const [{ data: assignments }, { data: creatorProfile }, { data: founder }, { data: links }] = await Promise.all([
     supabase
       .from('campaign_creators')
-      .select('id, status, agreed_payout_fcfa, partner_id, partner_commission_rate, applied_by, created_at, campaign:campaigns(id, title, category, target_country, status, is_managed)')
+      .select('id, status, agreed_payout_fcfa, partner_id, partner_commission_rate, applied_by, created_at, campaign:campaigns(id, title, category, target_country, status, is_managed, platforms)')
       .eq('creator_id', session.userId)
       .order('created_at', { ascending: false }),
     // payout settings via the definer RPC (is_pro + own momo — momo columns are not directly selectable, 0018).
@@ -45,6 +46,19 @@ export default async function CreatorDashboard() {
   const rateOf = (a: (typeof list)[number]) =>
     a.partner_commission_rate ?? (activePartner && (a.status === 'applied' || a.status === 'invited') ? activePartner.commission_rate : null);
   const net = (a: (typeof list)[number]) => splitPayout(a.agreed_payout_fcfa ?? 0, rateOf(a)).creator;
+  // G8: a brand's « Demander une nouvelle capture » reopens the screenshot slots on content_submitted.
+  const submittedIds = list.filter((a) => a.status === 'content_submitted').map((a) => a.id);
+  const { data: proofRows } = submittedIds.length
+    ? await supabase.from('proof_of_post').select('id, campaign_creator_id, media_type, recapture_requested_at, recapture_reason, resubmitted_at').in('campaign_creator_id', submittedIds)
+    : { data: [] as { id: string; campaign_creator_id: string; media_type: string; recapture_requested_at: string | null; recapture_reason: string | null; resubmitted_at: string | null }[] };
+  const recaptureFor = new Map<string, { reason: string | null; previous: string[] }>();
+  for (const pr of proofRows ?? []) {
+    const pendingRecapture = pr.recapture_requested_at && (!pr.resubmitted_at || pr.resubmitted_at < pr.recapture_requested_at);
+    if (!pendingRecapture) continue;
+    const { data: media } = await supabase.from('proof_media').select('storage_path').eq('proof_id', pr.id).order('created_at');
+    const signed = media?.length ? (await supabase.storage.from('proofs').createSignedUrls(media.map((m) => m.storage_path), 600)).data ?? [] : [];
+    recaptureFor.set(pr.campaign_creator_id, { reason: pr.recapture_reason, previous: signed.map((x) => x.signedUrl).filter((u): u is string => !!u) });
+  }
   const earned = list.filter((a) => a.status === 'paid').reduce((s, a) => s + net(a), 0);
   const pendingPay = list.filter((a) => a.status === 'verified').reduce((s, a) => s + net(a), 0);
   const activeCount = list.filter((a) => ['applied', 'approved', 'content_submitted', 'verified'].includes(a.status)).length;
@@ -207,8 +221,19 @@ export default async function CreatorDashboard() {
                     <MessageCircle className="h-3.5 w-3.5" aria-hidden /> {(camp as { is_managed?: boolean } | undefined)?.is_managed ? t.creatorUx.contactBayele : 'Contacter la marque'}
                   </Link>
 
-                  {a.status === 'approved' && <ProofForm cc={a.id} help={t.creatorUx.proofHelp} tip={t.creatorTips.proof} tipAria={t.creatorTips.aria} />}
-                  {a.status === 'content_submitted' && (
+                  {(() => {
+                    // G8: screenshots for any campaign listing WhatsApp (Co-CTO); URL proof stays the main path.
+                    const platforms = ((camp as { platforms?: string[] } | undefined)?.platforms ?? []).map((x) => x.toLowerCase());
+                    const wa = platforms.includes('whatsapp');
+                    const recapture = recaptureFor.get(a.id) ?? null;
+                    const linkProps = { help: t.creatorUx.proofHelp, tip: t.creatorTips.proof, tipAria: t.creatorTips.aria };
+                    if (a.status === 'approved' && !wa) return <ProofForm cc={a.id} {...linkProps} />;
+                    if ((a.status === 'approved' && wa) || recapture) {
+                      return <WhatsappProof P={t.proofShots} cc={a.id} creatorId={session.userId!} onlyWhatsapp={platforms.length === 1} recapture={recapture} aria={t.creatorTips.aria} linkProps={linkProps} />;
+                    }
+                    return null;
+                  })()}
+                  {a.status === 'content_submitted' && !recaptureFor.has(a.id) && (
                     <p className="mt-3 rounded-lg bg-accent-soft px-3 py-2 text-[11px] text-ink">
                       Votre preuve est en cours de vérification par la marque.
                     </p>

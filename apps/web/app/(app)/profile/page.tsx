@@ -10,6 +10,7 @@ import { FounderBadge } from '@/components/founder-badge';
 import { formatFounderNumber } from '@/lib/founder';
 import { getFounderNumber } from '@/lib/data/founder';
 import { getDictionary } from '@/i18n/dictionaries';
+import { govFormProps } from '@/lib/data/gov-form';
 import { getMyContact, getMyModerationStatus } from '@/lib/data/moderation';
 import { ModerationStatusCard } from '@/components/moderation-status-card';
 
@@ -84,7 +85,7 @@ export default async function ProfilePage() {
     momoPhone: payout?.momo_payout_phone_e164 ?? '',
     momoProvider: payout?.momo_provider ?? 'mtn_momo',
     socials,
-    specialties: (kp?.specialties ?? []).join(', '),
+    specialties: kp?.specialties ?? [],
     yearsExperience: kp?.years_experience ?? 0,
     partnerMomoPhone: partnerPayout?.momo_payout_phone_e164 ?? '',
     partnerMomoProvider: partnerPayout?.momo_provider ?? 'mtn_momo',
@@ -136,7 +137,7 @@ export default async function ProfilePage() {
         <AvatarUploader userId={session.userId} initialUrl={profile.avatar_url} name={profile.display_name} />
       </div>
 
-      <ProfileForm initial={initial} F={t.creatorForm} T={t.creatorTips} locale={locale === 'en' ? 'en' : 'fr'} />
+      <ProfileForm initial={initial} F={t.creatorForm} T={t.creatorTips} locale={locale === 'en' ? 'en' : 'fr'} gov={await govFormProps(locale === 'en' ? 'en' : 'fr')} />
     </section>
   );
 }

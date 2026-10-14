@@ -100,7 +100,7 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
                   )}
                 </div>
               </div>
-              <ProfileContactCTA handle={c.handle} kind="consultant" primaryLabel={t.profile.hire} messageLabel={t.profile.message} />
+              <ProfileContactCTA handle={c.handle} kind="consultant" partnerId={c.id} primaryLabel={t.profile.hire} messageLabel={t.profile.message} />
             </div>
 
             {c.bio && <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink/80">{c.bio}</p>}
@@ -122,22 +122,20 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
           ))}
         </section>
 
-        {/* Expertise */}
-        <section className="mt-8">
-          {/* D10/F6: specialties are self-declared until Bayele verifies them → muted tags + « Non vérifié ». */}
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-display text-lg font-bold text-ink">{t.profile.expertiseHeading}</h2>
-            <span className="inline-flex items-center rounded-full bg-surface px-2.5 py-0.5 text-[11px] font-bold text-muted">
-              {t.profile.unverified}
-              <SectionTip id="partner-specialties-unverified" label={t.profile.expertiseHeading} text={t.profile.unverifiedTip} ariaTemplate={t.profile.tipAria} />
-            </span>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {c.tags.map((tag) => (
-              <span key={tag} className="rounded-full border border-dashed border-line bg-white px-4 py-1.5 text-sm font-medium text-muted">{tag}</span>
-            ))}
-          </div>
-        </section>
+        {/* Expertise — G1: codes from Bayele's list, self-declared → « Spécialités déclarées » (replaces « Non vérifié »). */}
+        {c.tags.length > 0 && (
+          <section className="mt-8">
+            <h2 className="flex items-center font-display text-lg font-bold text-ink">
+              {t.specialties.publicHeading}
+              <SectionTip id="partner-specialties-public" label={t.specialties.publicHeading} text={t.specialties.publicTip} ariaTemplate={t.profile.tipAria} />
+            </h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {c.tags.map((tag) => (
+                <span key={tag} className="rounded-full border border-line bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700">{tag}</span>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Professional links */}
         {c.links.length > 0 && (

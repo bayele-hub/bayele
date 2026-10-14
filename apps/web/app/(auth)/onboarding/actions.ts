@@ -8,6 +8,10 @@ import { parseRefHandle, parseSignupSource, effectiveSource } from '@/lib/attrib
 import { withNext } from '@/lib/auth/return-path';
 import { getDictionary } from '@/i18n/dictionaries';
 import { checkProfileText, limitErrorField, parseAudience, type LimitedField } from '@/lib/profile-limits';
+import { cityFromForm } from '@/lib/gov/cities';
+import { parseSpecialtyCodes } from '@/lib/gov/specialties';
+import { getSpecialties } from '@/lib/data/partner-gov';
+import { NON_CIRCUMVENTION_VERSION } from '@/lib/legal';
 
 type Role = Database['public']['Enums']['user_role'];
 type Country = Database['public']['Enums']['country_code'];
@@ -29,7 +33,7 @@ const ERR_FR: Record<string, string> = {
   industry_required: 'Le secteur est requis.',
 };
 
-export type OnboardState = { error: string | null; field?: LimitedField | null };
+export type OnboardState = { error: string | null; field?: LimitedField | 'specialties' | 'consent' | null };
 
 export async function onboardAction(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
   const role = String(formData.get('role') ?? '') as Role;
@@ -48,9 +52,23 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
   const FE = t.creatorForm.errors;
   const fieldMsg = (f: LimitedField, kind: 'required' | 'tooLong') =>
     f === 'city' ? (kind === 'required' ? FE.cityRequired : FE.city) : f === 'displayName' ? (kind === 'required' ? FE.displayNameRequired : FE.displayName) : FE.bio;
-  const problems = checkProfileText({ displayName: String(formData.get('display_name') ?? ''), city: String(formData.get('city') ?? ''), bio: String(formData.get('bio') ?? '') });
+  const city = cityFromForm((k) => formData.get(k));
+  const problems = checkProfileText({ displayName: String(formData.get('display_name') ?? ''), city, bio: String(formData.get('bio') ?? '') });
   const bad = (['displayName', 'city', 'bio'] as const).find((k) => problems[k]);
   if (bad) return { error: fieldMsg(bad, problems[bad]!), field: bad };
+
+  // G1: partner specialties are codes from the list, 3 at most.
+  const SE = t.specialties.errors;
+  let specialties: string[] = [];
+  if (role === 'consultant') {
+    const known = (await getSpecialties()).map((s) => s.code);
+    const parsed = parseSpecialtyCodes(formData.get('specialties'), known);
+    if (parsed.error) return { error: SE[parsed.error], field: 'specialties' };
+    specialties = parsed.codes;
+  }
+  // G7: partners and brands tick the non-circumvention clause at onboarding (recorded after the RPC).
+  const needsConsent = role === 'consultant' || role === 'business';
+  if (needsConsent && formData.get('consent') !== 'on') return { error: t.consent.onboarding.error, field: 'consent' };
 
   const csv = (k: string) =>
     String(formData.get(k) ?? '')
@@ -86,7 +104,7 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     p_role: role,
     p_handle: String(formData.get('handle') ?? ''),
     p_display_name: String(formData.get('display_name') ?? ''),
-    p_city: String(formData.get('city') ?? ''),
+    p_city: city,
     p_country: country,
     p_bio: opt('bio'),
     // Public URL of the photo uploaded client-side to the owner-scoped avatars bucket (optional).
@@ -95,7 +113,7 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     // AR-1: the creator's typed audience (blank = 0 on a new profile).
     p_audience_size: parseAudience(formData.get('audience_size')) ?? 0,
     p_platforms: platforms as unknown as OnboardPlatforms,
-    p_specialties: csv('specialties'),
+    p_specialties: specialties,
     p_years_experience: Number(formData.get('years_experience') ?? 0) || 0,
     p_company_name: opt('company_name'),
     p_industry: opt('industry'),
@@ -106,7 +124,17 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     const key = (error.message ?? '').trim();
     const field = limitErrorField(key);
     if (field) return { error: fieldMsg(field, /required/.test(key) ? 'required' : 'tooLong'), field };
+    if (key === 'invalid_specialty' || key === 'too_many_specialties') return { error: SE[key], field: 'specialties' };
     return { error: ERR_FR[key] ?? 'Une erreur est survenue. Vérifiez vos informations et réessayez.' };
+  }
+
+  if (needsConsent) {
+    // Best-effort: a failure here only means the one-time modal (§7) asks again on the next visit.
+    try {
+      await supabase.rpc('record_consent', { p_kind: 'cgu_non_circumvention', p_version: NON_CIRCUMVENTION_VERSION });
+    } catch {
+      /* the (app) layout modal covers it */
+    }
   }
 
   // Sign-up attribution (plan §4.7): record once where this account came from — the source and

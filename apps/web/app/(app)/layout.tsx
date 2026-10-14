@@ -10,6 +10,11 @@ import { BottomNav } from '@/components/bottom-nav';
 import { UnreadMessagesProvider } from '@/components/unread-messages-provider';
 import { MessagesBadge } from '@/components/messages-badge';
 import type { Database } from '@bayele/database';
+import { getDictionary } from '@/i18n/dictionaries';
+import { getMyConsents } from '@/lib/data/partner-gov';
+import { needsConsent } from '@/lib/gov/rules';
+import { NON_CIRCUMVENTION_VERSION } from '@/lib/legal';
+import { ConsentModal } from '@/components/gov/consent-modal';
 
 type Notif = Database['public']['Tables']['notifications']['Row'];
 type Role = Database['public']['Enums']['user_role'];
@@ -44,6 +49,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     unreadMessages = msgCount;
   }
 
+  // G7 §7: existing partners/brands acknowledge the non-circumvention rule once (per clause version).
+  let consentL: React.ComponentProps<typeof ConsentModal>['L'] | null = null;
+  if (session.userId && (session.roles.includes('business') || session.roles.includes('consultant')) && session.primary !== 'super_admin') {
+    const consents = await getMyConsents();
+    if (needsConsent({ roles: session.roles, primary: session.primary, consents, version: NON_CIRCUMVENTION_VERSION })) {
+      const { t } = await getDictionary();
+      const M = t.consent.modal;
+      consentL = { ...M, readClause: t.consent.readClause };
+    }
+  }
+
   return (
     <UnreadMessagesProvider userId={session.userId} initial={unreadMessages}>
       {/* Fixed app frame: the shell is pinned to the (dynamic) viewport height so the header and the
@@ -74,6 +90,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <main className="mx-auto w-full max-w-5xl flex-1 overflow-y-auto overscroll-contain px-4 py-6">{children}</main>
 
         {session.primary && <BottomNav role={session.primary} />}
+        {consentL && <ConsentModal L={consentL} />}
       </div>
     </UnreadMessagesProvider>
   );

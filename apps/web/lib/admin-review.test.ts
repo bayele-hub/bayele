@@ -265,8 +265,11 @@ describe('D5: 80 / 60 / 500 limits with field errors', () => {
   it('forms use the shared limits (counter + max) on city, bio and name', () => {
     for (const f of ['app/(app)/profile/profile-form.tsx', 'app/(auth)/onboarding/[role]/onboarding-form.tsx']) {
       const s = src(f);
-      for (const k of ['PROFILE_LIMITS.city', 'PROFILE_LIMITS.bio', 'PROFILE_LIMITS.displayName']) expect(s, `${f} ${k}`).toContain(k);
+      // G9: the city limit now lives in the shared city picker (« Autre » text ≤ 60).
+      for (const k of ['PROFILE_LIMITS.bio', 'PROFILE_LIMITS.displayName']) expect(s, `${f} ${k}`).toContain(k);
+      expect(s, `${f} city picker`).toContain('<CountryCityFields');
     }
+    expect(src('components/gov/city-picker.tsx')).toContain('PROFILE_LIMITS.city');
     expect(src('app/(auth)/onboarding/[role]/onboarding-form.tsx')).not.toContain('pending_review');
     expect(src('app/(auth)/onboarding/[role]/onboarding-form.tsx')).not.toContain('45000');
   });

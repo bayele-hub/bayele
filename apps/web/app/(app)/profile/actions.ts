@@ -9,12 +9,15 @@ import { parseCountry } from '@/lib/countries';
 import { parseProvider } from '@/lib/data/campaigns';
 import { getDictionary } from '@/i18n/dictionaries';
 import { checkProfileText, cleanText, limitErrorField, parseAudience, type LimitedField } from '@/lib/profile-limits';
+import { cityFromForm } from '@/lib/gov/cities';
+import { parseSpecialtyCodes } from '@/lib/gov/specialties';
+import { getSpecialties } from '@/lib/data/partner-gov';
 
 type Provider = Database['public']['Enums']['payment_provider'];
 type Country = Database['public']['Enums']['country_code'];
 type CreatorPlatforms = Database['public']['Tables']['creator_profiles']['Update']['platforms'];
 
-export type ProfileState = { error: string | null; ok?: boolean; field?: LimitedField | null };
+export type ProfileState = { error: string | null; ok?: boolean; field?: LimitedField | 'specialties' | null };
 
 
 // Normalize a Mobile-Money number to E.164 (strip spaces/dashes/parens). Returns the normalized
@@ -50,7 +53,7 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   const FE = t.creatorForm.errors;
   const displayName = cleanText(formData.get('display_name'));
   const bio = String(formData.get('bio') ?? '').trim();
-  const city = cleanText(formData.get('city'));
+  const city = cleanText(cityFromForm((k) => formData.get(k)));
   // D5 limits (same as the 0036 CHECKs) → a clear field error instead of a generic failure.
   const msgFor = (field: LimitedField, kind: 'required' | 'tooLong'): string =>
     field === 'city' ? (kind === 'required' ? FE.cityRequired : FE.city) : field === 'displayName' ? (kind === 'required' ? FE.displayNameRequired : FE.displayName) : FE.bio;
@@ -113,16 +116,25 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
     } catch {
       return { error: 'Numéro Mobile Money invalide. Utilisez le format international, ex. +2376XXXXXXXX.' };
     }
+    // G1: codes from the list, 3 at most (0040 enforces it server-side too).
+    const SE = t.specialties.errors;
+    const known = (await getSpecialties()).map((x) => x.code);
+    const parsed = parseSpecialtyCodes(formData.get('specialties'), known);
+    if (parsed.error) return { error: SE[parsed.error], field: 'specialties' };
     const { error } = await supabase
       .from('consultant_profiles')
       .update({
-        specialties: parseList(formData.get('specialties')),
+        specialties: parsed.codes,
         years_experience: Math.max(0, Math.round(Number(formData.get('years_experience') ?? 0))),
         momo_payout_phone_e164: partnerPhone,
         momo_provider: partnerProvider,
       })
       .eq('user_id', session.userId);
-    if (error) return { error: 'Profil partenaire : mise à jour impossible.' };
+    if (error) {
+      const code = (error.message ?? '').trim();
+      if (code === 'invalid_specialty' || code === 'too_many_specialties') return { error: SE[code], field: 'specialties' };
+      return { error: 'Profil partenaire : mise à jour impossible.' };
+    }
   }
 
   if (session.roles.includes('business')) {

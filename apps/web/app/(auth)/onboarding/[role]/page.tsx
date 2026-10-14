@@ -8,6 +8,7 @@ import { parseCountry } from '@/lib/countries';
 import { withNext } from '@/lib/auth/return-path';
 import { safeNextPath } from '@/lib/attribution';
 import { getDictionary } from '@/i18n/dictionaries';
+import { govFormProps } from '@/lib/data/gov-form';
 
 const VALID = ['creator', 'consultant', 'business'] as const;
 type Role = (typeof VALID)[number];
@@ -35,7 +36,7 @@ export default async function OnboardingPage({ params, searchParams }: { params:
   // Normalize to the canonical public slug (e.g. a stray /onboarding/Creator).
   if (slug !== roleSlug(role)) redirect(withNext(onboardingPath(role), next));
 
-  const { t } = await getDictionary();
+  const { locale, t } = await getDictionary();
   const meta = session.metadata;
   const defaults = {
     displayName: (meta.display_name as string) ?? (meta.company_name as string) ?? '',
@@ -57,7 +58,8 @@ export default async function OnboardingPage({ params, searchParams }: { params:
       </div>
 
       <div className="mx-auto mt-2 w-full max-w-lg rounded-2xl border border-line bg-white p-5 shadow-card sm:p-6">
-        <OnboardingForm role={role} userId={session.userId} defaults={defaults} next={next} F={t.creatorForm} T={t.creatorTips} />
+        <OnboardingForm role={role} userId={session.userId} defaults={defaults} next={next} F={t.creatorForm} T={t.creatorTips}
+          gov={await govFormProps(locale === 'en' ? 'en' : 'fr')} consent={{ label: t.consent.onboarding.label, readClause: t.consent.readClause }} />
       </div>
     </div>
   );
