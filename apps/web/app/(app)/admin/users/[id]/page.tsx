@@ -17,6 +17,9 @@ import { SectionTip } from '@/components/admin/section-tip';
 import { MemberStatusPill } from '@/components/admin/member-status-pill';
 import { MaskedValue } from '@/components/admin/masked-value';
 import { DecisionPanel } from '@/components/admin/decision-panel';
+import { AddCityButton } from '@/components/admin/add-city-button';
+import { getSpecialties } from '@/lib/data/partner-gov';
+import { specialtyLabels } from '@/lib/gov/specialties';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +37,7 @@ const SERVER_DUP: Record<string, WarningKey> = { no_platform: 'noSocials', no_pa
 export default async function MemberDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ from?: string }> }) {
   const [{ id }, sp, session, { locale, t }] = await Promise.all([params, searchParams, getSession(), getDictionary()]);
   if (!session.userId) redirect('/auth?mode=signin');
-  const d = await getMemberDetail(id);
+  const [d, specs] = await Promise.all([getMemberDetail(id), getSpecialties()]);
   if (!d) notFound();
   const L = t.admin.members;
   const p = d.profile;
@@ -52,7 +55,7 @@ export default async function MemberDetailPage({ params, searchParams }: { param
     hasBillingEmail: d.business ? d.business.billing_email.present : undefined,
   });
   const serverWarn = d.checklist.filter((c) => !(SERVER_DUP[c] && clientWarn.includes(SERVER_DUP[c]!)));
-  const warnTexts = [...clientWarn.map((w) => L.warn[w]), ...serverWarn.map((c) => L.warn[c as keyof L['warn']] ?? c)];
+  const warnTexts = [...clientWarn.map((w) => L.warn[w]), ...serverWarn.map((c) => L.warn[c as keyof L['warn']] ?? (t.adminPartners.memberWarn as Record<string, string>)[c] ?? c)];
   const blocking = clientWarn.filter((w) => w !== 'defaultRating').length + serverWarn.length;
   const source = d.attribution?.signup_source ?? 'none';
   const sourceLabel = L.source[source as keyof L['source']] ?? source;
@@ -92,6 +95,9 @@ export default async function MemberDetailPage({ params, searchParams }: { param
           <ul className="mt-1 list-disc space-y-0.5 pl-5 [overflow-wrap:anywhere]">
             {warnTexts.map((w) => <li key={w}>{w}</li>)}
           </ul>
+          {d.checklist.includes('city_not_in_list') && p.city && p.city.length <= 60 && (
+            <AddCityButton label={fill(t.cityPicker.admin.add, { city: p.city, country: countryName(p.country, locale) })} doneLabel={t.cityPicker.admin.added} country={p.country} city={p.city} memberId={p.id} />
+          )}
           <p className="mt-1 text-rose-700">{L.warningsHint}</p>
         </div>
       )}
@@ -129,7 +135,7 @@ export default async function MemberDetailPage({ params, searchParams }: { param
 
           {d.creator && <CreatorSections d={d} L={L} locale={locale} money={money} aria={aria} />}
           {d.business && <BusinessSections d={d} L={L} money={money} aria={aria} />}
-          {d.partner && <PartnerSections d={d} L={L} money={money} aria={aria} />}
+          {d.partner && <PartnerSections d={d} L={L} money={money} aria={aria} specLabels={specialtyLabels(d.partner.specialties, specs, locale === 'en' ? 'en' : 'fr')} specNote={t.adminPartners.tips.specialties} />}
 
           <Card title={L.section.activity} tip={<SectionTip id="member-activity" label={L.section.activity} text={L.tips.activity} ariaTemplate={aria} />}>
             <Dl>
@@ -322,7 +328,7 @@ function BusinessSections({ d, L, money, aria }: { d: AdminMemberDetail; L: L; m
   );
 }
 
-function PartnerSections({ d, L, money, aria }: { d: AdminMemberDetail; L: L; money: (n: number) => string; aria: string }) {
+function PartnerSections({ d, L, money, aria, specLabels, specNote }: { d: AdminMemberDetail; L: L; money: (n: number) => string; aria: string; specLabels: string[]; specNote: string }) {
   const k = d.partner!;
   const id = d.profile.id;
   return (
@@ -332,8 +338,8 @@ function PartnerSections({ d, L, money, aria }: { d: AdminMemberDetail; L: L; mo
           <Item label={L.field.specialties} wide>
             {k.specialties.length ? (
               <>
-                <span className="flex flex-wrap gap-1">{k.specialties.map((x) => <span key={x} className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-ink">{x}</span>)}</span>
-                <span className="mt-0.5 block text-[11px] text-muted">{L.field.specialtiesNote}</span>
+                <span className="flex flex-wrap gap-1">{specLabels.map((x) => <span key={x} className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-ink">{x}</span>)}</span>
+                <span className="mt-0.5 block text-[11px] text-muted">{specNote}</span>
               </>
             ) : <NotSet L={L} />}
           </Item>

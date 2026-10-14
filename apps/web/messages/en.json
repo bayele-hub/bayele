@@ -1540,5 +1540,826 @@
       "not_draft": "This contract already has an invoice.",
       "generic": "The action failed. Try again."
     }
+  },
+  "adminPartners": {
+    "tips": {
+      "listing": "Delisting hides a partner from the directory and blocks new introductions. Current work continues. A reason is required.",
+      "specialties": "Picked by the partner from Bayele's list (3 at most). They are declared, not verified.",
+      "links": "The commission is set when the creator accepts. Only an admin can change it, with a reason; missions already started keep their rate.",
+      "commissions": "Paid only after the campaign is validated and escrow is released. Held while a self-dealing flag is open.",
+      "assignments": "Only Bayele introduces a brand to a partner. The conversation opens right away, for 30 days. The partner can ask to end it.",
+      "flags": "Masked contact details and member reports. A masked message's original is kept 90 days, readable with a logged reason.",
+      "flagsQueue": "Each row shows the type of detail masked. \"View original\" needs a reason and every read is logged. After 90 days, the original is deleted.",
+      "selfDealing": "A partner and a brand share a phone, payout number or e-mail. Their payouts are held until you decide.",
+      "requests": "Reply within 24 h. Approving connects the brand and the partner right away. Declining sends the reason to the brand.",
+      "endRequests": "A partner asks to stop an introduction. End it, or decline with a note they'll receive in the app."
+    },
+    "title": "Partners",
+    "rail": [
+      "Partners",
+      "Requests",
+      "Flags"
+    ],
+    "filter": {
+      "listed": "Listed",
+      "delisted": "Delisted",
+      "suspended": "Suspended",
+      "pending": "Pending",
+      "all": "All",
+      "hold": "Payouts on hold"
+    },
+    "search": "Name, @handle or city",
+    "countMany": "{n} partners",
+    "countOne": "1 partner",
+    "countBreakdown": "{l} listed · {d} delisted · {s} suspended",
+    "chip": {
+      "listed": "Listed",
+      "delisted": "Delisted",
+      "hold": "Payouts on hold",
+      "flagsSr": "open flags",
+      "endRequested": "End requested"
+    },
+    "card": {
+      "counts": "{c} creators · {a} introductions · {r} retainers",
+      "open": "View partner page"
+    },
+    "empty": "No partner matches these filters.",
+    "memberLink": "Full member page",
+    "action": {
+      "delist": "Delist",
+      "relist": "Relist",
+      "assign": "Introduce to a brand",
+      "retainer": "Propose a retainer",
+      "suspend": "Suspend",
+      "reactivate": "Reactivate"
+    },
+    "section": {
+      "listing": "Directory",
+      "specialties": "Declared specialties",
+      "links": "Represented creators",
+      "deals": "Missions",
+      "commissions": "Commissions",
+      "retainers": "Retainers",
+      "assignments": "Introductions",
+      "requests": "Contact requests",
+      "flags": "Flags"
+    },
+    "listing": {
+      "since": "Listed since {date}",
+      "delistedOn": "Delisted on {date} — Reason: {reason}",
+      "listed": "Listed"
+    },
+    "legacy": "Unrecognised old text: {values}",
+    "legacyFix": "A correction has been requested",
+    "origin": {
+      "admin": "Proposed by Bayele",
+      "contact_request": "Brand's request",
+      "legacy_retainer": "Existing retainer"
+    },
+    "scope": {
+      "brand": "Whole brand",
+      "campaign": "Campaign: {title}"
+    },
+    "status": {
+      "active": "Active",
+      "ended": "Ended"
+    },
+    "commissions": {
+      "line": "Owed: {owed} · Paid: {paid} · {count} missions",
+      "hold": "Payouts on hold: a self-dealing flag is open."
+    },
+    "flags": {
+      "line": "{open} open · {n30} in 30 days",
+      "partner30": "{n} flags in 30 days",
+      "openThread": "Open the conversation",
+      "resolve": "Mark as handled",
+      "clear": "Clear the flag",
+      "confirm": "Confirm",
+      "holdNote": "Partner payouts on hold",
+      "reportedBy": "Reported by @{handle}",
+      "empty": "No open flags.",
+      "pair": "@{partner} ↔ @{brand}",
+      "count": "{n} masked",
+      "sender": "Sent by @{handle}",
+      "noteOptional": "Note (optional)",
+      "noteRequired": "Note (required to confirm)",
+      "done": "Flag handled.",
+      "forPartner": "Partner: @{handle}",
+      "showAllPartners": "All partners"
+    },
+    "historyToggle": "Show history ({n})",
+    "emptyLinks": "No represented creators.",
+    "emptyAssignments": "No introductions.",
+    "emptyRetainers": "No retainers.",
+    "emptyRequests": "No contact requests.",
+    "emptyFlags": "No flags.",
+    "reason": "Reason",
+    "reasonOptional": "Reason (optional)",
+    "cancel": "Cancel",
+    "delist": {
+      "title": "Delist {name}?",
+      "effect": "The partner disappears from the directory and gets no new introductions or requests. Current missions and retainers continue. They are notified in the app.",
+      "done": "{name} has been delisted."
+    },
+    "relist": {
+      "done": "{name} is listed again.",
+      "title": "Relist {name}?"
+    },
+    "assign": {
+      "brand": "Brand",
+      "campaign": "Campaign (optional)",
+      "note": "Note (optional)",
+      "noteCounter": "{n}/280",
+      "searchHint": "Type at least 2 letters",
+      "activeCount": "{n} active introductions",
+      "submit": "Connect them",
+      "help": "The introduction is active right away: a conversation opens between the brand and the partner for 30 days. Both are notified in the app.",
+      "done": "Introduction made. The conversation is open for 30 days.",
+      "openThread": "Open the conversation"
+    },
+    "unassign": {
+      "title": "End the introduction with {brand}?",
+      "effect": "The conversation is closed (messages stay readable). Both parties are notified.",
+      "submit": "End it",
+      "done": "The introduction has ended."
+    },
+    "endLink": {
+      "title": "End the representation of @{creator}?",
+      "effect": "Missions already accepted keep their terms. The creator and the partner are notified.",
+      "submit": "End the representation",
+      "done": "The representation has ended."
+    },
+    "rate": {
+      "title": "Change @{creator}'s commission",
+      "current": "Current rate: {rate}%",
+      "new": "New rate (%)",
+      "help": "Missions already started keep their rate. The creator and the partner are notified.",
+      "submit": "Save the rate",
+      "done": "Rate saved.",
+      "open": "Change the commission"
+    },
+    "retainer": {
+      "help": "Bayele proposes this retainer on the brand's behalf. Bayele's share is fixed at 25%. The partner must accept it.",
+      "done": "Retainer proposed. The partner must accept it.",
+      "brand": "Brand (approved)",
+      "contract": "Contract value (FCFA)",
+      "fee": "Partner fee (FCFA)",
+      "media": "Media budget (FCFA)",
+      "kpi": "KPI bonus (FCFA, optional)",
+      "cut": "Bayele share (25%): {cut} · Net to split: {net}",
+      "unbalanced": "Fee + media budget must equal the net ({net}).",
+      "submit": "Propose the retainer"
+    },
+    "errors": {
+      "partner_not_available": "This partner isn't available (pending, suspended or delisted).",
+      "brand_not_active": "This brand isn't approved yet.",
+      "campaign_not_found": "This campaign doesn't belong to the chosen brand.",
+      "assignment_exists": "An introduction is already open for this partner and brand.",
+      "reason_required": "Enter a reason.",
+      "reason_too_long": "Reason too long (500 characters at most).",
+      "note_too_long": "Note too long (280 characters at most).",
+      "query_too_short": "Type at least 2 letters.",
+      "request_already_decided": "This request has already been handled.",
+      "original_not_found": "This message wasn't masked: there is no original.",
+      "original_purged": "The original was deleted after 90 days.",
+      "invalid_commission_rate": "Invalid rate.",
+      "link_not_open": "The representation is no longer active.",
+      "invalid_amounts": "Invalid amounts.",
+      "flag_already_decided": "This flag has already been handled.",
+      "note_required": "A note is required to confirm.",
+      "not_pending": "This request has already been handled.",
+      "message_required": "A message is required for \"Other reason\".",
+      "message_too_long": "Message too long (500 characters at most).",
+      "generic": "The action failed. Try again.",
+      "partner_not_found": "Partner not found.",
+      "not_authorized": "Admins only.",
+      "link_not_found": "Representation not found.",
+      "assignment_not_found": "Introduction not found.",
+      "request_not_found": "Request not found.",
+      "flag_not_found": "Flag not found.",
+      "invalid_reason_code": "Pick a reason from the list.",
+      "consultant_not_found": "Partner not found.",
+      "invalid_decision": "Invalid decision.",
+      "invalid_listing": "Invalid action.",
+      "note_required_dismiss": "Write a note for the partner."
+    },
+    "flagsTabs": [
+      "Masked details",
+      "Reports",
+      "Self-dealing"
+    ],
+    "flagStatus": [
+      "Open",
+      "Handled",
+      "All"
+    ],
+    "kinds": {
+      "phone": "Number",
+      "email": "E-mail",
+      "messaging_link": "Messaging link",
+      "social_handle": "Social account"
+    },
+    "selfKinds": {
+      "phone": "Same phone",
+      "payout_number": "Shared payout number",
+      "email": "Same e-mail"
+    },
+    "selfSource": {
+      "assignment": "Introduction by Bayele",
+      "contact_request": "Approved contact request",
+      "campaign_application": "Application for a creator",
+      "retainer": "Retainer proposed by Bayele"
+    },
+    "original": {
+      "show": "View original",
+      "title": "View the original message",
+      "notice": "Safety team access only. This read is logged with your reason.",
+      "quick": [
+        "Check a report",
+        "Review a possible off-platform exchange",
+        "Ongoing dispute"
+      ],
+      "submit": "Show the original",
+      "label": "Original (viewed on {date})",
+      "hide": "Hide",
+      "purged": "Original deleted (over 90 days)"
+    },
+    "endRequests": {
+      "title": "End requests",
+      "status": [
+        "Open",
+        "Accepted",
+        "Declined",
+        "All"
+      ],
+      "end": "End it",
+      "dismiss": "Decline the request",
+      "prefill": "End requested by the partner: {reason}",
+      "noteLabel": "Note for the partner",
+      "empty": "No pending end requests."
+    },
+    "cgu": {
+      "accepted": "Non-circumvention rule accepted (version {version})",
+      "missing": "Non-circumvention rule not yet accepted"
+    },
+    "requests": {
+      "status": [
+        "Pending",
+        "Approved",
+        "Declined",
+        "Withdrawn",
+        "Expired",
+        "All"
+      ],
+      "overdue": "> 24 h",
+      "brandApproved": "Approved brand",
+      "brandNotApproved": "Brand not approved",
+      "selfDealing": "Possible self-dealing",
+      "budget": "Budget: {value}",
+      "budgetNone": "Budget: not given",
+      "deadline": "Deadline: {date}",
+      "masked": "Contact details were masked in this request.",
+      "approve": "Approve",
+      "decline": "Decline",
+      "approved": "Request approved. The conversation is open.",
+      "approveMessage": "Message to the brand (optional)",
+      "approveNote": "The conversation opens right away between the brand and the partner, for 30 days.",
+      "approveSubmit": "Approve and connect",
+      "messageLabel": "Message to the brand",
+      "preview": "The brand will receive: Reason: {label}. {message}",
+      "submitDecline": "Decline the request",
+      "empty": "No pending requests.",
+      "reasons": {
+        "incomplete": {
+          "label": "Incomplete request",
+          "message": "Please describe your need (goal, timing) and send a new request."
+        },
+        "brand_unverified": {
+          "label": "Brand account to complete",
+          "message": "Complete your brand profile; we can then handle your request."
+        },
+        "poor_fit": {
+          "label": "Partner not a good fit for this need",
+          "message": "This partner doesn't match this need. Bayele can suggest another one."
+        },
+        "suspected_offplatform": {
+          "label": "Suspected off-platform dealings",
+          "message": "We can't follow up on this request. Exchanges and payments must go through Bayele."
+        },
+        "other": {
+          "label": "Other reason",
+          "message": ""
+        }
+      }
+    },
+    "dealStatus": {
+      "invited": "Invited",
+      "applied": "Applied",
+      "approved": "Accepted",
+      "rejected": "Declined",
+      "content_submitted": "Proof sent",
+      "verified": "Proof approved",
+      "paid": "Paid",
+      "disputed": "In dispute"
+    },
+    "retainerStatus": {
+      "draft": "Proposed",
+      "invoiced": "Invoiced",
+      "funded": "Funded",
+      "active": "Active",
+      "completed": "Completed",
+      "terminated": "Cancelled"
+    },
+    "settlementStatus": {
+      "pending": "To pay",
+      "paid": "Paid"
+    },
+    "campaignStatus": {
+      "draft": "Draft",
+      "pending_funding": "Awaiting funding",
+      "published": "Published",
+      "in_progress": "In progress",
+      "under_review": "Under review",
+      "completed": "Completed",
+      "disputed": "In dispute",
+      "cancelled": "Cancelled"
+    },
+    "blocked": {
+      "delisted": "Delisted: no new introductions or retainers. Relist them first.",
+      "suspended": "Account suspended: no new introductions or retainers until it is reactivated.",
+      "pending": "Profile awaiting approval: approve it before introducing them.",
+      "rejected": "Profile rejected: no new introductions or retainers."
+    },
+    "hub": [
+      "Partners",
+      "Requests",
+      "End requests",
+      "Flags"
+    ],
+    "searchLabel": "Search for a partner",
+    "cardCounts": "{c} creators · {a} introductions",
+    "searchSubmit": "Search",
+    "specialtyFilter": "Specialty",
+    "specialtyAll": "All specialties",
+    "clearFilters": "Clear filters",
+    "prev": "Previous",
+    "next": "Next",
+    "range": "{from}–{to} of {total}",
+    "unavailable": "List unavailable right now. Try again in a moment.",
+    "back": "Partners",
+    "suspend": {
+      "reason": "Reason (sent to the partner)",
+      "effect": "The partner can no longer act on Bayele and their conversations are paused. They are notified in the app.",
+      "done": "{name} is suspended."
+    },
+    "reactivate": {
+      "done": "{name} is reactivated."
+    },
+    "since": "since {date}",
+    "dismiss": {
+      "done": "Request declined. The partner receives your note."
+    },
+    "pickBrand": "Pick a brand from the list.",
+    "noBrand": "No approved brand matches.",
+    "searching": "Searching…",
+    "dealsApplied": "Applied by the partner",
+    "acceptedOn": "accepted on {date}",
+    "endedReason": "Reason: {reason}",
+    "endRequestRow": "End requested: \"{reason}\"",
+    "decisionNote": "Note: {note}",
+    "pendingFix": "A correction has been requested",
+    "linkStatus": {
+      "pending": "Pending",
+      "active": "Active",
+      "ended": "Ended",
+      "declined": "Declined",
+      "invited": "Invitation sent"
+    },
+    "requestStatus": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "declined": "Declined",
+      "withdrawn": "Withdrawn",
+      "closed": "Ended",
+      "expired": "Expired"
+    },
+    "endStatus": {
+      "open": "Open",
+      "accepted": "Accepted",
+      "dismissed": "Declined"
+    },
+    "flagState": {
+      "open": "Open",
+      "resolved": "Handled",
+      "cleared": "Cleared",
+      "confirmed": "Confirmed"
+    },
+    "flagSource": {
+      "auto_mask": "Masked details",
+      "report": "Report",
+      "contact_request": "Contact request"
+    },
+    "ageHours": "{n} h ago",
+    "ageDays": "{n} d ago",
+    "ageNow": "just now",
+    "dealsEmpty": "No missions.",
+    "settlement": {
+      "partner_payout": "Partner payout",
+      "brand_refund": "Brand refund"
+    },
+    "city": {
+      "add": "Add \"{city}\" to the list ({country})"
+    },
+    "memberWarn": {
+      "specialties_unmapped": "Old specialties not recognised: a correction is requested.",
+      "city_not_in_list": "City not in the country's list.",
+      "contact_in_bio": "The bio contains contact details (number, e-mail, link or account).",
+      "self_dealing_flag": "Self-dealing flag open: partner payouts on hold."
+    }
+  },
+  "partnerRequest": {
+    "tips": {
+      "goal": "One or two sentences: what you want to achieve. Bayele reads the request before passing it to the partner."
+    },
+    "cta": {
+      "request": "Request this partner",
+      "help": "Bayele reviews your request and replies in the app.",
+      "sent": "Request sent · see status",
+      "openThread": "Open the conversation",
+      "proposeRetainer": "Propose a retainer",
+      "notApproved": "Your brand account must be approved before you request a partner.",
+      "completeProfile": "Complete my profile"
+    },
+    "title": "Request a partner",
+    "notice": "Bayele reads your request. If it's approved, the conversation with the partner opens here right away. Your exchanges and payments stay protected on Bayele.",
+    "goal": "Your need",
+    "goalPlaceholder": "What you want to achieve, in one or two sentences.",
+    "goalCounter": "{n}/280",
+    "budget": "Expected budget (optional)",
+    "budgetPlaceholder": "A range, if you know it",
+    "deadline": "Deadline (optional)",
+    "maskNotice": "Contact details will be masked: Bayele introduces you in the app.",
+    "submit": "Send the request",
+    "footnote": "Bayele replies in the app.",
+    "sent": "Request sent. Bayele replies in the app.",
+    "errors": {
+      "owner_not_active": "Your brand account must be approved before you request a partner.",
+      "partner_not_available": "This partner isn't available right now.",
+      "cannot_contact_self": "You can't request yourself.",
+      "request_already_open": "A request is already open for this partner.",
+      "too_many_requests": "You already have 5 pending requests. Wait for a reply or withdraw one.",
+      "invalid_goal": "Describe your need (280 characters at most).",
+      "budget_too_long": "Budget too long (60 characters at most).",
+      "deadline_in_past": "Pick a future date.",
+      "consent_required": "Tick the box to send the request.",
+      "generic": "Sending failed. Try again."
+    },
+    "back": "Partners",
+    "partnerUnavailable": "This partner isn't available right now.",
+    "alreadyOpenLink": "See status"
+  },
+  "businessPartners": {
+    "tips": {
+      "window": "The conversation stays open 30 days. Proposing or signing a retainer extends it; once the contract is signed, contact details show."
+    },
+    "nav": "Partners",
+    "title": "My partners",
+    "assigned": "Assigned partners",
+    "pending": "Pending",
+    "history": "Show history ({n})",
+    "windowUntil": "Conversation open until {date}",
+    "contractSigned": "Contract signed: contact details visible",
+    "withdraw": "Withdraw the request",
+    "withdrawConfirm": "Withdraw this request? You can send another one.",
+    "expired": "30-day window ended without a contract — you can send a new request.",
+    "requestAgain": "Request again",
+    "declinedReason": "Reason: {label}. {message}",
+    "sentOn": "Sent on {date}",
+    "pill": {
+      "review": "Under review by Bayele",
+      "active": "Active",
+      "declined": "Declined",
+      "withdrawn": "Withdrawn",
+      "ended": "Ended",
+      "expired": "Expired"
+    },
+    "empty": {
+      "title": "No partners yet",
+      "body": "A partner runs your campaigns and creators. Pick one from the directory: Bayele introduces you.",
+      "cta": "Find a partner"
+    },
+    "retainerHelp": "You can propose a retainer to partners Bayele has introduced you to.",
+    "retainerNone": "You can propose a retainer once Bayele has introduced you to a partner.",
+    "origin": {
+      "admin": "Proposed by Bayele",
+      "contact_request": "Following your request"
+    },
+    "retainerSelect": "Partner",
+    "talentTabs": [
+      "Creators",
+      "Partners"
+    ],
+    "reviewIntro": "Bayele reads your request and replies in the app, usually within 24 h.",
+    "withdrawn": "Request withdrawn.",
+    "withdrawYes": "Yes, withdraw",
+    "errors": {
+      "generic": "The action failed. Try again.",
+      "not_pending": "This request has already been handled."
+    },
+    "endedOn": "Ended on {date}",
+    "declined": "Declined",
+    "directoryTitle": "Directory partners",
+    "directoryEmpty": "No approved partners yet.",
+    "allCountries": "All countries",
+    "allSpecialties": "All specialties",
+    "filter": "Filter"
+  },
+  "partnerAssignments": {
+    "tips": {
+      "howItWorks": "Brands go through Bayele to reach you. Keep your specialties up to date: they help Bayele suggest the right brands."
+    },
+    "nav": "Introductions",
+    "title": "Introductions",
+    "active": "Active",
+    "ended": "Ended",
+    "need": "Need: \"{goal}\"",
+    "note": "Note from Bayele: {note}",
+    "until": "Conversation open until {date}",
+    "openThread": "Open the conversation",
+    "viewMessages": "View messages",
+    "endedOn": "Ended on {date}",
+    "requestEnd": "Ask to end it",
+    "requestEndTitle": "Why do you want to end this introduction?",
+    "requestEndReason": "Reason",
+    "requestEndHelp": "Bayele reviews your request and replies in the app. Your messages remain readable.",
+    "requestEndSubmit": "Send the request",
+    "endRequested": "End requested",
+    "endRequestedOn": "Request sent on {date}",
+    "endDismissed": "End request declined: {note}",
+    "cancel": "Cancel",
+    "empty": "No introductions yet. Bayele suggests brands when your profile matches their needs.",
+    "delisted": "You're no longer visible in the directory. Your current missions continue. Write to support@bayele.com to find out more.",
+    "errors": {
+      "reason_required": "Enter a reason.",
+      "reason_too_long": "Reason too long (300 characters at most).",
+      "end_already_requested": "You've already asked to end this introduction.",
+      "assignment_not_active": "This introduction has already ended.",
+      "generic": "Sending failed. Try again."
+    },
+    "sent": "Request sent. Bayele replies in the app.",
+    "counter": "{n}/300",
+    "endReason": "Reason: {reason}"
+  },
+  "specialties": {
+    "tip": "Pick up to 3 areas you really work in. Brands see them on your public profile.",
+    "publicTip": "Specialties chosen by the partner from Bayele's list. Bayele does not verify them.",
+    "legend": "Specialties",
+    "counter": "{n}/3",
+    "help": "Choose up to 3 specialties from the list.",
+    "max": "3 specialties at most. Remove one to choose another.",
+    "publicHeading": "Declared specialties",
+    "legacy": "Your old text: {legacy} — choose the matching specialties.",
+    "errors": {
+      "invalid_specialty": "Choose from the list.",
+      "too_many_specialties": "3 specialties at most."
+    },
+    "none": "No declared specialties."
+  },
+  "messaging": {
+    "tips": {
+      "masked": "Before a contract is signed, numbers, e-mails, links and accounts are masked. Payment is only guaranteed on Bayele.",
+      "why": "Bayele protects you while you talk here. A long string of digits, like a reference, may be masked by mistake: add letters to it."
+    },
+    "header": {
+      "masked": "Bayele introduction · contact details masked until the contract",
+      "until": "Open until {date}",
+      "signed": "Contract signed · conversation linked to the retainer",
+      "expired": "30-day window ended",
+      "suspended": "Conversation paused",
+      "closed": "Conversation closed"
+    },
+    "mask": {
+      "preSend": "For your safety, contact details (number, e-mail, WhatsApp link, social account) will be masked when sent. Talk here until the contract is signed.",
+      "bubbleNote": "Contact details masked: talk on Bayele until the contract is signed.",
+      "sent": "We masked {kinds} in your message. It protects both sides: payment is only guaranteed on Bayele.",
+      "why": "Why?",
+      "kinds": {
+        "phone": "a phone number",
+        "email": "an e-mail address",
+        "messaging_link": "a messaging link",
+        "social_handle": "a social account"
+      },
+      "and": "and"
+    },
+    "closed": {
+      "expired": "This conversation is closed: the 30-day window ended without a contract. The brand can send a new request.",
+      "suspended": "This conversation is paused while an account is being checked.",
+      "ended": "This introduction has ended. Messages remain readable."
+    },
+    "report": {
+      "menu": "Report an off-platform request",
+      "title": "Report an off-platform request",
+      "body": "Asked to continue on WhatsApp, by phone, or to pay outside Bayele? Tell us: Bayele will review the conversation.",
+      "reason": "What happened (optional)",
+      "submit": "Send the report",
+      "done": "Thank you. Bayele is reviewing the conversation. The other party isn't notified.",
+      "rate_limited": "You've already sent several reports today. Try again tomorrow or write to support@bayele.com.",
+      "cancel": "Cancel",
+      "error": "The report failed. Try again."
+    },
+    "errors": {
+      "conversation_expired": "The 30-day window has ended: this message wasn't sent.",
+      "conversation_frozen": "This conversation is paused: this message wasn't sent.",
+      "conversation_closed": "This introduction has ended: this message wasn't sent.",
+      "not_assigned": "This conversation opens after Bayele introduces you.",
+      "generic": "Sending failed. Try again."
+    }
+  },
+  "proofShots": {
+    "tip": "Two screenshots: the posted status with its date, then the view count at least 24 h later. Crop them to hide the names of people who viewed it.",
+    "reviewTip": "Check the status date and the view count. If something is missing, ask for a new screenshot instead of rejecting.",
+    "title": "WhatsApp proof",
+    "modeLink": "Post link",
+    "modeShots": "WhatsApp screenshots",
+    "guide": {
+      "title": "How to do it",
+      "steps": [
+        "Screenshot of the posted status, with the date visible.",
+        "At least 24 h later, screenshot of the view count.",
+        "Before sending, crop with your phone to hide the names and numbers of people who viewed your status."
+      ],
+      "private": "Your screenshots stay private: only the brand and Bayele see them."
+    },
+    "slot": {
+      "posted": "Posted status",
+      "views": "View count (24 h later)",
+      "extra": "Extra screenshot (optional)"
+    },
+    "add": "Add a screenshot",
+    "other": "Choose another image",
+    "state": {
+      "uploading": "Uploading…",
+      "ready": "Ready"
+    },
+    "replace": "Replace",
+    "retry": "Try again",
+    "submit": "Send the proof",
+    "resubmit": "Send the proof again",
+    "sent": "Proof sent — the brand is checking it.",
+    "recaptureBanner": "The brand asks for a new screenshot. Reason: {reason}",
+    "previous": "Previous screenshots ({n})",
+    "identicalClient": "Both screenshots are identical. Add the view-count screenshot taken at least 24 h later.",
+    "errors": {
+      "tooLarge": "Image too large (5 MB at most after compression). Choose another screenshot.",
+      "type": "Unsupported format. Use a JPG, PNG or WebP screenshot.",
+      "network": "Upload failed. Check your connection, then try again.",
+      "screenshots_required": "Add the two required screenshots.",
+      "screenshot_not_uploaded": "A screenshot hasn't finished uploading. Try again.",
+      "proof_duplicate_image": "This screenshot was already used for another mission. Add a screenshot of this status.",
+      "screenshot_already_used": "This screenshot was already sent. Add a new one.",
+      "screenshots_identical": "Both screenshots are identical.",
+      "invalid_screenshot": "Unreadable screenshot. Pick it again.",
+      "already_submitted": "The proof has already been sent.",
+      "generic": "Sending failed. Try again.",
+      "not_approved": "This mission isn't accepted yet.",
+      "invalid_screenshot_path": "Invalid screenshot. Pick it again."
+    },
+    "review": {
+      "labels": [
+        "Posted status",
+        "Views",
+        "Extra"
+      ],
+      "recapture": "Ask for a new screenshot",
+      "reason": "Reason",
+      "quick": [
+        "The date isn't visible",
+        "The view count is missing",
+        "The view-count screenshot was taken too early",
+        "The image is unreadable"
+      ],
+      "left": "The creator can send new screenshots. {left} request(s) left out of 3.",
+      "send": "Send the request",
+      "pending": "New screenshot requested",
+      "expired": "Image expired — reload the page.",
+      "errors": {
+        "too_many_recaptures": "You've already asked for 3 new screenshots. Approve or reject the proof.",
+        "reason_required": "Say what needs fixing.",
+        "reason_too_long": "Reason too long (300 characters at most).",
+        "recapture_pending": "A new screenshot is pending: you can approve once it's sent.",
+        "generic": "The request failed. Try again.",
+        "proof_already_reviewed": "This proof has already been reviewed.",
+        "not_a_screenshot_proof": "This proof isn't a screenshot."
+      },
+      "sent": "Request sent to the creator.",
+      "cancel": "Cancel",
+      "open": "Open {label}"
+    }
+  },
+  "cityPicker": {
+    "tip": "Pick your city from the country's list. If it isn't there, choose \"Other city\" and type only its name.",
+    "label": "City",
+    "placeholder": "Search your city",
+    "other": "Other city…",
+    "otherLabel": "Your city's name",
+    "noMatch": "No city found: choose \"Other city\".",
+    "countryChanged": "Choose a city in the new country.",
+    "admin": {
+      "add": "Add \"{city}\" to the list ({country})",
+      "added": "City added to the list.",
+      "errors": {
+        "city_exists": "This city is already in the list.",
+        "invalid_city": "Invalid city name."
+      }
+    },
+    "errors": {
+      "required": "Choose your city."
+    },
+    "countryLabel": "Country"
+  },
+  "consent": {
+    "readClause": "Read the clause",
+    "request": {
+      "label": "I agree to work with this partner only through Bayele for 12 months after the introduction."
+    },
+    "onboarding": {
+      "label": "I agree to go through Bayele for any collaboration that starts from a Bayele introduction, for 12 months.",
+      "error": "Tick the box to continue."
+    },
+    "modal": {
+      "title": "A simple rule to protect you",
+      "body": "When Bayele introduces you to a brand or a partner, you work together through Bayele for 12 months after the introduction or the last paid job.",
+      "points": [
+        "Your payment is guaranteed by escrow.",
+        "Your exchanges are kept in case of disagreement."
+      ],
+      "tick": "I have read and accept this rule.",
+      "continue": "Continue",
+      "signOut": "Sign out",
+      "tickError": "Tick the box to continue.",
+      "saveError": "Saving failed. Try again."
+    },
+    "partnerRequired": "This partner must first accept the updated non-circumvention rule. Try again later or contact Bayele.",
+    "requiredError": "First accept the non-circumvention rule: reload the page to see it."
+  },
+  "legal": {
+    "updated": "Last updated: 14 October 2026",
+    "toc": [
+      "1. Terms",
+      "Non-circumvention",
+      "2. Escrow",
+      "3. Data",
+      "4. Invoicing"
+    ],
+    "nonCircumvention": {
+      "title": "1.1 Introductions and non-circumvention",
+      "body": [
+        "When Bayele introduces a brand and a partner, they agree to contract and pay through Bayele for any collaboration between them for 12 months from the introduction or from the last job paid on Bayele.",
+        "If this is circumvented, Bayele may, depending on severity: issue a warning, suspend the account, remove the partner from the directory, charge an amount equal to Bayele's lost fees, and withhold commissions not yet paid.",
+        "This commitment is accepted with a tick box, recorded with its version and date."
+      ]
+    },
+    "escrow": {
+      "body": "Funds stay locked in escrow until the proof of posting is approved, then they are released and paid by Mobile Money.",
+      "title": "2. Escrow protocol"
+    },
+    "privacy": {
+      "review": {
+        "title": "3.1 Profile review",
+        "body": "Our administrators may view your profile, before and after it is approved, to verify your identity and protect the community. Mobile Money payout numbers and tax identifiers are masked by default and are only shown for a payment, a dispute or a legal obligation."
+      },
+      "logs": {
+        "title": "3.2 Logging",
+        "body": "We log profile views, displays of masked data and decisions (approval, rejection, correction request, suspension), with the date, the administrator and the reason. The log does not contain the data displayed. Views are kept for 12 months; decisions and displays of masked data for 5 years."
+      },
+      "proofs": {
+        "title": "3.3 Screenshots",
+        "body": "Screenshots sent as proof of a WhatsApp status are private: only the creator, the campaign's brand and our administrators can see them. They are kept for 30 days after payment, or after a dispute closes if that is later, and then deleted. Hide the names and numbers of anyone visible in your screenshots."
+      },
+      "messages": {
+        "title": "3.4 Message moderation",
+        "body": "Before a contract is signed, contact details (phone, e-mail, WhatsApp link, social media handle) are automatically masked in messages. When a message is masked, the original is kept for 90 days, accessible only to the safety team; every access is logged. Once a contract is signed, messages are neither masked nor scanned."
+      },
+      "rights": {
+        "title": "3.5 Your rights",
+        "body": "You can ask to access your data, correct it, and submit your profile again after a rejection. Write to us at support@bayele.com."
+      },
+      "title": "3. Personal data",
+      "intro": "Companies' tax identifiers and billing addresses are never public. Only creators' pseudonym, city, categories and public audience appear in the directory."
+    },
+    "copyLink": "Copy the section link",
+    "title": "Legal agreements and escrow framework",
+    "home": "Home",
+    "center": "Legal and compliance centre",
+    "compliance": "Compliant with OHADA law and CEMAC / WAEMU regulations.",
+    "cgu": {
+      "title": "1. Terms of use",
+      "body": "Bayele connects advertisers, partners and creators and secures the payments between them."
+    },
+    "ohada": {
+      "title": "4. OHADA invoicing (SokoClick)",
+      "body": "Invoices comply with the OHADA Uniform Act, with a verifiable identifier for tax deductibility."
+    },
+    "copied": "Link copied"
   }
 }

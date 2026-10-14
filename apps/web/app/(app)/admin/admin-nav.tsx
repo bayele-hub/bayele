@@ -9,6 +9,8 @@ const TABS = [
   // « Profils » = the members list filtered on « À valider » (one list, one card — design §A.2).
   { href: '/admin/users?status=pending_review', label: 'Profils', short: 'Profils', Icon: ShieldCheck },
   { href: '/admin/users', label: 'Utilisateurs', short: 'Utilisateurs', Icon: Users },
+  // Partner governance hub (G2): list, contact requests, end requests, flags.
+  { href: '/admin/partners', label: 'Partenaires', short: 'Partenaires', Icon: Handshake },
   // Managed campaigns: placed before « Campagnes » so the tabs follow the money (brief → funding → payout).
   { href: '/admin/briefs', label: 'Briefs gérés', short: 'Briefs', Icon: ClipboardList },
   { href: '/admin/funding', label: 'Campagnes', short: 'Campagnes', Icon: Wallet },
