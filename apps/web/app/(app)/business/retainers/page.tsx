@@ -3,7 +3,10 @@ import Link from 'next/link';
 import { Handshake, Plus, Clock, CheckCircle2, MessageCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
-import { fmtFcfa, RETAINER_STATUS_FR } from '@/lib/data/campaigns';
+import { fmtFcfa } from '@/lib/data/campaigns';
+import { getDictionary } from '@/i18n/dictionaries';
+import { canInvoice, retainerStage } from '@/lib/retainers';
+import { InvoiceButton } from './invoice-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,10 +18,12 @@ export default async function BusinessRetainers() {
   const supabase = await createClient();
   const { data: retainers } = await supabase
     .from('agency_retainers')
-    .select('id, status, contract_value_fcfa, consultant_fee_fcfa, media_budget_fcfa, kpi_bonus_fcfa, created_at, consultant:profiles!agency_retainers_consultant_id_fkey(display_name, handle)')
+    .select('id, status, partner_accepted_at, partner_declined_at, contract_value_fcfa, consultant_fee_fcfa, media_budget_fcfa, kpi_bonus_fcfa, created_at, consultant:profiles!agency_retainers_consultant_id_fkey(display_name, handle)')
     .order('created_at', { ascending: false });
 
   const list = retainers ?? [];
+  const { t } = await getDictionary();
+  const R = t.retainers;
 
   return (
     <section className="space-y-6">
@@ -47,8 +52,9 @@ export default async function BusinessRetainers() {
           {list.map((r) => {
             const cons = r.consultant as { display_name: string; handle: string } | { display_name: string; handle: string }[] | null;
             const c = Array.isArray(cons) ? cons[0] : cons;
-            const done = r.status === 'completed';
-            const invoiced = r.status === 'invoiced';
+            const stage = retainerStage(r);
+            const done = stage === 'completed';
+            const waiting = stage === 'awaiting_partner' || stage === 'ready_to_invoice' || stage === 'invoiced';
             return (
               <li key={r.id} className="rounded-2xl border border-line bg-white p-4 shadow-card">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -62,19 +68,19 @@ export default async function BusinessRetainers() {
                     <span className="font-display font-extrabold text-ink">{fmtFcfa(r.contract_value_fcfa)}</span>
                     <div
                       className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                        done ? 'bg-emerald-50 text-emerald-700' : invoiced ? 'bg-accent-soft text-accent' : 'bg-surface text-muted'
+                        done ? 'bg-emerald-50 text-emerald-700' : waiting ? 'bg-accent-soft text-ink' : stage === 'declined' ? 'bg-rose-50 text-rose-700' : 'bg-surface text-muted'
                       }`}
                     >
-                      {done ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                      {RETAINER_STATUS_FR[r.status] ?? r.status}
+                      {done ? <CheckCircle2 className="h-3 w-3" aria-hidden /> : <Clock className="h-3 w-3" aria-hidden />}
+                      {R.stage[stage]}
                     </div>
                   </div>
                 </div>
-                {invoiced && (
-                  <p className="mt-2 rounded-lg bg-accent-soft/60 px-3 py-2 text-[11px] text-accent">
-                    Facture générée. Réglez le contrat par Mobile Money — le contrat s'active dès la confirmation.
-                  </p>
-                )}
+                {/* O7: no invoice before the partner accepts. */}
+                {stage === 'awaiting_partner' && <p className="mt-2 rounded-lg bg-surface px-3 py-2 text-[11px] text-ink">{R.awaitingHint}</p>}
+                {canInvoice(r) && <InvoiceButton retainerId={r.id} label={R.invoice} payLabel={R.pay} invoicedText={R.invoiced} />}
+                {stage === 'invoiced' && <p className="mt-2 rounded-lg bg-accent-soft px-3 py-2 text-[11px] text-ink">{R.invoiced}</p>}
+                {(stage === 'funded' || stage === 'active') && <p className="mt-2 text-[11px] text-muted">{R.stopHint}</p>}
                 <Link
                   href={`/messages/open?ctx=retainer&id=${r.id}`}
                   className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"

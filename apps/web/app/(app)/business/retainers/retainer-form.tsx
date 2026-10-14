@@ -1,11 +1,13 @@
 'use client';
 
 import { useActionState, useEffect, useRef, useState } from 'react';
-import { Loader2, AlertCircle, Check, ArrowRight, ExternalLink, UserCheck, UserX } from 'lucide-react';
+import { Loader2, AlertCircle, Check, ArrowRight, UserCheck, UserX, Lock } from 'lucide-react';
 import { createRetainerAction, lookupConsultantAction, type RetainerState } from './actions';
 import { fmtFcfa } from '@/lib/data/campaigns';
+import type { Dictionary } from '@/i18n/dictionaries';
+import { retainerSplit } from '@/lib/retainers';
 
-export function RetainerForm({ consultantHandle, consultantName }: { consultantHandle: string; consultantName?: string }) {
+export function RetainerForm({ consultantHandle, consultantName, R }: { consultantHandle: string; consultantName?: string; R: Dictionary['retainers'] }) {
   const [state, action, pending] = useActionState<RetainerState, FormData>(createRetainerAction, { error: null });
 
   // Live consultant resolution as the identifier is typed (debounced), so the business confirms who
@@ -32,34 +34,21 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
     return () => clearTimeout(t);
   }, [handle]);
 
+  // O7: Bayele's cut is fixed server-side at 25 % — shown read-only, never editable.
   const [contract, setContract] = useState(1_000_000);
-  const [cut, setCut] = useState(150_000);
-  const [fee, setFee] = useState(550_000);
+  const [fee, setFee] = useState(450_000);
   const [media, setMedia] = useState(300_000);
-  const [kpi, setKpi] = useState(100_000);
+  const [kpi, setKpi] = useState(0);
 
-  const sum = cut + fee + media;
-  const balanced = sum === contract && contract > 0;
+  const split = retainerSplit(contract);
+  const sum = fee + media;
+  const balanced = !!split && sum === split.net;
 
   if (state.ok) {
     return (
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-        <Check className="mx-auto h-8 w-8 text-emerald-600" />
-        <p className="mt-2 font-bold text-ink">Rétainer créé et facturé.</p>
-        {state.mode === 'sokoclick' && state.paymentUrl ? (
-          <a
-            href={state.paymentUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-flex min-h-tap items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-600"
-          >
-            Payer via SokoClick <ExternalLink className="h-3.5 w-3.5" />
-          </a>
-        ) : (
-          <p className="mt-2 text-xs text-muted">
-            Réglez le contrat par Mobile Money — notre équipe confirme le paiement pour activer le contrat.
-          </p>
-        )}
+        <Check className="mx-auto h-8 w-8 text-emerald-600" aria-hidden />
+        <p className="mt-2 font-bold text-ink">{R.created}</p>
         <a href="/business/retainers" className="mt-3 block text-sm font-bold text-brand hover:underline">
           Voir mes rétainers →
         </a>
@@ -105,24 +94,21 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
 
       <NumField label="Valeur du contrat (FCFA)" name="contract" value={contract} onChange={setContract} />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <NumField label="Commission Bayele" name="cut" value={cut} onChange={setCut} />
+      <div className="rounded-2xl border border-line bg-surface p-4">
+        <Row label={R.cutLabel} value={split ? fmtFcfa(split.cut) : '—'} icon />
+        <Row label={R.netLabel} value={split ? fmtFcfa(split.net) : '—'} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <NumField label="Honoraires partenaire" name="fee" value={fee} onChange={setFee} />
         <NumField label="Budget média" name="media" value={media} onChange={setMedia} />
       </div>
-      <NumField label="Bonus KPI (versé à la clôture, en plus)" name="kpi" value={kpi} onChange={setKpi} />
+      <NumField label="Bonus KPI" name="kpi" value={kpi} onChange={setKpi} />
+      <p className="text-[11px] text-muted">{R.kpiNote}</p>
 
       <div className={`rounded-2xl border p-4 ${balanced ? 'border-line bg-surface' : 'border-rose-200 bg-rose-50'}`}>
-        <Row label="Commission + honoraires + média" value={fmtFcfa(sum)} />
-        <div className="mt-2 flex items-center justify-between border-t border-line pt-2">
-          <span className="text-sm font-bold text-ink">Doit égaler le contrat</span>
-          <span className="font-display text-lg font-extrabold text-ink">{fmtFcfa(contract)}</span>
-        </div>
-        {!balanced && (
-          <p className="mt-2 text-[11px] font-semibold text-rose-600">
-            La répartition ({fmtFcfa(sum)}) doit être exactement égale à la valeur du contrat.
-          </p>
-        )}
+        <Row label="Honoraires + média" value={fmtFcfa(sum)} />
+        {!balanced && split && <p className="mt-2 text-[11px] font-semibold text-rose-700">{R.splitHint.replace('{net}', fmtFcfa(split.net))}</p>}
       </div>
 
       <button
@@ -130,11 +116,9 @@ export function RetainerForm({ consultantHandle, consultantName }: { consultantH
         disabled={pending || !balanced}
         className="flex min-h-tap w-full items-center justify-center gap-2 rounded-xl bg-brand text-sm font-bold text-white shadow-sm transition hover:bg-brand-600 active:scale-95 disabled:opacity-50"
       >
-        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>Créer &amp; facturer <ArrowRight className="h-3.5 w-3.5" /></>)}
+        {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : (<>Proposer le contrat <ArrowRight className="h-3.5 w-3.5" aria-hidden /></>)}
       </button>
-      <p className="text-center text-[11px] text-muted">
-        La facture OHADA est générée par SokoClick. Les fonds restent sous séquestre Bayele (ADR-001).
-      </p>
+      <p className="text-center text-[11px] text-muted">{R.awaitingHint}</p>
     </form>
   );
 }
@@ -156,10 +140,10 @@ function NumField(props: { label: string; name: string; value: number; onChange:
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, icon = false }: { label: string; value: string; icon?: boolean }) {
   return (
-    <div className="flex items-center justify-between py-0.5 text-xs">
-      <span className="text-muted">{label}</span>
+    <div className="flex items-center justify-between gap-3 py-0.5 text-xs">
+      <span className="flex items-center gap-1 text-muted">{icon && <Lock className="h-3 w-3" aria-hidden />}{label}</span>
       <span className="font-semibold text-ink">{value}</span>
     </div>
   );

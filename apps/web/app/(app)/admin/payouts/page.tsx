@@ -4,6 +4,9 @@ import { getSession } from '@/lib/auth/session';
 import { PayoutQueue, type PayoutRow } from '../payout-queue';
 import { CommissionQueue, type CommissionRow } from '../commission-queue';
 import { splitPayout } from '@/lib/founder';
+import { SettlementQueue, type SettlementRow } from '../retainers/settlement-queue';
+import { getDictionary } from '@/i18n/dictionaries';
+import { providerLabel } from '@/lib/data/campaigns';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,6 +62,15 @@ export default async function AdminPayouts() {
     gross: c.gross_payout_fcfa,
   }));
 
+  // O7: retainer settlements (partner payouts after completion, brand refunds after an early end).
+  const { t } = await getDictionary();
+  const { data: pendingSettlements } = await supabase.rpc('admin_retainer_settlements');
+  const settlements: SettlementRow[] = (pendingSettlements ?? []).map((x) => ({
+    id: x.id, kind: x.kind, amount: x.amount_fcfa, kept: x.bayele_fee_kept_fcfa, recipientName: x.recipient_name, recipientHandle: x.recipient_handle,
+    phone: x.payout_phone, provider: x.payout_provider ? providerLabel(x.payout_provider) : null, providerId: x.payout_provider ?? null,
+    contract: x.contract_value_fcfa, reason: x.reason,
+  }));
+
   return (
     <section className="space-y-4">
       <div>
@@ -78,6 +90,7 @@ export default async function AdminPayouts() {
         </p>
       </div>
       <CommissionQueue rows={commissionRows} />
+      <SettlementQueue rows={settlements} S={t.admin.queues.settlements} />
     </section>
   );
 }
