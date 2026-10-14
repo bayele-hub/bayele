@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 const STATUS_CLASS: Record<string, string> = {
   held: 'bg-brand-50 text-brand-700',
-  releasable: 'bg-accent-soft text-accent',
+  releasable: 'bg-accent-soft text-ink',
   paid_out: 'bg-emerald-50 text-emerald-700',
   proof_pending: 'bg-surface text-muted',
   pending: 'bg-surface text-muted',
@@ -53,6 +53,7 @@ export default async function AdminLedger() {
         <ul className="grid gap-3">
           {rows.map((t) => {
             const inbound = t.direction === 'inbound';
+            const refund = t.direction === 'refund'; // D9 leftover refund to the brand
             const camp = t.campaign as { title: string } | { title: string }[] | null;
             const title = Array.isArray(camp) ? camp[0]?.title : camp?.title;
             const rec = t.recipient as { display_name: string } | { display_name: string }[] | null;
@@ -71,7 +72,7 @@ export default async function AdminLedger() {
                     <div className="min-w-0">
                       <p className="truncate font-bold text-ink">{title ?? 'Campagne'}</p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {inbound ? 'Financement' : `Paiement → ${recipient ?? 'créateur'}`} · {providerLabel(t.provider)}
+                        {inbound ? 'Financement' : refund ? `Remboursement (reste) → ${recipient ?? 'marque'}` : `Paiement → ${recipient ?? 'créateur'}`} · {providerLabel(t.provider)}
                       </p>
                     </div>
                   </div>

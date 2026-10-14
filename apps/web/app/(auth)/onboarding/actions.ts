@@ -6,6 +6,8 @@ import type { Database } from '@bayele/database';
 import { parseCountry } from '@/lib/countries';
 import { parseRefHandle, parseSignupSource, effectiveSource } from '@/lib/attribution';
 import { withNext } from '@/lib/auth/return-path';
+import { getDictionary } from '@/i18n/dictionaries';
+import { checkProfileText, limitErrorField, parseAudience, type LimitedField } from '@/lib/profile-limits';
 
 type Role = Database['public']['Enums']['user_role'];
 type Country = Database['public']['Enums']['country_code'];
@@ -27,7 +29,7 @@ const ERR_FR: Record<string, string> = {
   industry_required: 'Le secteur est requis.',
 };
 
-export type OnboardState = { error: string | null };
+export type OnboardState = { error: string | null; field?: LimitedField | null };
 
 export async function onboardAction(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
   const role = String(formData.get('role') ?? '') as Role;
@@ -40,6 +42,15 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
   if (!user) redirect('/auth?mode=signin');
 
   const country: Country = parseCountry(formData.get('country'));
+
+  // D5 limits before the RPC (onboard_profile re-checks: display_name_too_long / city_too_long / bio_too_long).
+  const { t } = await getDictionary();
+  const FE = t.creatorForm.errors;
+  const fieldMsg = (f: LimitedField, kind: 'required' | 'tooLong') =>
+    f === 'city' ? (kind === 'required' ? FE.cityRequired : FE.city) : f === 'displayName' ? (kind === 'required' ? FE.displayNameRequired : FE.displayName) : FE.bio;
+  const problems = checkProfileText({ displayName: String(formData.get('display_name') ?? ''), city: String(formData.get('city') ?? ''), bio: String(formData.get('bio') ?? '') });
+  const bad = (['displayName', 'city', 'bio'] as const).find((k) => problems[k]);
+  if (bad) return { error: fieldMsg(bad, problems[bad]!), field: bad };
 
   const csv = (k: string) =>
     String(formData.get(k) ?? '')
@@ -81,7 +92,8 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
     // Public URL of the photo uploaded client-side to the owner-scoped avatars bucket (optional).
     p_avatar_url: avatarUrl,
     p_categories: csv('categories'),
-    p_audience_size: Number(formData.get('audience_size') ?? 0) || 0,
+    // AR-1: the creator's typed audience (blank = 0 on a new profile).
+    p_audience_size: parseAudience(formData.get('audience_size')) ?? 0,
     p_platforms: platforms as unknown as OnboardPlatforms,
     p_specialties: csv('specialties'),
     p_years_experience: Number(formData.get('years_experience') ?? 0) || 0,
@@ -92,6 +104,8 @@ export async function onboardAction(_prev: OnboardState, formData: FormData): Pr
 
   if (error) {
     const key = (error.message ?? '').trim();
+    const field = limitErrorField(key);
+    if (field) return { error: fieldMsg(field, /required/.test(key) ? 'required' : 'tooLong'), field };
     return { error: ERR_FR[key] ?? 'Une erreur est survenue. Vérifiez vos informations et réessayez.' };
   }
 

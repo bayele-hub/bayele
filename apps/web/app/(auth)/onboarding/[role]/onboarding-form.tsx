@@ -7,6 +7,12 @@ import { SocialIcon, SOCIAL_META, type Platform } from '@/components/social-icon
 import { OnboardingAvatar } from '@/components/onboarding-avatar';
 import { normalizeHandle } from '@/lib/handle';
 import { countryOptions, type CountryCode } from '@/lib/countries';
+import type { Dictionary } from '@/i18n/dictionaries';
+import { LimitedField } from '@/components/limited-field';
+import { SectionTip } from '@/components/admin/section-tip';
+import { PROFILE_LIMITS } from '@/lib/profile-limits';
+import { AudienceField } from '@/components/audience-field';
+import { CATEGORY_VALUES } from '@/lib/campaign-categories';
 
 type Role = 'creator' | 'consultant' | 'business';
 type CC = CountryCode;
@@ -17,10 +23,8 @@ const ONBOARD_SOCIALS: Platform[] = ['whatsapp', 'instagram', 'facebook', 'tikto
 
 const COUNTRIES = countryOptions('fr');
 
-const CATEGORIES = [
-  'Beauté', 'Mode', 'Tech', 'Food', 'Musique', 'Sport',
-  'Santé & Bien-être', 'Humour', 'Éducation', 'Voyage', 'Business',
-];
+// Same values as the board filters and alerts (lib/campaign-categories.ts).
+const CATEGORIES = CATEGORY_VALUES;
 
 const ROLE_COPY: Record<Role, { title: string; blurb: string }> = {
   creator: { title: 'Profil créateur', blurb: 'Votre vitrine pour les marques. Vous êtes payé par campagne, via séquestre.' },
@@ -33,13 +37,18 @@ export function OnboardingForm({
   userId,
   defaults,
   next = null,
+  F,
+  T,
 }: {
   role: Role;
   userId: string;
   defaults: { displayName: string; handle: string; country: CC; companyName: string };
   /** Validated return path from sign-up; re-validated by the action. */
   next?: string | null;
+  F: Dictionary['creatorForm'];
+  T: Dictionary['creatorTips'];
 }) {
+  const tip = (key: keyof Dictionary['creatorTips'], label: string) => <SectionTip id={`creator-${String(key)}`} label={label} text={T[key]} ariaTemplate={T.aria} />;
   const [state, formAction, pending] = useActionState<OnboardState, FormData>(onboardAction, { error: null });
   const [cats, setCats] = useState<string[]>([]);
   const copy = ROLE_COPY[role];
@@ -49,9 +58,7 @@ export function OnboardingForm({
       <div>
         <h1 className="font-display text-xl font-extrabold text-ink">{copy.title}</h1>
         <p className="mt-1 text-sm text-muted">{copy.blurb}</p>
-        <p className="mt-2 inline-flex items-center rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold text-muted">
-          Statut à la création : <code className="ml-1 text-ink">pending_review</code> — validé par un admin.
-        </p>
+        <p className="mt-2 rounded-xl bg-surface px-3 py-2 text-[12px] text-ink">{F.statusNote}</p>
       </div>
 
       <input type="hidden" name="role" value={role} />
@@ -59,8 +66,8 @@ export function OnboardingForm({
 
       <OnboardingAvatar userId={userId} name={defaults.displayName || defaults.companyName} />
 
-      {state.error && (
-        <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+      {state.error && !state.field && (
+        <div role="alert" className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
           <AlertCircle className="h-4 w-4 shrink-0" /> {state.error}
         </div>
       )}
@@ -68,8 +75,9 @@ export function OnboardingForm({
       {role === 'business' ? (
         <>
           <Text name="company_name" label="Nom de l'entreprise" defaultValue={defaults.companyName} required placeholder="SARL Douala Logistics" />
-          <div className="grid grid-cols-2 gap-3">
-            <Text name="display_name" label="Nom public" defaultValue={defaults.displayName || defaults.companyName} required placeholder="Douala Logistics" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <LimitedField id="field-display-name" name="display_name" label="Nom public" max={PROFILE_LIMITS.displayName} defaultValue={defaults.displayName || defaults.companyName} required placeholder="Douala Logistics"
+              error={state.field === 'displayName' ? state.error : null} overLimitError={F.errors.displayName} />
             <HandleField defaultValue={defaults.handle} placeholder="douala_logistics" />
           </div>
           <Text name="industry" label="Secteur" required placeholder="Logistique, FMCG, Fintech…" />
@@ -77,14 +85,15 @@ export function OnboardingForm({
         </>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3">
-            <Text name="display_name" label="Nom complet" defaultValue={defaults.displayName} required placeholder="Awa Ngono" />
-            <HandleField defaultValue={defaults.handle} placeholder="awa_beauty" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <LimitedField id="field-display-name" name="display_name" label="Nom complet" max={PROFILE_LIMITS.displayName} defaultValue={defaults.displayName} required placeholder="Awa Ngono"
+              tip={role === 'creator' ? tip('displayName', 'Nom complet') : undefined} error={state.field === 'displayName' ? state.error : null} overLimitError={F.errors.displayName} autoComplete="name" />
+            <HandleField defaultValue={defaults.handle} placeholder="awa_beauty" tip={role === 'creator' ? tip('handle', F.handleLabel) : undefined} />
           </div>
           {role === 'creator' ? (
             <>
               <div>
-                <label className="text-xs font-semibold text-ink">Catégories</label>
+                <p className="flex items-center text-xs font-semibold text-ink">{F.categoriesLabel}{tip('categories', F.categoriesLabel)}</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {CATEGORIES.map((c) => {
                     const on = cats.includes(c);
@@ -102,29 +111,36 @@ export function OnboardingForm({
                 </div>
                 <input type="hidden" name="categories" value={cats.join(',')} />
               </div>
-              <Text name="audience_size" label="Audience cumulée (abonnés)" type="number" placeholder="45000" />
+              <AudienceField label={F.audienceLabel} tip={tip('audience', F.audienceLabel)} networksTemplate={F.audienceNetworks} />
               <div>
-                <label className="text-xs font-semibold text-ink">Réseaux sociaux (optionnel)</label>
+                <p className="flex items-center text-xs font-semibold text-ink">{F.socialsTitle}{tip('socials', F.socialsTitle)}</p>
                 <p className="mt-0.5 text-[11px] text-muted">Ajoutez vos liens principaux — vous pourrez compléter plus tard.</p>
                 <div className="mt-2 grid gap-2">
                   {ONBOARD_SOCIALS.map((p) => (
-                    <div key={p} className="flex items-center gap-2">
-                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white" style={{ backgroundColor: SOCIAL_META[p].brand }}>
-                        <SocialIcon platform={p} className="h-4 w-4" />
+                    <div key={p} className="grid gap-2 rounded-xl border border-line p-2 sm:grid-cols-[auto_1fr_7rem] sm:items-center sm:border-0 sm:p-0">
+                      <span className="flex items-center gap-2">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white" style={{ backgroundColor: SOCIAL_META[p].brand }}>
+                          <SocialIcon platform={p} className="h-4 w-4" aria-hidden />
+                        </span>
+                        <span className="text-xs font-bold text-ink sm:sr-only">{SOCIAL_META[p].label}</span>
                       </span>
                       <input
                         name={`soc_${p}_url`}
                         inputMode="url"
+                        aria-label={`Lien ${SOCIAL_META[p].label}`}
                         placeholder={`Lien ${SOCIAL_META[p].label}`}
-                        className="min-w-0 flex-1 rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
+                        className="min-h-tap min-w-0 rounded-lg border border-line bg-white px-2.5 py-2 text-[16px] text-ink placeholder:text-muted focus:border-brand focus:outline-none sm:text-xs"
                       />
-                      <input
-                        name={`soc_${p}_followers`}
-                        type="number"
-                        min={0}
-                        placeholder="abonnés"
-                        className="w-20 shrink-0 rounded-lg border border-line bg-white px-2 py-2 text-xs text-ink focus:border-brand focus:outline-none"
-                      />
+                      <label className="flex min-w-0 items-center gap-2 text-[11px] font-semibold text-muted">
+                        <span className="sm:sr-only">{F.followers}</span>
+                        <input
+                          name={`soc_${p}_followers`}
+                          type="number"
+                          min={0}
+                          aria-label={`${SOCIAL_META[p].label} — ${F.followers}`}
+                          className="min-h-tap w-full min-w-0 rounded-lg border border-line bg-white px-2 py-2 text-[16px] text-ink focus:border-brand focus:outline-none sm:text-xs"
+                        />
+                      </label>
                     </div>
                   ))}
                 </div>
@@ -132,15 +148,19 @@ export function OnboardingForm({
             </>
           ) : (
             <>
-              <Text name="specialties" label="Spécialités (séparées par des virgules)" required placeholder="Stratégie média, Influence" />
-              <Text name="years_experience" label="Années d'expérience" type="number" placeholder="8" />
+              <div>
+                <Text name="specialties" label="Spécialités (séparées par des virgules)" required placeholder="Stratégie média, Influence" />
+                <p className="mt-1 text-[11px] text-muted">{F.specialtiesHint}</p>
+              </div>
+              <Text name="years_experience" label="Années d'expérience" type="number" />
             </>
           )}
         </>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <Text name="city" label="Ville" required placeholder="Douala" />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <LimitedField id="field-city" name="city" label={F.cityLabel} max={PROFILE_LIMITS.city} required placeholder="Douala" helper={F.cityHelp}
+          tip={tip('city', F.cityLabel)} error={state.field === 'city' ? state.error : null} overLimitError={F.errors.city} autoComplete="address-level2" />
         <div>
           <label className="text-xs font-semibold text-ink">Pays</label>
           <select
@@ -157,15 +177,8 @@ export function OnboardingForm({
         </div>
       </div>
 
-      <div>
-        <label className="text-xs font-semibold text-ink">Bio (optionnel)</label>
-        <textarea
-          name="bio"
-          rows={3}
-          placeholder="Présentez votre contenu et votre audience en une phrase."
-          className="mt-1 w-full resize-none rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink placeholder-muted/60 focus:border-brand focus:outline-none"
-        />
-      </div>
+      <LimitedField id="field-bio" name="bio" label={`${F.bioLabel} (optionnel)`} max={PROFILE_LIMITS.bio} multiline placeholder={F.bioPlaceholder}
+        tip={tip('bio', F.bioLabel)} error={state.field === 'bio' ? state.error : null} overLimitError={F.errors.bio} />
 
       <button
         type="submit"
@@ -180,12 +193,13 @@ export function OnboardingForm({
 
 // Controlled identifier field: normalizes every keystroke to the DB's handle format
 // (a–z, 0–9, _), so accents/spaces can't reach submit and trigger invalid_handle_format.
-function HandleField({ defaultValue, placeholder }: { defaultValue: string; placeholder: string }) {
+function HandleField({ defaultValue, placeholder, tip }: { defaultValue: string; placeholder: string; tip?: React.ReactNode }) {
   const [value, setValue] = useState(() => normalizeHandle(defaultValue));
   return (
     <div>
-      <label className="text-xs font-semibold text-ink">Identifiant</label>
+      <label htmlFor="field-handle" className="flex items-center text-xs font-semibold text-ink">Identifiant{tip}</label>
       <input
+        id="field-handle"
         name="handle"
         required
         value={value}

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { Users } from 'lucide-react';
 import { getSession } from '@/lib/auth/session';
 import { listCreators } from '@/lib/data/talent';
+import { getDictionary } from '@/i18n/dictionaries';
 import { TalentGrid, type TalentItem } from './talent-grid';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,7 @@ export default async function TalentSearch() {
   if (!session.userId) redirect('/auth?mode=signin');
 
   // Server-rendered first page of the directory (mobile invariant §3 #10 — never a client empty fetch).
-  const creators = await listCreators({ limit: 60 });
+  const [creators, { t }] = await Promise.all([listCreators({ limit: 60 }), getDictionary()]);
   const items: TalentItem[] = creators.map((c) => ({
     handle: c.handle,
     displayName: c.displayName,
@@ -19,7 +20,7 @@ export default async function TalentSearch() {
     city: c.city,
     country: c.country,
     tags: c.tags,
-    ratingAvg: c.ratingAvg,
+    rating: c.rating,
     audienceSize: c.audienceSize,
   }));
 
@@ -32,7 +33,7 @@ export default async function TalentSearch() {
         </div>
         <p className="mt-0.5 text-xs text-muted">Parcourez l'annuaire pour composer vos campagnes.</p>
       </div>
-      <TalentGrid creators={items} />
+      <TalentGrid creators={items} newLabel={t.profile.new} />
     </section>
   );
 }

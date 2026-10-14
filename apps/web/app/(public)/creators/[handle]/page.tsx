@@ -92,7 +92,7 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
                 <p className="text-sm text-muted">@{creator.handle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
                   <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {[creator.city, countryName(creator.country)].filter(Boolean).join(', ')}</span>
-                  <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" /> {creator.ratingAvg.toFixed(1)}</span>
+                  <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden /> {creator.rating.kind === 'rating' ? creator.rating.value.toFixed(1) : t.profile.new}</span>
                   <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5 text-brand" /> {formatFollowers(creator.audienceSize ?? 0, locale)} {t.directory.followers}</span>
                 </div>
               </div>
@@ -110,12 +110,12 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
         </section>
 
         {/* Stats */}
-        <section className="mt-4 grid grid-cols-3 gap-3">
+        <section className="mt-4 grid auto-cols-fr grid-flow-col gap-3">
           {[
             { label: t.profile.totalAudience, value: formatFollowers(creator.audienceSize ?? 0, locale) },
-            { label: t.profile.rating, value: creator.ratingAvg.toFixed(1) },
-            { label: t.profile.campaigns, value: String(creator.completedCampaigns) },
-          ].map((s) => (
+            { label: t.profile.rating, value: creator.rating.kind === 'rating' ? creator.rating.value.toFixed(1) : t.profile.new },
+            creator.completedCampaigns !== null ? { label: t.profile.campaigns, value: String(creator.completedCampaigns) } : null,
+          ].filter((x): x is { label: string; value: string } => !!x).map((s) => (
             <div key={s.label} className="rounded-2xl border border-line bg-surface px-4 py-5 text-center">
               <div className="font-display text-2xl font-extrabold text-ink">{s.value}</div>
               <div className="mt-1 text-[12px] leading-snug text-muted">{s.label}</div>

@@ -11,6 +11,7 @@ import { ProfileContactCTA } from '@/components/profile-contact-cta';
 import { getConsultant, type ConsultantLink } from '@/lib/data/talent';
 import { getDictionary } from '@/i18n/dictionaries';
 import { personLd, breadcrumbLd, COUNTRY_NAME, SITE_NAME } from '@/lib/seo';
+import { SectionTip } from '@/components/admin/section-tip';
 import { countryName } from '@/lib/countries';
 
 
@@ -92,8 +93,11 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
                 <p className="text-sm text-muted">@{c.handle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
                   <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {[c.city, countryName(c.country)].filter(Boolean).join(', ')}</span>
-                  <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" /> {c.ratingAvg.toFixed(1)}</span>
-                  <span className="inline-flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-brand" /> {c.yearsExperience} {t.profile.experience.toLowerCase()}</span>
+                  <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden /> {c.rating.kind === 'rating' ? c.rating.value.toFixed(1) : t.profile.new}</span>
+                  {/* F9: never « 0 ans d'expérience » */}
+                  {c.yearsExperience > 0 && (
+                    <span className="inline-flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-brand" aria-hidden /> {c.yearsExperience} {t.profile.experience.toLowerCase()}</span>
+                  )}
                 </div>
               </div>
               <ProfileContactCTA handle={c.handle} kind="consultant" primaryLabel={t.profile.hire} messageLabel={t.profile.message} />
@@ -104,12 +108,13 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
         </section>
 
         {/* Stats */}
-        <section className="mt-4 grid grid-cols-3 gap-3">
+        <section className="mt-4 grid auto-cols-fr grid-flow-col gap-3">
+          {/* D6 « Nouveau »; F9: no hard-coded « Campagnes gérées » (no real count) and no « 0 » years. */}
           {[
-            { label: t.profile.rating, value: c.ratingAvg.toFixed(1) },
-            { label: t.profile.managedCampaigns, value: String(c.completedCampaigns) },
-            { label: t.profile.experience, value: String(c.yearsExperience) },
-          ].map((s) => (
+            { label: t.profile.rating, value: c.rating.kind === 'rating' ? c.rating.value.toFixed(1) : t.profile.new },
+            c.completedCampaigns !== null ? { label: t.profile.managedCampaigns, value: String(c.completedCampaigns) } : null,
+            c.yearsExperience > 0 ? { label: t.profile.experience, value: String(c.yearsExperience) } : null,
+          ].filter((x): x is { label: string; value: string } => !!x).map((s) => (
             <div key={s.label} className="rounded-2xl border border-line bg-surface px-4 py-5 text-center">
               <div className="font-display text-2xl font-extrabold text-ink">{s.value}</div>
               <div className="mt-1 text-[12px] leading-snug text-muted">{s.label}</div>
@@ -119,10 +124,17 @@ export default async function ConsultantProfilePage({ params }: { params: Promis
 
         {/* Expertise */}
         <section className="mt-8">
-          <h2 className="font-display text-lg font-bold text-ink">{t.profile.expertiseHeading}</h2>
+          {/* D10/F6: specialties are self-declared until Bayele verifies them → muted tags + « Non vérifié ». */}
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-display text-lg font-bold text-ink">{t.profile.expertiseHeading}</h2>
+            <span className="inline-flex items-center rounded-full bg-surface px-2.5 py-0.5 text-[11px] font-bold text-muted">
+              {t.profile.unverified}
+              <SectionTip id="partner-specialties-unverified" label={t.profile.expertiseHeading} text={t.profile.unverifiedTip} ariaTemplate={t.profile.tipAria} />
+            </span>
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             {c.tags.map((tag) => (
-              <span key={tag} className="rounded-full border border-line bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700">{tag}</span>
+              <span key={tag} className="rounded-full border border-dashed border-line bg-white px-4 py-1.5 text-sm font-medium text-muted">{tag}</span>
             ))}
           </div>
         </section>

@@ -10,7 +10,7 @@ function Avatar({ p }: { p: TalentSummary }) {
   return <SmartAvatar src={p.avatarUrl} name={p.displayName} className="h-12 w-12 shrink-0 text-sm" />;
 }
 
-function CardHead({ p }: { p: TalentSummary }) {
+function CardHead({ p, newLabel }: { p: TalentSummary; newLabel: string }) {
   return (
     <div className="flex items-start gap-3">
       <Avatar p={p} />
@@ -23,18 +23,23 @@ function CardHead({ p }: { p: TalentSummary }) {
         <p className="mt-0.5 text-[11px] text-muted/80">{p.city}</p>
       </div>
       <span className="inline-flex items-center gap-1 text-[12px] font-bold text-ink">
-        <Star className="h-3.5 w-3.5 fill-accent text-accent" /> {p.ratingAvg.toFixed(1)}
+        <Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden /> {p.rating.kind === 'rating' ? p.rating.value.toFixed(1) : newLabel}
       </span>
     </div>
   );
 }
 
-function Tags({ p }: { p: TalentSummary }) {
+// Partner specialties are self-declared (D10/F6): muted dashed tags + a « Non vérifié » label.
+function Tags({ p, unverified }: { p: TalentSummary; unverified?: string }) {
+  const tagCls = unverified
+    ? 'rounded-md border border-dashed border-line px-2 py-0.5 text-[11px] font-medium text-muted'
+    : 'rounded-md bg-surface px-2 py-0.5 text-[11px] font-medium text-ink/70';
   return (
-    <div className="mt-3 flex flex-wrap gap-1.5">
+    <div className="mt-3 flex flex-wrap items-center gap-1.5">
       {p.tags.slice(0, 3).map((tag) => (
-        <span key={tag} className="rounded-md bg-surface px-2 py-0.5 text-[11px] font-medium text-ink/70">{tag}</span>
+        <span key={tag} className={tagCls}>{tag}</span>
       ))}
+      {unverified && p.tags.length > 0 && <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">{unverified}</span>}
     </div>
   );
 }
@@ -46,7 +51,7 @@ const CARD =
 export function CreatorCard({ p, t, locale }: { p: TalentSummary; t: Dictionary; locale: Locale }) {
   return (
     <Link href={`/creators/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
-      <CardHead p={p} />
+      <CardHead p={p} newLabel={t.profile.new} />
       <Tags p={p} />
       <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
         <span className="inline-flex items-center gap-1.5 text-[13px] font-bold text-ink">
@@ -65,8 +70,8 @@ export function CreatorCard({ p, t, locale }: { p: TalentSummary; t: Dictionary;
 export function ConsultantCard({ p, t }: { p: TalentSummary; t: Dictionary }) {
   return (
     <Link href={`/partners/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
-      <CardHead p={p} />
-      <Tags p={p} />
+      <CardHead p={p} newLabel={t.profile.new} />
+      <Tags p={p} unverified={t.profile.unverified} />
       <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
         <span className="text-[12px] font-medium text-muted">{t.directory.roleConsultant}</span>
         <span className="inline-flex items-center gap-1 text-sm font-bold text-brand">

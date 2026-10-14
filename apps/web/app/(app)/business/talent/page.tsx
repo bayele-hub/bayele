@@ -55,7 +55,7 @@ export default async function BusinessTalent() {
     city: c.city,
     country: c.country,
     tags: c.tags,
-    ratingAvg: c.ratingAvg,
+    rating: c.rating,
     audienceSize: c.audienceSize,
   }));
 
@@ -68,7 +68,7 @@ export default async function BusinessTalent() {
         </div>
         <p className="mt-0.5 text-xs text-muted">Parcourez l&apos;annuaire, ouvrez un profil et lancez une campagne pour collaborer.</p>
       </div>
-      <TalentGrid creators={items} />
+      <TalentGrid creators={items} newLabel={(await getDictionary()).t.profile.new} />
     </section>
   );
 }

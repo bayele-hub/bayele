@@ -9,6 +9,9 @@ import { AvatarUploader } from '@/components/avatar-uploader';
 import { FounderBadge } from '@/components/founder-badge';
 import { formatFounderNumber } from '@/lib/founder';
 import { getFounderNumber } from '@/lib/data/founder';
+import { getDictionary } from '@/i18n/dictionaries';
+import { getMyContact, getMyModerationStatus } from '@/lib/data/moderation';
+import { ModerationStatusCard } from '@/components/moderation-status-card';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +33,8 @@ export default async function ProfilePage() {
   const isBusiness = session.roles.includes('business');
 
   const supabase = await createClient();
+  // D1: phone_e164 is no longer selectable on profiles → own contact via get_my_contact().
+  const [{ locale, t }, contact, modStatus] = await Promise.all([getDictionary(), getMyContact(), getMyModerationStatus()]);
   const [creatorRes, payoutRes, consultantRes, businessRes, founderNumber, partnerPayoutRes] = await Promise.all([
     isCreator
       ? supabase.from('creator_profiles').select('categories, audience_size, platforms').eq('user_id', session.userId).maybeSingle()
@@ -111,12 +116,12 @@ export default async function ProfilePage() {
               </div>
             )}
             <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted">
-              <Phone className="h-3 w-3" /> {profile.phone_e164 ?? 'Téléphone non renseigné'}
+              <Phone className="h-3 w-3" aria-hidden /> {contact.phone ?? 'Téléphone non renseigné'}
             </p>
           </div>
           <span
             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
-              profile.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-accent-soft text-accent'
+              profile.status === 'active' ? 'bg-emerald-50 text-emerald-700' : profile.status === 'pending_review' ? 'bg-accent-soft text-ink' : 'bg-rose-50 text-rose-700'
             }`}
           >
             {profile.status === 'active' && <BadgeCheck className="h-3 w-3" />}
@@ -125,9 +130,13 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      <AvatarUploader userId={session.userId} initialUrl={profile.avatar_url} name={profile.display_name} />
+      {modStatus && <ModerationStatusCard s={modStatus} U={t.creatorUx} tips={t.creatorTips} locale={locale} compact />}
 
-      <ProfileForm initial={initial} />
+      <div id="photo" className="scroll-mt-4">
+        <AvatarUploader userId={session.userId} initialUrl={profile.avatar_url} name={profile.display_name} />
+      </div>
+
+      <ProfileForm initial={initial} F={t.creatorForm} T={t.creatorTips} locale={locale === 'en' ? 'en' : 'fr'} />
     </section>
   );
 }

@@ -4,6 +4,7 @@ import { ArrowLeft, Handshake } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { RetainerForm } from '../retainer-form';
+import { getDictionary } from '@/i18n/dictionaries';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ export default async function NewRetainer({ searchParams }: { searchParams: Prom
     consultantName = data?.display_name ?? undefined;
   }
 
+  const { t } = await getDictionary();
   return (
     <section className="space-y-5">
       <Link href="/business/retainers" className="inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-brand">
@@ -33,7 +35,7 @@ export default async function NewRetainer({ searchParams }: { searchParams: Prom
         <Handshake className="h-5 w-5 text-brand" />
         <h1 className="font-display text-2xl font-extrabold text-ink">Nouveau rétainer partenaire</h1>
       </div>
-      <RetainerForm consultantHandle={handle} consultantName={consultantName} />
+      <RetainerForm consultantHandle={handle} consultantName={consultantName} R={t.retainers} />
     </section>
   );
 }

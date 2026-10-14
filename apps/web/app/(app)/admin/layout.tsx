@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
 import { getSession } from '@/lib/auth/session';
+import { Suspense } from 'react';
 import { AdminNav } from './admin-nav';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </div>
 
-      <AdminNav />
+      {/* useSearchParams (active « Profils » tab) needs a Suspense boundary. */}
+      <Suspense fallback={null}>
+        <AdminNav />
+      </Suspense>
 
       <div>{children}</div>
     </div>

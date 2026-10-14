@@ -20,6 +20,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_access_log: {
+        Row: {
+          action: "view" | "reveal" | "decision"
+          admin_id: string
+          created_at: string
+          field: string | null
+          id: number
+          member_id: string
+          reason: string | null
+          view_day: string | null
+        }
+        Insert: {
+          action: "view" | "reveal" | "decision"
+          admin_id: string
+          created_at?: string
+          field?: string | null
+          id?: number
+          member_id: string
+          reason?: string | null
+          view_day?: string | null
+        }
+        Update: {
+          action?: "view" | "reveal" | "decision"
+          admin_id?: string
+          created_at?: string
+          field?: string | null
+          id?: number
+          member_id?: string
+          reason?: string | null
+          view_day?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_access_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_access_log_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_retainers: {
         Row: {
           bayele_cut_fcfa: number
@@ -30,6 +78,8 @@ export type Database = {
           created_at: string
           id: string
           kpi_bonus_fcfa: number
+          partner_accepted_at: string | null
+          partner_declined_at: string | null
           media_budget_fcfa: number
           sokoclick_invoice_id: string | null
           status: Database["public"]["Enums"]["retainer_status"]
@@ -43,6 +93,8 @@ export type Database = {
           created_at?: string
           id?: string
           kpi_bonus_fcfa?: number
+          partner_accepted_at?: string | null
+          partner_declined_at?: string | null
           media_budget_fcfa: number
           sokoclick_invoice_id?: string | null
           status?: Database["public"]["Enums"]["retainer_status"]
@@ -56,6 +108,8 @@ export type Database = {
           created_at?: string
           id?: string
           kpi_bonus_fcfa?: number
+          partner_accepted_at?: string | null
+          partner_declined_at?: string | null
           media_budget_fcfa?: number
           sokoclick_invoice_id?: string | null
           status?: Database["public"]["Enums"]["retainer_status"]
@@ -835,6 +889,124 @@ export type Database = {
           },
         ]
       }
+      member_correction_requests: {
+        Row: {
+          closed_at: string | null
+          closed_event_id: number | null
+          created_at: string
+          event_id: number
+          fields: string[]
+          id: string
+          member_id: string
+          message: string | null
+          reason_code: string
+          status: "open" | "resolved" | "cancelled"
+        }
+        Insert: {
+          closed_at?: string | null
+          closed_event_id?: number | null
+          created_at?: string
+          event_id: number
+          fields?: string[]
+          id?: string
+          member_id: string
+          message?: string | null
+          reason_code: string
+          status?: "open" | "resolved" | "cancelled"
+        }
+        Update: {
+          closed_at?: string | null
+          closed_event_id?: number | null
+          created_at?: string
+          event_id?: number
+          fields?: string[]
+          id?: string
+          member_id?: string
+          message?: string | null
+          reason_code?: string
+          status?: "open" | "resolved" | "cancelled"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_correction_requests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_correction_requests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "member_moderation_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_correction_requests_closed_event_id_fkey"
+            columns: ["closed_event_id"]
+            isOneToOne: false
+            referencedRelation: "member_moderation_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_moderation_events: {
+        Row: {
+          action: "approve" | "reject" | "request_changes" | "suspend" | "reactivate" | "resubmitted" | "status_change"
+          admin_id: string | null
+          correction_fields: string[] | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["account_status"] | null
+          id: number
+          internal_note: string | null
+          member_id: string
+          message: string | null
+          reason_code: string | null
+          to_status: Database["public"]["Enums"]["account_status"] | null
+        }
+        Insert: {
+          action: "approve" | "reject" | "request_changes" | "suspend" | "reactivate" | "resubmitted" | "status_change"
+          admin_id?: string | null
+          correction_fields?: string[] | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["account_status"] | null
+          id?: number
+          internal_note?: string | null
+          member_id: string
+          message?: string | null
+          reason_code?: string | null
+          to_status?: Database["public"]["Enums"]["account_status"] | null
+        }
+        Update: {
+          action?: "approve" | "reject" | "request_changes" | "suspend" | "reactivate" | "resubmitted" | "status_change"
+          admin_id?: string | null
+          correction_fields?: string[] | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["account_status"] | null
+          id?: number
+          internal_note?: string | null
+          member_id?: string
+          message?: string | null
+          reason_code?: string | null
+          to_status?: Database["public"]["Enums"]["account_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_moderation_events_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_moderation_events_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1044,7 +1216,9 @@ export type Database = {
           handle: string
           id: string
           phone_e164: string | null
+          resubmitted_at: string | null
           status: Database["public"]["Enums"]["account_status"]
+          text_limits_grandfathered: boolean
           updated_at: string
         }
         Insert: {
@@ -1057,7 +1231,9 @@ export type Database = {
           handle: string
           id: string
           phone_e164?: string | null
+          resubmitted_at?: string | null
           status?: Database["public"]["Enums"]["account_status"]
+          text_limits_grandfathered?: boolean
           updated_at?: string
         }
         Update: {
@@ -1070,7 +1246,9 @@ export type Database = {
           handle?: string
           id?: string
           phone_e164?: string | null
+          resubmitted_at?: string | null
           status?: Database["public"]["Enums"]["account_status"]
+          text_limits_grandfathered?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -1129,6 +1307,86 @@ export type Database = {
           {
             foreignKeyName: "proof_of_post_reviewed_by_fkey"
             columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retainer_settlements: {
+        Row: {
+          amount_fcfa: number
+          bayele_fee_kept_fcfa: number
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          created_by: string | null
+          disbursement_ref: string | null
+          id: string
+          kind: "partner_payout" | "brand_refund"
+          provider: Database["public"]["Enums"]["payment_provider"] | null
+          reason: string | null
+          recipient_id: string
+          retainer_id: string
+          status: "pending" | "paid"
+        }
+        Insert: {
+          amount_fcfa: number
+          bayele_fee_kept_fcfa?: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          disbursement_ref?: string | null
+          id?: string
+          kind: "partner_payout" | "brand_refund"
+          provider?: Database["public"]["Enums"]["payment_provider"] | null
+          reason?: string | null
+          recipient_id: string
+          retainer_id: string
+          status?: "pending" | "paid"
+        }
+        Update: {
+          amount_fcfa?: number
+          bayele_fee_kept_fcfa?: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          disbursement_ref?: string | null
+          id?: string
+          kind?: "partner_payout" | "brand_refund"
+          provider?: Database["public"]["Enums"]["payment_provider"] | null
+          reason?: string | null
+          recipient_id?: string
+          retainer_id?: string
+          status?: "pending" | "paid"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retainer_settlements_retainer_id_fkey"
+            columns: ["retainer_id"]
+            isOneToOne: false
+            referencedRelation: "agency_retainers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retainer_settlements_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retainer_settlements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retainer_settlements_confirmed_by_fkey"
+            columns: ["confirmed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1694,6 +1952,139 @@ export type Database = {
           min_net_fcfa: number | null
           updated_at: string | null
           updated_by: string | null
+        }[]
+      }
+      get_my_contact: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          phone_e164: string | null
+          email: string | null
+        }[]
+      }
+      respond_retainer: {
+        Args: {
+          p_retainer_id: string
+          p_accept: boolean
+        }
+        Returns: undefined
+      }
+      admin_terminate_retainer: {
+        Args: {
+          p_retainer_id: string
+          p_partner_payout_fcfa: number
+          p_reason: string
+        }
+        Returns: undefined
+      }
+      admin_retainer_settlements: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          retainer_id: string
+          kind: "partner_payout" | "brand_refund"
+          status: "pending" | "paid"
+          amount_fcfa: number
+          bayele_fee_kept_fcfa: number
+          recipient_id: string
+          recipient_name: string
+          recipient_handle: string
+          payout_phone: string | null
+          payout_provider: Database["public"]["Enums"]["payment_provider"] | null
+          contract_value_fcfa: number
+          reason: string | null
+          created_at: string
+        }[]
+      }
+      admin_confirm_retainer_settlement: {
+        Args: {
+          p_settlement_id: string
+          p_provider?: Database["public"]["Enums"]["payment_provider"]
+          p_disbursement_ref?: string
+        }
+        Returns: undefined
+      }
+      admin_pending_leftover_refunds: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          refund_txn_id: string
+          campaign_id: string
+          campaign_title: string
+          owner_id: string
+          owner_name: string
+          is_managed: boolean
+          inbound_amount_fcfa: number
+          inbound_fee_fcfa: number
+          pool_net_fcfa: number
+          used_net_fcfa: number
+          unused_net_fcfa: number
+          fee_returned_fcfa: number
+          refund_fcfa: number
+          created_at: string
+        }[]
+      }
+      admin_moderate_member: {
+        Args: {
+          p_user_id: string
+          p_action: "approve" | "reject" | "request_changes" | "suspend" | "reactivate"
+          p_reason_code?: "fake_or_unreachable" | "duplicate" | "incomplete" | "inappropriate" | "not_eligible" | "spam_or_test" | "other"
+          p_message?: string
+          p_internal_note?: string
+          p_fields?: ("city" | "bio" | "avatar" | "socials" | "payout_phone" | "display_name" | "company_info" | "phone" | "other")[]
+        }
+        Returns: number
+      }
+      my_moderation_status: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      admin_member_detail: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      admin_reveal_member_field: {
+        Args: {
+          p_user_id: string
+          p_field: "phone" | "email" | "creator_payout_phone" | "partner_payout_phone" | "business_tax_id" | "partner_tax_id" | "billing_email" | "billing_address"
+          p_reason?: string
+        }
+        Returns: string | null
+      }
+      admin_member_list: {
+        Args: {
+          p_status?: Database["public"]["Enums"]["account_status"]
+          p_role?: Database["public"]["Enums"]["user_role"]
+          p_country?: Database["public"]["Enums"]["country_code"]
+          p_search?: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: {
+          id: string
+          handle: string
+          display_name: string
+          avatar_url: string | null
+          city: string
+          country: Database["public"]["Enums"]["country_code"]
+          status: Database["public"]["Enums"]["account_status"]
+          roles: Database["public"]["Enums"]["user_role"][] | null
+          company_name: string | null
+          created_at: string
+          resubmitted_at: string | null
+          open_correction: boolean
+          has_phone: boolean
+          total_count: number
+        }[]
+      }
+      admin_member_counts: {
+        Args: {
+          p_role?: Database["public"]["Enums"]["user_role"]
+          p_country?: Database["public"]["Enums"]["country_code"]
+        }
+        Returns: {
+          status: Database["public"]["Enums"]["account_status"]
+          members: number
         }[]
       }
       pay_floors_public: {

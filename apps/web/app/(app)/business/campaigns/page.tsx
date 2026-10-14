@@ -64,7 +64,7 @@ export default async function BusinessCampaigns() {
                     </div>
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                        held ? 'bg-emerald-50 text-emerald-700' : draft ? 'bg-accent-soft text-accent' : 'bg-surface text-muted'
+                        held ? 'bg-emerald-50 text-emerald-700' : draft ? 'bg-accent-soft text-ink' : 'bg-surface text-muted'
                       }`}
                     >
                       {held ? <Lock className="h-3 w-3" /> : <Clock className="h-3 w-3" />}

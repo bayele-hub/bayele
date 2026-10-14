@@ -16,7 +16,7 @@ const TYPE_FR: Record<string, string> = {
 const STATUS_FR: Record<string, string> = { paid: 'Payée', sent: 'Envoyée', draft: 'Brouillon', void: 'Annulée' };
 const STATUS_CLASS: Record<string, string> = {
   paid: 'bg-emerald-50 text-emerald-700',
-  sent: 'bg-accent-soft text-accent',
+  sent: 'bg-accent-soft text-ink',
   draft: 'bg-surface text-muted',
   void: 'bg-surface text-muted',
 };

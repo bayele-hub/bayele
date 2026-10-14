@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Search, MapPin, Star, Users } from 'lucide-react';
 import { countryName } from '@/lib/countries';
+import type { RatingDisplay } from '@/lib/ratings';
 
 export interface TalentItem {
   handle: string;
@@ -12,7 +13,7 @@ export interface TalentItem {
   city: string;
   country: string;
   tags: string[];
-  ratingAvg: number;
+  rating: RatingDisplay;
   audienceSize?: number;
 }
 
@@ -27,7 +28,7 @@ function compactAudience(n?: number): string | null {
  * Shared searchable creator grid used by both the consultant talent-search and the business
  * "Trouver des créateurs" page. Client-side filtering over a server-rendered first page.
  */
-export function TalentGrid({ creators }: { creators: TalentItem[] }) {
+export function TalentGrid({ creators, newLabel }: { creators: TalentItem[]; newLabel: string }) {
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
 
@@ -106,7 +107,7 @@ export function TalentGrid({ creators }: { creators: TalentItem[] }) {
                     <p className="truncate font-bold text-ink">{c.displayName}</p>
                     <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted">
                       <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {[c.city, countryName(c.country)].filter(Boolean).join(', ')}</span>
-                      <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-accent text-accent" /> {c.ratingAvg.toFixed(1)}</span>
+                      <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-accent text-accent" aria-hidden /> {c.rating.kind === 'rating' ? c.rating.value.toFixed(1) : newLabel}</span>
                       {aud && <span className="inline-flex items-center gap-1"><Users className="h-3 w-3" /> {aud}</span>}
                     </div>
                     <div className="mt-1.5 flex flex-wrap gap-1">

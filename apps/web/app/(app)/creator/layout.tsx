@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { CreatorNav } from './creator-nav';
 import { creatorAllowed, creatorTabs } from '@/lib/auth/creator-gate';
+import { getDictionary } from '@/i18n/dictionaries';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,9 +16,10 @@ export default async function CreatorLayout({ children }: { children: React.Reac
   const gate = { roles: session.roles, primary: session.primary, status: session.profile?.status };
   if (!creatorAllowed(gate, 'campaigns')) redirect('/dashboard');
 
+  const { t } = await getDictionary();
   return (
     <div className="space-y-5">
-      <CreatorNav tabs={creatorTabs(gate)} />
+      <CreatorNav tabs={creatorTabs(gate)} lockedTip={t.creatorTips.lockedTab} tipAria={t.creatorTips.aria} />
       <div>{children}</div>
     </div>
   );

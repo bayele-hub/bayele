@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Megaphone, Wallet, Handshake, UserCircle } from 'lucide-react';
 import type { CreatorTab } from '@/lib/auth/creator-gate';
+import { SectionTip } from '@/components/admin/section-tip';
 
 const ICONS = { home: Home, megaphone: Megaphone, wallet: Wallet, handshake: Handshake, user: UserCircle } as const;
 
@@ -11,7 +12,7 @@ const ICONS = { home: Home, megaphone: Megaphone, wallet: Wallet, handshake: Han
  * Creator workspace tabs. Tabs the viewer can't use yet (pending_review creators: everything but
  * Campagnes and Profil) are shown disabled rather than as links that would bounce them.
  */
-export function CreatorNav({ tabs }: { tabs: CreatorTab[] }) {
+export function CreatorNav({ tabs, lockedTip, tipAria }: { tabs: CreatorTab[]; lockedTip?: string; tipAria?: string }) {
   const pathname = usePathname();
   return (
     <nav className="no-scrollbar -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
@@ -23,9 +24,11 @@ export function CreatorNav({ tabs }: { tabs: CreatorTab[] }) {
           return (
             <li key={href}>
               {disabled ? (
-                <span aria-disabled="true" title="Disponible après la validation de votre profil" className={`${base} cursor-not-allowed border-line bg-surface text-muted/60`}>
+                // `title` never shows on touch: the « ? » opens the explanation on tap (D8, creatorTips.lockedTab).
+                <span aria-disabled="true" className={`${base} border-line bg-surface text-muted`}>
                   <Icon className="h-4 w-4" aria-hidden />
                   {label}
+                  {lockedTip && tipAria && <SectionTip id={`creator-locked-${icon}`} label={label} text={lockedTip} ariaTemplate={tipAria} />}
                 </span>
               ) : (
                 <Link

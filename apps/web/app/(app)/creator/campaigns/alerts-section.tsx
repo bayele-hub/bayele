@@ -1,4 +1,5 @@
 import { Bell, Share2, X } from 'lucide-react';
+import { SectionTip } from '@/components/admin/section-tip';
 import { getDictionary } from '@/i18n/dictionaries';
 import { AlertOptIn } from '@/components/campaigns/alert-opt-in';
 import { alertOptions } from '@/components/campaigns/alert-props';
@@ -18,6 +19,7 @@ import { fill, plural } from '@/lib/campaign-board';
 export async function AlertsSection({ alertCountry, alertCat, msg, defaultCountry }: { alertCountry?: string; alertCat?: string; msg?: string; defaultCountry?: string | null }) {
   const [{ locale, t }, mine, referrals] = await Promise.all([getDictionary(), getMyAlerts(), getMyReferralCount()]);
   const a = t.alerts;
+  const tips = t.creatorTips;
   const opts = alertOptions(t, locale);
   if (!mine) return null;
 
@@ -39,6 +41,7 @@ export async function AlertsSection({ alertCountry, alertCat, msg, defaultCountr
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="alertes-title" className="flex items-center gap-1.5 text-sm font-bold text-ink">
           <Bell className="h-4 w-4 text-brand" aria-hidden /> {a.listTitle}
+          <SectionTip id="creator-alerts" label={a.listTitle} text={tips.alerts} ariaTemplate={tips.aria} />
         </h2>
         <p className="text-[12px] text-muted">
           {remaining > 0 ? plural(remaining, a.remainingOne, a.remainingMany) : <span className="font-semibold text-ink">{a.limitTitle}</span>}

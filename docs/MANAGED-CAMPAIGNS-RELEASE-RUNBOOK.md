@@ -170,3 +170,131 @@ Do not use `supabase db push` on this project. Production history versions are a
 - Web: promote the previous Vercel deployment.
 - DB: only if really needed. Run `rollback/20261011120000_0034_funding_ref_per_campaign.rollback.sql`, which restores the 0033 body (the ref-only check that caused the incident, so avoid it).
 - If you do run it, remove the history row by name: `0034_funding_ref_per_campaign`. Production's version is `20261011075929`, not the file version.
+
+## 10. Admin member review release (branch `feat/admin-profile-review`, 2026-10-14)
+
+Migrations 0035 (security and money fixes), 0036 (moderation, read model, access log, text limits) and 0037 (phone lockdown). Contract: `briefs/BACKEND-CONTRACT-ADMIN-REVIEW.md`; QA: `qa/QA-REPORT-ADMIN-REVIEW.md` (final verdict GO).
+
+### 10.1 Order (binding)
+```
+A. 0035 + 0036 applied to production      DONE 2026-10-14 (history 20261014035625, 20261014035916)
+B. Owner applies the patch, pushes, opens the PR, checks the Vercel preview, merges → production deploy Ready
+C. 0037 (phone lockdown)                  ONLY after B is Ready; never before (it breaks every signed-in page of the old web)
+```
+Keep the gap between A and B short. During that window the old web runs on 0035 + 0036 with these accepted limits:
+- no retainer can be funded, because the old web has no partner « Accepter » button;
+- funded retainers can't be ended (that needs the new settlement UI);
+- leftover refunds wait for the new /admin/disputes queue;
+- the old /admin/ledger labels a refund row « Paiement ».
+
+### 10.2 Production evidence for 0035 + 0036 (2026-10-14)
+
+**Pre-checks (read-only):**
+- Production was at `0034_funding_ref_per_campaign`; none of the new objects existed.
+- The only super_admin (`bayele_admin`) is active, so A7 doesn't lock anyone out.
+- The Co-CTO's leftover-backfill preview returned 0 rows.
+- Text limits: 1 city over 60 characters (grandfathered), 0 names over 80, 0 bios over 500.
+- Before 0035, anon/authenticated held 28 TRUNCATE grants and authenticated could read `phone_e164`.
+
+**Drift check:** every function in public/private matched the repo's 0034 state, with two exceptions:
+- the v1 board/stats, retired on purpose (§6);
+- `on_profile_status_change`, where one word of the « rejected » copy differed. 0036 replaces it entirely.
+
+**Dry-run:** both files applied, one transaction each, to a fresh local DB at 0034.
+
+**Apply:** `apply_migration` with each exact file returned `success` on the first try.
+
+**Post-checks:**
+- **All 96 functions** in public/private match the local dry-run exactly (body, result, security definer, volatility, search_path).
+- The 12 new RPCs are executable by authenticated and **not** by anon.
+- **TRUNCATE grants to anon/authenticated on existing tables: 0** (was 28). The `postgres` default ACL no longer includes TRUNCATE.
+- **`profiles.phone_e164` is still readable by authenticated** (0037 not applied). A simulated signed-in creator (`SET LOCAL ROLE authenticated`, read-only, rolled back) gets 1 row from `select *` on its own profile, `get_my_contact()` returns 1 row, and `my_moderation_status()` works.
+- `private.is_admin` requires `status = 'active'`; bayele_admin is still admin, and a creator is not.
+- The 4 new tables exist with RLS on.
+- The 3 text CHECKs are present as NOT VALID; 92 of 92 existing profiles are grandfathered.
+- 0 leftover-refund rows, 0 settlements, 0 moderation events.
+- The « browse open campaigns » policy now uses `private.is_active_partner`.
+- Security advisors: no missing-RLS errors. The new SECURITY DEFINER warnings are expected.
+
+**Notes:**
+- The `supabase_admin` default ACL still grants TRUNCATE on tables that role creates later. The migration role can't change another role's defaults; this is a follow-up for the owner (Supabase support or dashboard). It doesn't affect any existing table.
+- 1 existing retainer is `invoiced` without partner acceptance. Under O7 it can't be funded until the partner clicks « Accepter » in the new web (`respond_retainer` accepts legacy invoiced rows).
+
+### 10.3 Step C: apply 0037 after the deploy is Ready
+
+**Gate:**
+1. The Vercel production deployment of the merge is **Ready**.
+2. Signed in on production, /dashboard and /profile load, and /profile shows your own phone (through `get_my_contact`).
+
+**Apply** with the connector (no DROP/DELETE in the file): `apply_migration(name='0037_profiles_phone_lockdown')` with the exact contents of `supabase/migrations/20261014090200_0037_profiles_phone_lockdown.sql`.
+
+**Post-check (read-only):**
+```sql
+SELECT has_table_privilege('authenticated','public.profiles','SELECT')                         AS auth_table_select,   -- false
+       has_column_privilege('authenticated','public.profiles','phone_e164','SELECT')           AS auth_phone,          -- false
+       has_column_privilege('authenticated','public.profiles','text_limits_grandfathered','SELECT') AS auth_flag,       -- false
+       has_column_privilege('authenticated','public.profiles','handle','SELECT')               AS auth_handle,         -- true
+       has_column_privilege('authenticated','public.profiles','resubmitted_at','SELECT')       AS auth_resubmitted,    -- true
+       has_column_privilege('anon','public.profiles','phone_e164','SELECT')                    AS anon_phone,          -- false
+       (SELECT version||' '||name FROM supabase_migrations.schema_migrations ORDER BY version DESC LIMIT 1) AS last;  -- …0037_profiles_phone_lockdown
+```
+Simulated signed-in read: the explicit column list works and `select *` is refused.
+```sql
+BEGIN READ ONLY;
+SELECT set_config('request.jwt.claim.sub', '<an active member uuid>', true);
+SET LOCAL ROLE authenticated;
+SELECT id, handle, display_name, avatar_url, bio, city, country, status, created_at, updated_at, resubmitted_at
+  FROM public.profiles WHERE id = auth.uid();          -- 1 row
+SELECT count(*) FROM public.get_my_contact();          -- 1
+ROLLBACK;
+-- (a separate run of  SELECT * FROM public.profiles  as authenticated must fail with 42501)
+```
+**Smoke test right after 0037:**
+- signed-in page loads (getSession) for a creator, a brand, a partner and the admin;
+- /profile shows your own phone, and saving the phone still works;
+- /admin/users/[id] « Afficher » reveals a phone;
+- the public directories /creators and /partners still render logged out.
+
+If any signed-in page shows an error, roll back 0037 at once (§10.5) and investigate.
+
+### 10.4 Smoke list after deploy (QA)
+1. Admin with a real session:
+   - /admin/users filters and pagination; /admin/moderation redirects to `?status=pending_review`;
+   - open @leopoldine and use « Demander une correction »;
+   - the member edits their city and reappears at the top as resubmitted;
+   - check the notification text for each decision type.
+2. Reveal a field, then check that an `admin_access_log` row exists (reveal) and that a view is logged at most once per day.
+3. Retainer end to end in the UI:
+   - propose (25 % read-only) → partner Accepter → brand invoice → fund → complete → settlement paid;
+   - an early end with a brand refund.
+4. A leftover refund appears in /admin/disputes; confirm it with a receipt; the brand sees it.
+5. Creator EN locale on /business/talent (AR-3); a creator with a legacy audience value saves their profile (AR-1).
+6. Right after 0037: getSession and /profile work (own phone via `get_my_contact`).
+7. @leopoldine changes only her avatar: it saves (AR-8 fix in 0036). Changing her city enforces the limit with a clear field error.
+8. Funding a campaign or retainer of a non-approved brand shows « La marque n'est pas encore validée… » (O8).
+
+### 10.5 Rollback (web first, then DB in reverse order)
+1. **Web:** Vercel → promote the previous production deployment.
+   - If 0037 is applied, **roll back 0037 at the same time**: the old web needs table-wide SELECT on profiles.
+   - Then `git revert -m 1 <merge sha>` in a PR.
+2. **0037** (connector-safe statements plus one history delete, so use the SQL editor): `rollback/20261014090200_0037_profiles_phone_lockdown.rollback.sql`. This re-exposes phone numbers to signed-in users, so treat it as temporary.
+3. **0036** (SQL editor; DROP; **audit data loss**):
+   - export `member_moderation_events`, `member_correction_requests` and `admin_access_log` first;
+   - then run `rollback/20261014090100_0036_member_moderation_read_model.rollback.sql`;
+   - it refuses to run while 0037 is still applied.
+4. **0035** (SQL editor; DROP):
+   - run `rollback/20261014090000_0035_member_review_security_money.rollback.sql`;
+   - it refuses while retainer settlements or leftover-refund rows exist, or while 0036 or 0037 is still applied;
+   - it re-grants TRUNCATE (A14).
+5. **History rows:** each rollback deletes its *file* version (`2026101409xx00`), but production recorded apply-time versions. Also run:
+   `DELETE FROM supabase_migrations.schema_migrations WHERE name IN ('0037_profiles_phone_lockdown', '0036_member_moderation_read_model', '0035_member_review_security_money');` (only for the ones rolled back).
+
+### 10.6 Follow-ups (not blocking)
+- `supabase_admin` default ACL still grants TRUNCATE (see 10.2).
+- Pre-existing advisor warnings: anon can execute the messaging RPCs and `set_campaign_visibility`; leaked-password protection is off.
+- QA carry-overs:
+  - AR-4: « À vérifier » is capped at 2 000;
+  - AR-5: a brand-refund settlement has no destination without a phone;
+  - AR-7: the dashboard counts fees of fully refunded campaigns;
+  - contract Q2/Q3 need owner answers.
+- D3-db from §9: normalise the invoice reference case.

@@ -92,7 +92,8 @@ export function DirectoryView({
       {/* Grid */}
       {people.length === 0 ? (
         <div className="mt-4 rounded-2xl border border-dashed border-line bg-surface px-4 py-16 text-center text-sm text-muted">
-          {t.directoryPage.noResults}
+          {/* F12: « pour ces filtres » only when a filter is actually set */}
+          {activeCountry || activeCategory ? t.directoryPage.noResults : role === 'creator' ? t.directoryPage.emptyCreators : t.directoryPage.emptyConsultants}
         </div>
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

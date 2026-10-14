@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Platform } from '@/components/social-icons';
+import { ratingDisplay, type RatingDisplay } from '@/lib/ratings';
 
 export type { CountryCode } from '@/lib/countries';
 import type { CountryCode } from '@/lib/countries';
@@ -14,7 +15,8 @@ export interface TalentSummary {
   country: CountryCode;
   role: Role;
   tags: string[];
-  ratingAvg: number;
+  /** D6: « Nouveau » until real reviews exist (the DB default 5.00 is not a review). */
+  rating: RatingDisplay;
   audienceSize?: number;
 }
 
@@ -28,7 +30,8 @@ export interface CreatorProfile extends TalentSummary {
   bio: string;
   photoUrl: string | null;
   socials: SocialLink[];
-  completedCampaigns: number;
+  /** Not computed yet → null = hidden (never a hard-coded 0, F9). */
+  completedCampaigns: number | null;
   /** "Créateur fondateur" number (1–10 000), or null. */
   founderNumber: number | null;
 }
@@ -43,7 +46,8 @@ export interface ConsultantProfile extends TalentSummary {
   bio: string;
   photoUrl: string | null;
   yearsExperience: number;
-  completedCampaigns: number;
+  /** No real count is available to the public pages → null = hidden (F9). */
+  completedCampaigns: number | null;
   agencyAccess: boolean;
   links: ConsultantLink[];
 }
@@ -74,7 +78,8 @@ function mapRow(role: Role) {
     country: item.country,
     role,
     tags: item.creator_profiles?.categories ?? item.consultant_profiles?.specialties ?? [],
-    ratingAvg: item.creator_profiles?.rating_avg ?? 5.0,
+    // No review system yet: zero reviews back any rating, so it always reads « Nouveau » (D6).
+    rating: ratingDisplay(item.creator_profiles?.rating_avg ?? null, 0),
     audienceSize: role === 'creator' ? (item.creator_profiles?.audience_size ?? 0) : undefined,
   });
 }
@@ -139,8 +144,7 @@ export async function getCreator(handle: string): Promise<CreatorProfile | null>
       bio: (data as any).bio ?? '',
       photoUrl: base.avatarUrl,
       socials: platformsToSocials((data as any).creator_profiles?.platforms),
-      // Real metric: number of campaigns paid out to this creator (0 until campaigns complete).
-      completedCampaigns: 0,
+      completedCampaigns: null,
       founderNumber: pickFounder((data as any).founder_creators),
     };
   } catch {
@@ -170,7 +174,7 @@ export async function getConsultant(handle: string): Promise<ConsultantProfile |
       bio: (data as any).bio ?? '',
       photoUrl: base.avatarUrl,
       yearsExperience: cp?.years_experience ?? 0,
-      completedCampaigns: 0,
+      completedCampaigns: null,
       agencyAccess: Boolean(cp?.agency_access),
       links: [], // professional links come from a future consultant_profiles column
     };

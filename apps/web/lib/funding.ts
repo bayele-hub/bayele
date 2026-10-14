@@ -11,6 +11,8 @@ export interface FundingErrors {
   refRequired: string;
   notAuthorized: string;
   alreadyFunded: string;
+  /** O8: the brand's profile isn't approved yet (0035). */
+  ownerNotActive: string;
   generic: string;
 }
 
@@ -33,6 +35,7 @@ export function mapFundingError(err: RpcError, e: FundingErrors): FundResult {
   if (msg === 'invoice_already_used') return { error: e.invoiceAlreadyUsed, field: 'invoice' };
   if (msg === 'not_authorized') return { error: e.notAuthorized };
   if (msg === 'campaign_not_fundable') return { error: e.alreadyFunded };
+  if (msg === 'owner_not_active') return { error: e.ownerNotActive };
   return { error: e.generic };
 }
 

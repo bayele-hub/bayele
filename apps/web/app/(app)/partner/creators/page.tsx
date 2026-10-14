@@ -51,7 +51,7 @@ export default async function PartnerCreatorsPage() {
       </div>
 
       {!payoutConfigured && (
-        <Link href="/profile" className="flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent-soft p-4 transition hover:border-accent/50">
+        <Link href="/profile#paiement" className="flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent-soft p-4 transition hover:border-accent/50">
           <div className="flex items-center gap-3">
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-accent"><Wallet className="h-4 w-4" /></span>
             <div>
