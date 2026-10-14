@@ -11,6 +11,8 @@ import { LimitedField } from '@/components/limited-field';
 import { SectionTip } from '@/components/admin/section-tip';
 import { PROFILE_LIMITS, followersTotal } from '@/lib/profile-limits';
 import { AudienceField } from '@/components/audience-field';
+import { CountryCityFields, type CityPickerLabels } from '@/components/gov/city-picker';
+import { SpecialtyPicker, type SpecialtyPickerLabels } from '@/components/gov/specialty-picker';
 
 // Display order for the social editor (WhatsApp first — the dominant channel in-market).
 export const SOCIAL_PLATFORMS: Platform[] = [
@@ -34,7 +36,8 @@ export interface ProfileInitial {
   momoPhone: string;
   momoProvider: string;
   socials: SocialsMap;
-  specialties: string;
+  /** Stored specialties: codes (G1); values not in the list are shown as legacy text. */
+  specialties: string[];
   yearsExperience: number;
   partnerMomoPhone: string;
   partnerMomoProvider: string;
@@ -47,7 +50,14 @@ export interface ProfileInitial {
 type F = Dictionary['creatorForm'];
 type T = Dictionary['creatorTips'];
 
-export function ProfileForm({ initial, F, T, locale = 'fr' }: { initial: ProfileInitial; F: F; T: T; locale?: 'fr' | 'en' }) {
+export interface GovFormProps {
+  cities: Record<string, string[]>;
+  specialtyOptions: { code: string; label: string }[];
+  cityL: CityPickerLabels;
+  specL: SpecialtyPickerLabels;
+}
+
+export function ProfileForm({ initial, F, T, locale = 'fr', gov }: { initial: ProfileInitial; F: F; T: T; locale?: 'fr' | 'en'; gov: GovFormProps }) {
   const [state, action, pending] = useActionState<ProfileState, FormData>(updateProfileAction, { error: null });
   const tip = (key: keyof T, label: string) => <SectionTip id={`creator-${String(key)}`} label={label} text={T[key]} ariaTemplate={T.aria} />;
   const fieldErr = (f: 'displayName' | 'city' | 'bio') => (state.field === f ? state.error : null);
@@ -93,21 +103,9 @@ export function ProfileForm({ initial, F, T, locale = 'fr' }: { initial: Profile
       <Card title="Informations">
         <LimitedField id="field-display-name" name="display_name" label={F.displayNameLabel} max={PROFILE_LIMITS.displayName} defaultValue={initial.displayName} required
           tip={tip('displayName', F.displayNameLabel)} error={fieldErr('displayName')} overLimitError={F.errors.displayName} autoComplete="name" />
-        <div className="grid gap-3 sm:grid-cols-2">
-          <LimitedField id="field-city" name="city" label={F.cityLabel} max={PROFILE_LIMITS.city} defaultValue={initial.city} required helper={F.cityHelp}
-            tip={tip('city', F.cityLabel)} error={fieldErr('city')} overLimitError={F.errors.city} autoComplete="address-level2" />
-          <div>
-            <label className="text-xs font-semibold text-ink">Pays</label>
-            <select
-              name="country"
-              defaultValue={initial.country}
-              className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>{c.label}</option>
-              ))}
-            </select>
-          </div>
+        {/* G9: « Pays » first, then the city picker (list per country + « Autre »). */}
+        <div id="field-city" className="scroll-mt-4">
+          <CountryCityFields cities={gov.cities} countries={COUNTRIES} defaultCountry={initial.country} defaultCity={initial.city} L={gov.cityL} error={fieldErr('city')} />
         </div>
         <LimitedField id="field-bio" name="bio" label={F.bioLabel} max={PROFILE_LIMITS.bio} defaultValue={initial.bio} multiline placeholder={F.bioPlaceholder}
           tip={tip('bio', F.bioLabel)} error={fieldErr('bio')} overLimitError={F.errors.bio} />
@@ -140,10 +138,8 @@ export function ProfileForm({ initial, F, T, locale = 'fr' }: { initial: Profile
 
       {initial.isConsultant && (
         <Card title="Profil partenaire" id={initial.isCreator ? undefined : 'paiement'}>
-          <div>
-            <Field label="Spécialités (séparées par des virgules)" name="specialties" defaultValue={initial.specialties} placeholder="Stratégie, Social Ads, Influence" />
-            <p className="mt-1 text-[11px] text-muted">{F.specialtiesHint}</p>
-          </div>
+          <SpecialtyPicker options={gov.specialtyOptions} initial={initial.specialties} legacy={initial.specialties.filter((v) => !gov.specialtyOptions.some((o) => o.code === v))}
+            L={gov.specL} error={state.field === 'specialties' ? state.error : null} />
           <NumberField label="Années d'expérience" name="years_experience" defaultValue={initial.yearsExperience} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Mobile Money pour vos commissions" name="partner_momo_phone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.partnerMomoPhone} placeholder={`${COUNTRY_INFO[parseCountry(initial.country)].dial} …`} />

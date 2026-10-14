@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Handshake, Users, Megaphone, Search, UserCircle } from 'lucide-react';
+import { Home, Handshake, Users, Megaphone, Search, UserCircle, Link2 } from 'lucide-react';
 
 const TABS = [
   { href: '/partner/dashboard', label: 'Accueil', Icon: Home },
+  // P3: introductions made by Bayele (read-only, « Demander la fin »).
+  { href: '/partner/assignments', label: 'Mises en relation', Icon: Link2 },
   { href: '/partner/creators', label: 'Portefeuille', Icon: Users },
   { href: '/partner/campaigns', label: 'Campagnes', Icon: Megaphone },
   { href: '/partner/retainers', label: 'Rétainers', Icon: Handshake },

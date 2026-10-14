@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { getDictionary } from '@/i18n/dictionaries';
 
 export type DecideState = { error: string | null; ok?: boolean };
 export type ReviewState = { error: string | null; ok?: boolean };
@@ -75,9 +76,24 @@ export async function reviewProofAction(_prev: ReviewState, formData: FormData):
   if (error) {
     const msg = (error.message ?? '').trim();
     if (msg.includes('not authorized')) return { error: "Vous n'êtes pas autorisé à vérifier cette preuve." };
+    if (msg === 'recapture_pending') return { error: (await getDictionary()).t.proofShots.review.errors.recapture_pending };
     return { error: 'La vérification a échoué. Réessayez.' };
   }
 
   revalidatePath('/business/campaigns/[id]', 'page');
   return { error: null, ok: true };
+}
+
+/** G8 « Demander une nouvelle capture » (brand or admin): reason required ≤ 300, 3 per proof. */
+export async function requestRecaptureAction(proofId: string, reason: string): Promise<{ ok: boolean; error?: string }> {
+  const { t } = await getDictionary();
+  const E = t.proofShots.review.errors as Record<string, string>;
+  const why = (reason ?? '').trim();
+  if (!why) return { ok: false, error: E.reason_required };
+  if (why.length > 300) return { ok: false, error: E.reason_too_long };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('request_proof_recapture', { p_proof_id: proofId, p_reason: why });
+  if (error) return { ok: false, error: E[(error.message ?? '').trim()] ?? E.generic };
+  revalidatePath('/business/campaigns/[id]', 'page');
+  return { ok: true };
 }

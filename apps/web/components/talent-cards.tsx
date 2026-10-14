@@ -29,17 +29,14 @@ function CardHead({ p, newLabel }: { p: TalentSummary; newLabel: string }) {
   );
 }
 
-// Partner specialties are self-declared (D10/F6): muted dashed tags + a « Non vérifié » label.
-function Tags({ p, unverified }: { p: TalentSummary; unverified?: string }) {
-  const tagCls = unverified
-    ? 'rounded-md border border-dashed border-line px-2 py-0.5 text-[11px] font-medium text-muted'
-    : 'rounded-md bg-surface px-2 py-0.5 text-[11px] font-medium text-ink/70';
+// Partner specialties come from Bayele's list (G1) and are shown by label; the « Non vérifié » tag is
+// replaced by the « Spécialités déclarées » heading on the profile page.
+function Tags({ p }: { p: TalentSummary }) {
   return (
     <div className="mt-3 flex flex-wrap items-center gap-1.5">
       {p.tags.slice(0, 3).map((tag) => (
-        <span key={tag} className={tagCls}>{tag}</span>
+        <span key={tag} className="rounded-md bg-surface px-2 py-0.5 text-[11px] font-medium text-ink/70">{tag}</span>
       ))}
-      {unverified && p.tags.length > 0 && <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">{unverified}</span>}
     </div>
   );
 }
@@ -71,7 +68,7 @@ export function ConsultantCard({ p, t }: { p: TalentSummary; t: Dictionary }) {
   return (
     <Link href={`/partners/${p.handle}`} className={CARD} aria-label={`${t.directory.view} — ${p.displayName}`}>
       <CardHead p={p} newLabel={t.profile.new} />
-      <Tags p={p} unverified={t.profile.unverified} />
+      <Tags p={p} />
       <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
         <span className="text-[12px] font-medium text-muted">{t.directory.roleConsultant}</span>
         <span className="inline-flex items-center gap-1 text-sm font-bold text-brand">

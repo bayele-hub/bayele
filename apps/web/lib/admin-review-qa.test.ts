@@ -41,6 +41,7 @@ describe('AR-1: the typed audience is never replaced by the followers sum', () =
     vi.doMock('@/i18n/dictionaries', () => ({ getDictionary: async () => ({ locale: 'fr', t: fr }) }));
     vi.doMock('next/cache', () => ({ revalidatePath: vi.fn() }));
     vi.doMock('next/navigation', () => ({ redirect: vi.fn() }));
+    vi.doMock('@/lib/data/partner-gov', () => ({ getSpecialties: async () => [] }));
   });
 
   function legacyForm(audience: string | null): FormData {
@@ -92,12 +93,12 @@ describe('AR-1: the typed audience is never replaced by the followers sum', () =
 });
 
 describe('AR-2 / AR-3 / AR-6', () => {
-  it('partner specialties are shown as unverified tags (FR + EN)', () => {
-    expect(fr.profile.unverified).toBe('Non vérifié');
-    expect(en.profile.unverified).toBe('Unverified');
-    expect(en.profile.unverifiedTip).toBeTruthy();
-    expect(src('app/(public)/partners/[handle]/page.tsx')).toContain('t.profile.unverified');
-    expect(src('components/talent-cards.tsx')).toContain('unverified={t.profile.unverified}');
+  it('partner specialties are labelled « Spécialités déclarées » (G1 replaces the AR-2 « Non vérifié » tag)', () => {
+    expect(fr.specialties.publicHeading).toBe('Spécialités déclarées');
+    expect(en.specialties.publicHeading).toBe('Declared specialties');
+    expect(en.specialties.publicTip).toBeTruthy();
+    expect(src('app/(public)/partners/[handle]/page.tsx')).toContain('t.specialties.publicHeading');
+    expect(src('app/(public)/partners/[handle]/page.tsx')).not.toContain('t.profile.unverified');
   });
 
   it('no hard-coded French rating or tooltip labels in shared or creator screens', () => {

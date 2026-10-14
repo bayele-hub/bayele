@@ -12,6 +12,9 @@ import { LimitedField } from '@/components/limited-field';
 import { SectionTip } from '@/components/admin/section-tip';
 import { PROFILE_LIMITS } from '@/lib/profile-limits';
 import { AudienceField } from '@/components/audience-field';
+import { CountryCityFields } from '@/components/gov/city-picker';
+import { SpecialtyPicker } from '@/components/gov/specialty-picker';
+import type { GovFormProps } from '@/app/(app)/profile/profile-form';
 import { CATEGORY_VALUES } from '@/lib/campaign-categories';
 
 type Role = 'creator' | 'consultant' | 'business';
@@ -39,6 +42,8 @@ export function OnboardingForm({
   next = null,
   F,
   T,
+  gov,
+  consent,
 }: {
   role: Role;
   userId: string;
@@ -47,6 +52,8 @@ export function OnboardingForm({
   next?: string | null;
   F: Dictionary['creatorForm'];
   T: Dictionary['creatorTips'];
+  gov: GovFormProps;
+  consent: { label: string; readClause: string };
 }) {
   const tip = (key: keyof Dictionary['creatorTips'], label: string) => <SectionTip id={`creator-${String(key)}`} label={label} text={T[key]} ariaTemplate={T.aria} />;
   const [state, formAction, pending] = useActionState<OnboardState, FormData>(onboardAction, { error: null });
@@ -148,37 +155,33 @@ export function OnboardingForm({
             </>
           ) : (
             <>
-              <div>
-                <Text name="specialties" label="Spécialités (séparées par des virgules)" required placeholder="Stratégie média, Influence" />
-                <p className="mt-1 text-[11px] text-muted">{F.specialtiesHint}</p>
-              </div>
+              <SpecialtyPicker options={gov.specialtyOptions} initial={[]} legacy={[]} L={gov.specL} error={state.field === 'specialties' ? state.error : null} />
               <Text name="years_experience" label="Années d'expérience" type="number" />
             </>
           )}
         </>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <LimitedField id="field-city" name="city" label={F.cityLabel} max={PROFILE_LIMITS.city} required placeholder="Douala" helper={F.cityHelp}
-          tip={tip('city', F.cityLabel)} error={state.field === 'city' ? state.error : null} overLimitError={F.errors.city} autoComplete="address-level2" />
-        <div>
-          <label className="text-xs font-semibold text-ink">Pays</label>
-          <select
-            name="country"
-            defaultValue={defaults.country}
-            className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
-          >
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* G9: « Pays » first, then the city picker (list per country + « Autre »). */}
+      <div id="field-city" className="scroll-mt-4">
+        <CountryCityFields cities={gov.cities} countries={COUNTRIES} defaultCountry={defaults.country} defaultCity="" L={gov.cityL} error={state.field === 'city' ? state.error : null} />
       </div>
 
       <LimitedField id="field-bio" name="bio" label={`${F.bioLabel} (optionnel)`} max={PROFILE_LIMITS.bio} multiline placeholder={F.bioPlaceholder}
         tip={tip('bio', F.bioLabel)} error={state.field === 'bio' ? state.error : null} overLimitError={F.errors.bio} />
+
+      {/* G7 §7.3: partners and brands tick the non-circumvention clause (recorded after onboard_profile). */}
+      {(role === 'consultant' || role === 'business') && (
+        <div>
+          <label className="flex min-h-tap items-start gap-2 text-[13px] text-ink">
+            <input type="checkbox" name="consent" required className="mt-1 h-5 w-5 shrink-0 accent-brand"
+              aria-invalid={state.field === 'consent' || undefined} aria-describedby={state.field === 'consent' ? 'onb-consent-err' : undefined} />
+            <span>{consent.label} <span aria-hidden className="text-rose-700">*</span></span>
+          </label>
+          <a href="/legal#non-contournement" target="_blank" rel="noopener" className="ml-7 inline-flex min-h-[44px] items-center text-xs font-bold text-brand-700 underline">{consent.readClause}</a>
+          {state.field === 'consent' && <p id="onb-consent-err" role="alert" className="ml-7 text-xs font-semibold text-rose-700">{state.error}</p>}
+        </div>
+      )}
 
       <button
         type="submit"

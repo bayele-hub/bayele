@@ -1,38 +1,21 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
-import { Loader2, AlertCircle, Check, ArrowRight, UserCheck, UserX, Lock } from 'lucide-react';
-import { createRetainerAction, lookupConsultantAction, type RetainerState } from './actions';
+import { useActionState, useState } from 'react';
+import { Loader2, AlertCircle, Check, ArrowRight, Lock } from 'lucide-react';
+import { createRetainerAction, type RetainerState } from './actions';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import type { Dictionary } from '@/i18n/dictionaries';
 import { retainerSplit } from '@/lib/retainers';
 
-export function RetainerForm({ consultantHandle, consultantName, R }: { consultantHandle: string; consultantName?: string; R: Dictionary['retainers'] }) {
+export interface AssignedPartner { handle: string; name: string }
+
+/**
+ * G3: the partner is picked among the brand's ACTIVE assignments (no free identifier field);
+ * ?partner={handle} preselects it when assigned.
+ */
+export function RetainerForm({ partners, selected, R, B }: { partners: AssignedPartner[]; selected: string; R: Dictionary['retainers']; B: Dictionary['businessPartners'] }) {
   const [state, action, pending] = useActionState<RetainerState, FormData>(createRetainerAction, { error: null });
-
-  // Live consultant resolution as the identifier is typed (debounced), so the business confirms who
-  // they're commissioning before submitting. Seeded with any name resolved server-side via ?partner=.
-  const [handle, setHandle] = useState(consultantHandle);
-  const [lookup, setLookup] = useState<{ status: 'idle' | 'loading' | 'found' | 'missing'; name: string | null }>(
-    consultantName ? { status: 'found', name: consultantName } : { status: 'idle', name: null },
-  );
-  const reqId = useRef(0);
-
-  useEffect(() => {
-    const h = handle.trim().replace(/^@/, '');
-    if (!h) {
-      setLookup({ status: 'idle', name: null });
-      return;
-    }
-    setLookup((prev) => ({ status: 'loading', name: prev.name }));
-    const id = ++reqId.current;
-    const t = setTimeout(async () => {
-      const res = await lookupConsultantAction(h);
-      if (id !== reqId.current) return; // a newer keystroke superseded this lookup
-      setLookup(res.found ? { status: 'found', name: res.name } : { status: 'missing', name: null });
-    }, 350);
-    return () => clearTimeout(t);
-  }, [handle]);
+  const [handle, setHandle] = useState(partners.some((p) => p.handle === selected) ? selected : partners[0]?.handle ?? '');
 
   // O7: Bayele's cut is fixed server-side at 25 % — shown read-only, never editable.
   const [contract, setContract] = useState(1_000_000);
@@ -64,32 +47,16 @@ export function RetainerForm({ consultantHandle, consultantName, R }: { consulta
         </div>
       )}
 
+      {state.notAssigned && (
+        <a href="/business/talent?tab=partners" className="inline-flex min-h-tap items-center text-xs font-bold text-brand-700 underline">{B.empty.cta}</a>
+      )}
       <div>
-        <label className="text-xs font-semibold text-ink">Partenaire (identifiant)</label>
-        <input
-          name="consultant"
-          required
-          value={handle}
-          onChange={(e) => setHandle(e.target.value)}
-          placeholder="@partenaire"
-          autoComplete="off"
-          className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-3 text-sm text-ink focus:border-brand focus:outline-none"
-        />
-        {lookup.status === 'loading' && (
-          <p className="mt-1 flex items-center gap-1 text-[11px] text-muted">
-            <Loader2 className="h-3 w-3 animate-spin" /> Recherche du partenaire…
-          </p>
-        )}
-        {lookup.status === 'found' && lookup.name && (
-          <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-            <UserCheck className="h-3 w-3" /> Contrat pour {lookup.name}.
-          </p>
-        )}
-        {lookup.status === 'missing' && (
-          <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-rose-600">
-            <UserX className="h-3 w-3" /> Aucun partenaire trouvé pour cet identifiant.
-          </p>
-        )}
+        <label htmlFor="ret-partner" className="text-xs font-semibold text-ink">{B.retainerSelect}</label>
+        <select id="ret-partner" name="consultant" required value={handle} onChange={(e) => setHandle(e.target.value)}
+          className="mt-1 min-h-tap w-full rounded-xl border border-line bg-white px-3 text-[16px] text-ink focus:border-brand focus:outline-none sm:text-sm">
+          {partners.map((p) => <option key={p.handle} value={p.handle}>{p.name} · @{p.handle}</option>)}
+        </select>
+        <p className="mt-1 text-[11px] text-muted">{B.retainerHelp}</p>
       </div>
 
       <NumField label="Valeur du contrat (FCFA)" name="contract" value={contract} onChange={setContract} />

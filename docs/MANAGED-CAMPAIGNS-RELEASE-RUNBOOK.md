@@ -298,3 +298,142 @@ If any signed-in page shows an error, roll back 0037 at once (§10.5) and invest
   - AR-7: the dashboard counts fees of fully refunded campaigns;
   - contract Q2/Q3 need owner answers.
 - D3-db from §9: normalise the invoice reference case.
+
+## 11. Partner governance release (branch `feat/partner-governance`, stacked on admin-review, 2026-10-14)
+
+Migrations:
+- 0038: enum value `partner_assignment`;
+- 0039: governance, safe with the old web;
+- 0040: enforcement, post-deploy.
+
+Contract: `briefs/BACKEND-CONTRACT-PARTNER-GOV.md`; QA: `qa/QA-REPORT-PARTNER-GOV.md` (GO); tracker: `docs/PARTNER-GOVERNANCE-TRACKER.md`.
+
+### 11.1 Order (binding)
+```
+A. 0038 → 0039 applied to production            DONE 2026-10-14 (history 20261014073339, 20261014074234)
+B. Owner: git am admin-review.patch → push → PR → merge → Vercel Ready
+C. Owner: git am partner-governance.patch → push → PR → merge → Vercel Ready
+D. 0037 (phone lockdown, §10.3), then 0040   ONLY after B AND C are Ready
+```
+Git (Windows Git Bash), with both patches in the repo root:
+```bash
+git switch main && git pull --no-edit
+git switch -c feat/admin-profile-review && git am admin-review.patch && git push -u origin feat/admin-profile-review
+# open PR, merge, wait for Vercel production Ready, then:
+git switch main && git pull --no-edit
+git switch -c feat/partner-governance && git am partner-governance.patch && git push -u origin feat/partner-governance
+# open PR, merge, wait for Vercel production Ready
+rm admin-review.patch partner-governance.patch
+```
+`partner-governance.patch` applies only on top of the admin-review commits.
+
+If you merge with GitHub's "Rebase" or "Squash" button, the commit IDs change. The partner-governance patch still applies, because `git am` matches file content, not commit IDs.
+
+While A is live without D, the old web and the admin-review web keep working (QA t38_preweb + independent replay). They see the new behaviour only as new error codes:
+- `conversation_frozen` / `closed` / `expired`;
+- `payout_on_hold`;
+- `recapture_pending`.
+
+Brand↔partner threads before a funded retainer are already masked.
+
+### 11.2 Production evidence for 0038 + 0039 (2026-10-14)
+
+**Pre-checks (read-only):**
+- Production was at 0036.
+- **Drift check:** all 96 functions in public/private matched the repo's 0036 state (hash `fed49ff…`).
+- pg_cron 1.6.4 was installed with no jobs.
+- None of the new tables existed, and there was no `proofs` bucket.
+- Data: 6 partners (all with free-text specialties), 0 legacy retainer pairs, 19 conversations (all deal threads).
+
+**Dry-run:** both files applied in one transaction each to a fresh local DB at 0036.
+
+**Apply:** `apply_migration` with the exact files returned `success` both times: `0038_partner_assignment_context`, then `0039_partner_governance` (153 KB).
+
+**Post-checks:**
+- **Functions:**
+  - all 147 in public/private match the local dry run (body, result, security definer, volatility, search_path);
+  - 134 are **byte-identical**, including every function from 0035–0039 (e.g. `mask_contacts` with its exact whitespace literals);
+  - the other 13 predate this release and differ only in comment formatting from earlier applies.
+- **Seed data identical:** 14 specialties, 81 aliases, 88 cities (md5 of the full content).
+- **Cron:** `bayele_purge_masked_originals`, `17 3 * * *`, `SELECT private.purge_masked_originals()`, active.
+- **`proofs` bucket:** private, 5 MB, jpeg/png/webp. Its policies are `proofs creator upload` (INSERT) and `proofs parties read` (SELECT), both for authenticated.
+- **`message_originals`:**
+  - RLS is on and forced, with 0 policies, 0 client grants and no realtime publication;
+  - `authenticated` gets 42501 even on `select count(*)`.
+- **Grants:** all 11 new tables have RLS on; none of the 27 new RPCs can be executed by anon; specialties and cities are publicly readable; aliases are not.
+- **Old-web session:** a simulated signed-in brand's `select *` on its own profile returns 1 row, and `phone_e164` is still readable (0037 not applied).
+- **Masking simulation** (brand on the existing unfunded retainer thread, everything in one transaction, then ROLLBACK):
+  - input « Écris-moi au 677 12 34 56 ou wa.me/237677123456, budget 150 000 FCFA » was stored as « Écris-moi au [numéro masqué] ou [lien masqué], budget 150 000 FCFA » (the amount is kept);
+  - `masked_kinds` = {messaging_link, phone};
+  - the original was kept in `message_originals`;
+  - one flag was raised;
+  - the notification preview was masked;
+  - afterwards: 19 conversations, 0 originals, 0 flags (nothing persisted).
+- **Advisors:**
+  - no ERROR;
+  - INFO « RLS no policy » for `message_originals` and `partner_specialty_aliases` (deny-all by design) and `pay_floors` (existing);
+  - the anon-executable list is unchanged and pre-existing.
+
+**0040 preview (contract §11, read-only, taken now):**
+- `rows_to_map` = 6 of 6 partners; 5 have at least one unmappable value, so **expect 5 correction requests and notifications** when 0040 runs;
+- `legacy_pairs` = 0.
+
+### 11.3 Step D: 0037, then 0040
+
+**Gate:** both Vercel production deployments are Ready.
+- admin-review: signed-in /dashboard and /profile load, and the own phone shows.
+- partner-governance:
+  - /admin/partners loads for the admin;
+  - /business/partners loads for a brand;
+  - the one-time CGU acknowledgement modal appears for a partner and a brand.
+
+1. **0037** exactly as §10.3: apply, post-check and smoke test. Do not continue if a signed-in page fails.
+2. **0040** through the connector: `apply_migration(name='0040_partner_governance_enforce')` with the exact contents of `supabase/migrations/20261014120200_0040_partner_governance_enforce.sql` (no DROP/DELETE).
+   - Re-run the §11.2 preview first; if the counts changed, note them.
+
+**0040 post-check (read-only):**
+```sql
+SELECT (SELECT version||' '||name FROM supabase_migrations.schema_migrations ORDER BY version DESC LIMIT 1)                AS last,   -- …0040_partner_governance_enforce
+       (SELECT count(*) FROM pg_trigger WHERE tgname = 'trg_validate_specialties')                                    AS spec_trigger,  -- 1
+       (SELECT count(*) FROM public.consultant_profiles kp
+         WHERE EXISTS (SELECT 1 FROM unnest(kp.specialties) s WHERE s NOT IN (SELECT code FROM public.partner_specialties))) AS free_text_left, -- 0
+       (SELECT count(*) FROM public.consultant_profiles WHERE cardinality(specialties) > 3)                           AS over_three,    -- 0
+       (SELECT count(*) FROM public.consultant_profiles WHERE specialties_legacy IS NOT NULL)                         AS with_legacy,   -- ≈ 5
+       (SELECT count(*) FROM public.member_correction_requests WHERE status = 'open' AND 'other' = ANY (fields))      AS spec_corrections, -- ≈ 5
+       (SELECT count(*) FROM public.partner_assignments WHERE origin = 'legacy_retainer')                            AS legacy_assignments, -- = preview (0)
+       private.current_consent_version()                                                                              AS consent_version;   -- '2026-10-14'
+```
+Also confirm the function fingerprint for `propose_retainer`, `open_conversation`, `request_partner_contact` and `onboard_profile` matches a local dry run of 0001–0040, using the same hash query as §11.2.
+
+### 11.4 Smoke list (QA), on production after D
+1. A brand submits a request, the admin approves it, and both parties land in `/messages/<id>` and can write.
+   - A message with a phone number shows « Coordonnées masquées : … ».
+   - The admin reads the original with a reason and finds the `admin_access_log` reveal row.
+2. `select * from cron.job where jobname='bayele_purge_masked_originals'` returns the job (already verified after 0039).
+3. WhatsApp proof upload on a real phone: compression, signed URLs, the brand « Demander une nouvelle capture », then a resubmit. This is low priority (P6).
+4. After 0040:
+   - the partner specialty picker (max 3);
+   - the correction banner for unmapped legacy values on the 5 partners;
+   - legacy retainer pairs show as assigned (0 today);
+   - a brand proposing a retainer to an unassigned partner gets « Demander une mise en relation ».
+5. Delist a partner: they disappear from /partners and their profile returns 404; their existing threads still work.
+6. The admin-review smoke list (§10.4) on the combined release, in particular getSession and /profile after 0037.
+
+### 11.5 Rollback (web first, then DB in reverse order)
+1. **Web:** promote the previous Vercel deployment for each release, as needed.
+   - If 0037 or 0040 is applied and you go back to a web that needs the old behaviour, roll those back at the same time:
+     - the pre-admin-review web needs 0037 rolled back;
+     - the pre-governance web needs 0040 rolled back (free-text specialties, retainers to unassigned partners).
+2. **0040** (SQL editor; DELETE of legacy assignments): `rollback/20261014120200_0040_partner_governance_enforce.rollback.sql`.
+   - **The specialty mapping is not reverted**: codes stay, and the originals of unmapped values remain in `specialties_legacy`. Correction requests already sent stay.
+3. **0037** if needed (§10.5).
+4. **0039** (SQL editor; DROP): `rollback/20261014120100_0039_partner_governance.rollback.sql`.
+   - It refuses while 0040 is applied or while any governance data exists (assignments, requests, flags, originals, consents, proof media).
+   - Export that data first if you must force it.
+5. **0038** (SQL editor): it only un-records the migration, because Postgres can't drop an enum value. It refuses while `partner_assignment` conversations exist.
+6. **History rows:** each rollback deletes its *file* version. Production recorded apply-time versions, so also run
+   `DELETE FROM supabase_migrations.schema_migrations WHERE name IN ('0040_partner_governance_enforce', '0039_partner_governance', '0038_partner_assignment_context');` (only for the ones rolled back).
+
+### 11.6 Pending outside engineering
+- Local counsel review of the CGU clause, the privacy texts and the cross-border transfer basis (see the tracker).
+- G12 deferred items: admin 2FA, the dispute window N, the screenshot purge job, creator reassignment.

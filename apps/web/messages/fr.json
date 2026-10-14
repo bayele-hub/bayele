@@ -1540,5 +1540,826 @@
       "not_draft": "Ce contrat a déjà une facture.",
       "generic": "L'action a échoué. Réessayez."
     }
+  },
+  "adminPartners": {
+    "tips": {
+      "listing": "Retirer un partenaire le cache de l'annuaire et bloque les nouvelles mises en relation. Son travail en cours continue. Un motif est obligatoire.",
+      "specialties": "Choisies par le partenaire dans la liste Bayele (3 au plus). Elles sont déclarées, pas vérifiées.",
+      "links": "La commission est fixée quand le créateur accepte. Seul un admin peut la modifier, avec un motif ; les missions déjà commencées gardent leur taux.",
+      "commissions": "Versées seulement après validation de la campagne et libération du séquestre. Bloquées tant qu'un signalement d'auto-transaction est ouvert.",
+      "assignments": "Seul Bayele met une marque en relation avec un partenaire. La conversation s'ouvre tout de suite, pour 30 jours. Le partenaire peut demander la fin.",
+      "flags": "Coordonnées masquées et signalements des membres. L'original d'un message masqué est gardé 90 jours, lisible avec un motif enregistré.",
+      "flagsQueue": "Chaque ligne indique le type de coordonnée masquée. « Voir l'original » demande un motif et chaque lecture est enregistrée. Après 90 jours, l'original est supprimé.",
+      "selfDealing": "Un partenaire et une marque partagent un téléphone, un numéro de paiement ou un e-mail. Ses paiements sont bloqués jusqu'à votre décision.",
+      "requests": "Répondez sous 24 h. Approuver met la marque et le partenaire en relation tout de suite. Refuser envoie le motif à la marque.",
+      "endRequests": "Un partenaire demande à arrêter une mise en relation. Mettez-y fin, ou refusez avec une note qu'il recevra dans l'application."
+    },
+    "title": "Partenaires",
+    "rail": [
+      "Partenaires",
+      "Demandes",
+      "Signalements"
+    ],
+    "filter": {
+      "listed": "Listés",
+      "delisted": "Retirés",
+      "suspended": "Suspendus",
+      "pending": "En attente",
+      "all": "Tous",
+      "hold": "Paiements bloqués"
+    },
+    "search": "Nom, @identifiant ou ville",
+    "countMany": "{n} partenaires",
+    "countOne": "1 partenaire",
+    "countBreakdown": "{l} listés · {d} retirés · {s} suspendus",
+    "chip": {
+      "listed": "Listé",
+      "delisted": "Retiré de l'annuaire",
+      "hold": "Paiements bloqués",
+      "flagsSr": "signalements ouverts",
+      "endRequested": "Fin demandée"
+    },
+    "card": {
+      "counts": "{c} créateurs · {a} mises en relation · {r} rétainers",
+      "open": "Voir la fiche partenaire"
+    },
+    "empty": "Aucun partenaire ne correspond à ces filtres.",
+    "memberLink": "Fiche membre complète",
+    "action": {
+      "delist": "Retirer de l'annuaire",
+      "relist": "Remettre dans l'annuaire",
+      "assign": "Mettre en relation",
+      "retainer": "Proposer un rétainer",
+      "suspend": "Suspendre",
+      "reactivate": "Réactiver"
+    },
+    "section": {
+      "listing": "Annuaire",
+      "specialties": "Spécialités déclarées",
+      "links": "Créateurs représentés",
+      "deals": "Missions",
+      "commissions": "Commissions",
+      "retainers": "Rétainers",
+      "assignments": "Mises en relation",
+      "requests": "Demandes de contact",
+      "flags": "Signalements"
+    },
+    "listing": {
+      "since": "Listé depuis le {date}",
+      "delistedOn": "Retiré le {date} — Motif : {reason}",
+      "listed": "Listé"
+    },
+    "legacy": "Ancien texte non reconnu : {values}",
+    "legacyFix": "Une correction a été demandée",
+    "origin": {
+      "admin": "Proposée par Bayele",
+      "contact_request": "Demande de la marque",
+      "legacy_retainer": "Rétainer existant"
+    },
+    "scope": {
+      "brand": "Toute la marque",
+      "campaign": "Campagne : {title}"
+    },
+    "status": {
+      "active": "Active",
+      "ended": "Terminée"
+    },
+    "commissions": {
+      "line": "Dues : {owed} · Versées : {paid} · {count} missions",
+      "hold": "Paiements bloqués : un signalement d'auto-transaction est ouvert."
+    },
+    "flags": {
+      "line": "{open} ouverts · {n30} sur 30 jours",
+      "partner30": "{n} signalements sur 30 jours",
+      "openThread": "Ouvrir la conversation",
+      "resolve": "Marquer comme traité",
+      "clear": "Lever le signalement",
+      "confirm": "Confirmer",
+      "holdNote": "Paiements du partenaire bloqués",
+      "reportedBy": "Signalé par @{handle}",
+      "empty": "Aucun signalement ouvert.",
+      "pair": "@{partner} ↔ @{brand}",
+      "count": "{n} masquage(s)",
+      "sender": "Envoyé par @{handle}",
+      "noteOptional": "Note (facultatif)",
+      "noteRequired": "Note (obligatoire pour confirmer)",
+      "done": "Signalement traité.",
+      "forPartner": "Partenaire : @{handle}",
+      "showAllPartners": "Tous les partenaires"
+    },
+    "historyToggle": "Voir l'historique ({n})",
+    "emptyLinks": "Aucun créateur représenté.",
+    "emptyAssignments": "Aucune mise en relation.",
+    "emptyRetainers": "Aucun rétainer.",
+    "emptyRequests": "Aucune demande de contact.",
+    "emptyFlags": "Aucun signalement.",
+    "reason": "Motif",
+    "reasonOptional": "Motif (facultatif)",
+    "cancel": "Annuler",
+    "delist": {
+      "title": "Retirer {name} de l'annuaire ?",
+      "effect": "Le partenaire disparaît de l'annuaire et ne reçoit plus de nouvelles mises en relation ni demandes. Ses missions et rétainers en cours continuent. Il est prévenu dans l'application.",
+      "done": "{name} est retiré de l'annuaire."
+    },
+    "relist": {
+      "done": "{name} est de nouveau listé.",
+      "title": "Remettre {name} dans l'annuaire ?"
+    },
+    "assign": {
+      "brand": "Marque",
+      "campaign": "Campagne (facultatif)",
+      "note": "Note (facultatif)",
+      "noteCounter": "{n}/280",
+      "searchHint": "Tapez au moins 2 lettres",
+      "activeCount": "{n} mises en relation actives",
+      "submit": "Mettre en relation",
+      "help": "La mise en relation est active tout de suite : une conversation s'ouvre entre la marque et le partenaire pour 30 jours. Les deux sont prévenus dans l'application.",
+      "done": "Mise en relation faite. La conversation est ouverte pour 30 jours.",
+      "openThread": "Ouvrir la conversation"
+    },
+    "unassign": {
+      "title": "Mettre fin à la mise en relation avec {brand} ?",
+      "effect": "La conversation est fermée (les messages restent lisibles). Les deux parties sont prévenues.",
+      "submit": "Mettre fin",
+      "done": "La mise en relation est terminée."
+    },
+    "endLink": {
+      "title": "Mettre fin à la représentation de @{creator} ?",
+      "effect": "Les missions déjà acceptées gardent leurs conditions. Le créateur et le partenaire sont prévenus.",
+      "submit": "Mettre fin à la représentation",
+      "done": "La représentation est terminée."
+    },
+    "rate": {
+      "title": "Modifier la commission de @{creator}",
+      "current": "Taux actuel : {rate} %",
+      "new": "Nouveau taux (%)",
+      "help": "Les missions déjà commencées gardent leur taux. Le créateur et le partenaire sont prévenus.",
+      "submit": "Enregistrer le taux",
+      "done": "Taux enregistré.",
+      "open": "Modifier la commission"
+    },
+    "retainer": {
+      "help": "Bayele propose ce rétainer au nom de la marque. La part Bayele est fixée à 25 %. Le partenaire doit l'accepter.",
+      "done": "Rétainer proposé. Le partenaire doit l'accepter.",
+      "brand": "Marque (validée)",
+      "contract": "Montant du contrat (FCFA)",
+      "fee": "Honoraires du partenaire (FCFA)",
+      "media": "Budget média (FCFA)",
+      "kpi": "Prime KPI (FCFA, facultatif)",
+      "cut": "Part Bayele (25 %) : {cut} · Net à répartir : {net}",
+      "unbalanced": "Honoraires + budget média doivent égaler le net ({net}).",
+      "submit": "Proposer le rétainer"
+    },
+    "errors": {
+      "partner_not_available": "Ce partenaire n'est pas disponible (en attente, suspendu ou retiré de l'annuaire).",
+      "brand_not_active": "Cette marque n'est pas encore validée.",
+      "campaign_not_found": "Cette campagne n'appartient pas à la marque choisie.",
+      "assignment_exists": "Une mise en relation est déjà ouverte pour ce partenaire et cette marque.",
+      "reason_required": "Indiquez un motif.",
+      "reason_too_long": "Motif trop long (500 caractères au plus).",
+      "note_too_long": "Note trop longue (280 caractères au plus).",
+      "query_too_short": "Tapez au moins 2 lettres.",
+      "request_already_decided": "Cette demande a déjà été traitée.",
+      "original_not_found": "Ce message n'a pas été masqué : il n'y a pas d'original.",
+      "original_purged": "L'original a été supprimé après 90 jours.",
+      "invalid_commission_rate": "Taux invalide.",
+      "link_not_open": "La représentation n'est plus active.",
+      "invalid_amounts": "Montants invalides.",
+      "flag_already_decided": "Ce signalement a déjà été traité.",
+      "note_required": "Une note est obligatoire pour confirmer.",
+      "not_pending": "Cette demande a déjà été traitée.",
+      "message_required": "Un message est obligatoire pour « Autre motif ».",
+      "message_too_long": "Message trop long (500 caractères au plus).",
+      "generic": "L'action a échoué. Réessayez.",
+      "partner_not_found": "Partenaire introuvable.",
+      "not_authorized": "Action réservée aux administrateurs.",
+      "link_not_found": "Représentation introuvable.",
+      "assignment_not_found": "Mise en relation introuvable.",
+      "request_not_found": "Demande introuvable.",
+      "flag_not_found": "Signalement introuvable.",
+      "invalid_reason_code": "Choisissez un motif dans la liste.",
+      "consultant_not_found": "Partenaire introuvable.",
+      "invalid_decision": "Décision invalide.",
+      "invalid_listing": "Action invalide.",
+      "note_required_dismiss": "Écrivez une note pour le partenaire."
+    },
+    "flagsTabs": [
+      "Coordonnées masquées",
+      "Signalements",
+      "Auto-transactions"
+    ],
+    "flagStatus": [
+      "Ouverts",
+      "Traités",
+      "Tous"
+    ],
+    "kinds": {
+      "phone": "Numéro",
+      "email": "E-mail",
+      "messaging_link": "Lien de messagerie",
+      "social_handle": "Compte social"
+    },
+    "selfKinds": {
+      "phone": "Même téléphone",
+      "payout_number": "Numéro de paiement partagé",
+      "email": "Même e-mail"
+    },
+    "selfSource": {
+      "assignment": "Mise en relation par Bayele",
+      "contact_request": "Demande de contact approuvée",
+      "campaign_application": "Candidature pour un créateur",
+      "retainer": "Rétainer proposé par Bayele"
+    },
+    "original": {
+      "show": "Voir l'original",
+      "title": "Voir le message d'origine",
+      "notice": "Accès réservé à l'équipe de sécurité. Cette consultation est enregistrée avec votre motif.",
+      "quick": [
+        "Vérifier un signalement",
+        "Contrôle d'un échange hors plateforme",
+        "Litige en cours"
+      ],
+      "submit": "Afficher l'original",
+      "label": "Original (consulté le {date})",
+      "hide": "Masquer",
+      "purged": "Original supprimé (plus de 90 jours)"
+    },
+    "endRequests": {
+      "title": "Fins demandées",
+      "status": [
+        "Ouvertes",
+        "Acceptées",
+        "Refusées",
+        "Toutes"
+      ],
+      "end": "Mettre fin",
+      "dismiss": "Refuser la demande",
+      "prefill": "Fin demandée par le partenaire : {reason}",
+      "noteLabel": "Note pour le partenaire",
+      "empty": "Aucune demande de fin en attente."
+    },
+    "cgu": {
+      "accepted": "Règle de non-contournement acceptée (version {version})",
+      "missing": "Règle de non-contournement pas encore acceptée"
+    },
+    "requests": {
+      "status": [
+        "En attente",
+        "Approuvées",
+        "Refusées",
+        "Retirées",
+        "Expirées",
+        "Toutes"
+      ],
+      "overdue": "> 24 h",
+      "brandApproved": "Marque validée",
+      "brandNotApproved": "Marque non validée",
+      "selfDealing": "Auto-transaction possible",
+      "budget": "Budget : {value}",
+      "budgetNone": "Budget : non précisé",
+      "deadline": "Échéance : {date}",
+      "masked": "Des coordonnées ont été masquées dans cette demande.",
+      "approve": "Approuver",
+      "decline": "Refuser",
+      "approved": "Demande approuvée. La conversation est ouverte.",
+      "approveMessage": "Message à la marque (facultatif)",
+      "approveNote": "La conversation s'ouvre tout de suite entre la marque et le partenaire, pour 30 jours.",
+      "approveSubmit": "Approuver et mettre en relation",
+      "messageLabel": "Message à la marque",
+      "preview": "La marque recevra : Motif : {label}. {message}",
+      "submitDecline": "Refuser la demande",
+      "empty": "Aucune demande en attente.",
+      "reasons": {
+        "incomplete": {
+          "label": "Demande incomplète",
+          "message": "Précisez votre besoin (objectif, délai) et renvoyez une demande."
+        },
+        "brand_unverified": {
+          "label": "Compte marque à compléter",
+          "message": "Complétez votre profil marque ; nous pourrons ensuite traiter votre demande."
+        },
+        "poor_fit": {
+          "label": "Partenaire peu adapté à ce besoin",
+          "message": "Ce partenaire ne correspond pas à ce besoin. Bayele peut vous en proposer un autre."
+        },
+        "suspected_offplatform": {
+          "label": "Échanges hors plateforme suspectés",
+          "message": "Nous ne pouvons pas donner suite à cette demande. Les échanges et paiements doivent passer par Bayele."
+        },
+        "other": {
+          "label": "Autre motif",
+          "message": ""
+        }
+      }
+    },
+    "dealStatus": {
+      "invited": "Invité",
+      "applied": "Candidature",
+      "approved": "Acceptée",
+      "rejected": "Refusée",
+      "content_submitted": "Preuve envoyée",
+      "verified": "Preuve validée",
+      "paid": "Payée",
+      "disputed": "En litige"
+    },
+    "retainerStatus": {
+      "draft": "Proposé",
+      "invoiced": "Facturé",
+      "funded": "Financé",
+      "active": "En cours",
+      "completed": "Terminé",
+      "terminated": "Annulé"
+    },
+    "settlementStatus": {
+      "pending": "À verser",
+      "paid": "Versé"
+    },
+    "campaignStatus": {
+      "draft": "Brouillon",
+      "pending_funding": "En attente de financement",
+      "published": "Publiée",
+      "in_progress": "En cours",
+      "under_review": "En vérification",
+      "completed": "Terminée",
+      "disputed": "En litige",
+      "cancelled": "Annulée"
+    },
+    "blocked": {
+      "delisted": "Retiré de l'annuaire : pas de nouvelle mise en relation ni de rétainer. Remettez-le dans l'annuaire d'abord.",
+      "suspended": "Compte suspendu : pas de nouvelle mise en relation ni de rétainer tant qu'il n'est pas réactivé.",
+      "pending": "Profil en attente de validation : validez-le avant de le mettre en relation.",
+      "rejected": "Profil refusé : pas de nouvelle mise en relation ni de rétainer."
+    },
+    "hub": [
+      "Partenaires",
+      "Demandes",
+      "Fins demandées",
+      "Signalements"
+    ],
+    "searchLabel": "Rechercher un partenaire",
+    "cardCounts": "{c} créateurs · {a} mises en relation",
+    "searchSubmit": "Rechercher",
+    "specialtyFilter": "Spécialité",
+    "specialtyAll": "Toutes les spécialités",
+    "clearFilters": "Effacer les filtres",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "range": "{from}–{to} sur {total}",
+    "unavailable": "Liste indisponible pour le moment. Réessayez dans un instant.",
+    "back": "Partenaires",
+    "suspend": {
+      "reason": "Motif (envoyé au partenaire)",
+      "effect": "Le partenaire ne peut plus agir sur Bayele et ses conversations sont suspendues. Il est prévenu dans l'application.",
+      "done": "{name} est suspendu."
+    },
+    "reactivate": {
+      "done": "{name} est réactivé."
+    },
+    "since": "depuis le {date}",
+    "dismiss": {
+      "done": "Demande refusée. Le partenaire reçoit votre note."
+    },
+    "pickBrand": "Choisissez une marque dans la liste.",
+    "noBrand": "Aucune marque validée ne correspond.",
+    "searching": "Recherche…",
+    "dealsApplied": "Postulé par le partenaire",
+    "acceptedOn": "accepté le {date}",
+    "endedReason": "Motif : {reason}",
+    "endRequestRow": "Fin demandée : « {reason} »",
+    "decisionNote": "Note : {note}",
+    "pendingFix": "Une correction a été demandée",
+    "linkStatus": {
+      "pending": "En attente",
+      "active": "Active",
+      "ended": "Terminée",
+      "declined": "Refusée",
+      "invited": "Invitation envoyée"
+    },
+    "requestStatus": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "declined": "Refusée",
+      "withdrawn": "Retirée",
+      "closed": "Terminée",
+      "expired": "Expirée"
+    },
+    "endStatus": {
+      "open": "Ouverte",
+      "accepted": "Acceptée",
+      "dismissed": "Refusée"
+    },
+    "flagState": {
+      "open": "Ouvert",
+      "resolved": "Traité",
+      "cleared": "Levé",
+      "confirmed": "Confirmé"
+    },
+    "flagSource": {
+      "auto_mask": "Coordonnées masquées",
+      "report": "Signalement",
+      "contact_request": "Demande de contact"
+    },
+    "ageHours": "il y a {n} h",
+    "ageDays": "il y a {n} j",
+    "ageNow": "à l'instant",
+    "dealsEmpty": "Aucune mission.",
+    "settlement": {
+      "partner_payout": "Versement partenaire",
+      "brand_refund": "Remboursement marque"
+    },
+    "city": {
+      "add": "Ajouter « {city} » à la liste ({country})"
+    },
+    "memberWarn": {
+      "specialties_unmapped": "Spécialités anciennes non reconnues : une correction est demandée.",
+      "city_not_in_list": "Ville hors de la liste du pays.",
+      "contact_in_bio": "La bio contient des coordonnées (numéro, e-mail, lien ou compte).",
+      "self_dealing_flag": "Signalement d'auto-transaction ouvert : paiements du partenaire bloqués."
+    }
+  },
+  "partnerRequest": {
+    "tips": {
+      "goal": "Une ou deux phrases : ce que vous voulez obtenir. Bayele lit la demande avant de la transmettre au partenaire."
+    },
+    "cta": {
+      "request": "Demander ce partenaire",
+      "help": "Bayele examine votre demande et vous répond dans l'application.",
+      "sent": "Demande envoyée · voir le suivi",
+      "openThread": "Ouvrir la conversation",
+      "proposeRetainer": "Proposer un rétainer",
+      "notApproved": "Votre compte marque doit être validé avant de demander un partenaire.",
+      "completeProfile": "Compléter mon profil"
+    },
+    "title": "Demander un partenaire",
+    "notice": "Bayele lit votre demande. Si elle est approuvée, la conversation avec le partenaire s'ouvre tout de suite ici. Vos échanges et vos paiements restent protégés sur Bayele.",
+    "goal": "Votre besoin",
+    "goalPlaceholder": "Ce que vous voulez obtenir, en une ou deux phrases.",
+    "goalCounter": "{n}/280",
+    "budget": "Budget envisagé (facultatif)",
+    "budgetPlaceholder": "Une fourchette, si vous la connaissez",
+    "deadline": "Échéance (facultatif)",
+    "maskNotice": "Les coordonnées seront masquées : Bayele vous met en relation dans l'application.",
+    "submit": "Envoyer la demande",
+    "footnote": "Bayele vous répond dans l'application.",
+    "sent": "Demande envoyée. Bayele vous répond dans l'application.",
+    "errors": {
+      "owner_not_active": "Votre compte marque doit être validé avant de demander un partenaire.",
+      "partner_not_available": "Ce partenaire n'est pas disponible pour le moment.",
+      "cannot_contact_self": "Vous ne pouvez pas vous demander vous-même.",
+      "request_already_open": "Une demande est déjà en cours pour ce partenaire.",
+      "too_many_requests": "Vous avez déjà 5 demandes en attente. Attendez une réponse ou retirez-en une.",
+      "invalid_goal": "Décrivez votre besoin (280 caractères au plus).",
+      "budget_too_long": "Budget trop long (60 caractères au plus).",
+      "deadline_in_past": "Choisissez une date à venir.",
+      "consent_required": "Cochez la case pour envoyer la demande.",
+      "generic": "L'envoi a échoué. Réessayez."
+    },
+    "back": "Partenaires",
+    "partnerUnavailable": "Ce partenaire n'est pas disponible pour le moment.",
+    "alreadyOpenLink": "Voir le suivi"
+  },
+  "businessPartners": {
+    "tips": {
+      "window": "La conversation reste ouverte 30 jours. Proposer ou signer un rétainer la prolonge ; une fois le contrat signé, les coordonnées s'affichent."
+    },
+    "nav": "Partenaires",
+    "title": "Mes partenaires",
+    "assigned": "Partenaires assignés",
+    "pending": "En attente",
+    "history": "Voir l'historique ({n})",
+    "windowUntil": "Conversation ouverte jusqu'au {date}",
+    "contractSigned": "Contrat signé : coordonnées visibles",
+    "withdraw": "Retirer la demande",
+    "withdrawConfirm": "Retirer cette demande ? Vous pourrez en envoyer une autre.",
+    "expired": "Fenêtre de 30 jours écoulée sans contrat — vous pouvez refaire une demande.",
+    "requestAgain": "Refaire une demande",
+    "declinedReason": "Motif : {label}. {message}",
+    "sentOn": "Envoyée le {date}",
+    "pill": {
+      "review": "En revue par Bayele",
+      "active": "Actif",
+      "declined": "Refusée",
+      "withdrawn": "Retirée",
+      "ended": "Terminée",
+      "expired": "Expirée"
+    },
+    "empty": {
+      "title": "Aucun partenaire pour l'instant",
+      "body": "Un partenaire gère vos campagnes et vos créateurs. Choisissez-en un dans l'annuaire : Bayele vous met en relation.",
+      "cta": "Trouver un partenaire"
+    },
+    "retainerHelp": "Vous pouvez proposer un rétainer aux partenaires avec qui Bayele vous a mis en relation.",
+    "retainerNone": "Vous pourrez proposer un rétainer après une mise en relation par Bayele.",
+    "origin": {
+      "admin": "Proposée par Bayele",
+      "contact_request": "Suite à votre demande"
+    },
+    "retainerSelect": "Partenaire",
+    "talentTabs": [
+      "Créateurs",
+      "Partenaires"
+    ],
+    "reviewIntro": "Bayele lit votre demande et vous répond dans l'application, en général sous 24 h.",
+    "withdrawn": "Demande retirée.",
+    "withdrawYes": "Oui, retirer",
+    "errors": {
+      "generic": "L'action a échoué. Réessayez.",
+      "not_pending": "Cette demande a déjà été traitée."
+    },
+    "endedOn": "Terminée le {date}",
+    "declined": "Refusée",
+    "directoryTitle": "Partenaires de l'annuaire",
+    "directoryEmpty": "Aucun partenaire validé pour le moment.",
+    "allCountries": "Tous les pays",
+    "allSpecialties": "Toutes les spécialités",
+    "filter": "Filtrer"
+  },
+  "partnerAssignments": {
+    "tips": {
+      "howItWorks": "Les marques passent par Bayele pour vous contacter. Gardez vos spécialités à jour : elles aident Bayele à vous proposer les bonnes marques."
+    },
+    "nav": "Mises en relation",
+    "title": "Mises en relation",
+    "active": "Actives",
+    "ended": "Terminées",
+    "need": "Besoin : « {goal} »",
+    "note": "Note de Bayele : {note}",
+    "until": "Conversation ouverte jusqu'au {date}",
+    "openThread": "Ouvrir la conversation",
+    "viewMessages": "Voir les messages",
+    "endedOn": "Terminée le {date}",
+    "requestEnd": "Demander la fin",
+    "requestEndTitle": "Pourquoi souhaitez-vous mettre fin à cette mise en relation ?",
+    "requestEndReason": "Motif",
+    "requestEndHelp": "Bayele examine votre demande et vous répond dans l'application. Vos messages restent consultables.",
+    "requestEndSubmit": "Envoyer la demande",
+    "endRequested": "Fin demandée",
+    "endRequestedOn": "Demande envoyée le {date}",
+    "endDismissed": "Demande de fin refusée : {note}",
+    "cancel": "Annuler",
+    "empty": "Aucune mise en relation pour l'instant. Bayele vous propose des marques quand votre profil correspond à leurs besoins.",
+    "delisted": "Vous n'êtes plus visible dans l'annuaire. Vos missions en cours continuent. Écrivez à support@bayele.com pour en savoir plus.",
+    "errors": {
+      "reason_required": "Indiquez un motif.",
+      "reason_too_long": "Motif trop long (300 caractères au plus).",
+      "end_already_requested": "Vous avez déjà demandé la fin de cette mise en relation.",
+      "assignment_not_active": "Cette mise en relation est déjà terminée.",
+      "generic": "L'envoi a échoué. Réessayez."
+    },
+    "sent": "Demande envoyée. Bayele vous répond dans l'application.",
+    "counter": "{n}/300",
+    "endReason": "Motif : {reason}"
+  },
+  "specialties": {
+    "tip": "Choisissez jusqu'à 3 domaines où vous travaillez vraiment. Les marques les voient sur votre profil public.",
+    "publicTip": "Spécialités choisies par le partenaire dans la liste Bayele. Elles ne sont pas vérifiées par Bayele.",
+    "legend": "Spécialités",
+    "counter": "{n}/3",
+    "help": "Choisissez jusqu'à 3 spécialités dans la liste.",
+    "max": "3 spécialités au maximum. Retirez-en une pour en choisir une autre.",
+    "publicHeading": "Spécialités déclarées",
+    "legacy": "Votre ancien texte : {legacy} — choisissez les spécialités qui correspondent.",
+    "errors": {
+      "invalid_specialty": "Choisissez dans la liste.",
+      "too_many_specialties": "3 spécialités au maximum."
+    },
+    "none": "Aucune spécialité déclarée."
+  },
+  "messaging": {
+    "tips": {
+      "masked": "Avant la signature d'un contrat, les numéros, e-mails, liens et comptes sont masqués. Le paiement n'est garanti que sur Bayele.",
+      "why": "Bayele vous protège tant que vous échangez ici. Une longue suite de chiffres, comme une référence, peut être masquée par erreur : ajoutez-y des lettres."
+    },
+    "header": {
+      "masked": "Mise en relation Bayele · coordonnées masquées jusqu'au contrat",
+      "until": "Ouverte jusqu'au {date}",
+      "signed": "Contrat signé · conversation liée au rétainer",
+      "expired": "Fenêtre de 30 jours écoulée",
+      "suspended": "Conversation suspendue",
+      "closed": "Conversation fermée"
+    },
+    "mask": {
+      "preSend": "Pour votre sécurité, les coordonnées (numéro, e-mail, lien WhatsApp, compte social) seront masquées à l'envoi. Échangez ici jusqu'à la signature du contrat.",
+      "bubbleNote": "Coordonnées masquées : échangez sur Bayele jusqu'à la signature du contrat.",
+      "sent": "Nous avons masqué {kinds} dans votre message. C'est pour protéger les deux parties : le paiement n'est garanti que sur Bayele.",
+      "why": "Pourquoi ?",
+      "kinds": {
+        "phone": "un numéro de téléphone",
+        "email": "une adresse e-mail",
+        "messaging_link": "un lien de messagerie",
+        "social_handle": "un compte social"
+      },
+      "and": "et"
+    },
+    "closed": {
+      "expired": "Cette conversation est close : la fenêtre de 30 jours est écoulée sans contrat. La marque peut refaire une demande.",
+      "suspended": "Cette conversation est suspendue pendant la vérification d'un compte.",
+      "ended": "Cette mise en relation est terminée. Les messages restent consultables."
+    },
+    "report": {
+      "menu": "Signaler une demande hors plateforme",
+      "title": "Signaler une demande hors plateforme",
+      "body": "On vous propose de continuer sur WhatsApp, par téléphone ou de payer hors de Bayele ? Dites-le-nous : Bayele examine la conversation.",
+      "reason": "Ce qui s'est passé (facultatif)",
+      "submit": "Envoyer le signalement",
+      "done": "Merci. Bayele examine la conversation. L'autre partie n'est pas prévenue.",
+      "rate_limited": "Vous avez déjà envoyé plusieurs signalements aujourd'hui. Réessayez demain ou écrivez à support@bayele.com.",
+      "cancel": "Annuler",
+      "error": "Le signalement a échoué. Réessayez."
+    },
+    "errors": {
+      "conversation_expired": "La fenêtre de 30 jours est écoulée : ce message n'a pas été envoyé.",
+      "conversation_frozen": "Cette conversation est suspendue : ce message n'a pas été envoyé.",
+      "conversation_closed": "Cette mise en relation est terminée : ce message n'a pas été envoyé.",
+      "not_assigned": "Cette conversation s'ouvre après une mise en relation par Bayele.",
+      "generic": "L'envoi a échoué. Réessayez."
+    }
+  },
+  "proofShots": {
+    "tip": "Deux captures : le statut publié avec sa date, puis le nombre de vues au moins 24 h après. Recadrez-les pour cacher les noms des personnes qui l'ont vu.",
+    "reviewTip": "Vérifiez la date du statut et le nombre de vues. S'il manque quelque chose, demandez une nouvelle capture plutôt que de rejeter.",
+    "title": "Preuve WhatsApp",
+    "modeLink": "Lien de la publication",
+    "modeShots": "Captures WhatsApp",
+    "guide": {
+      "title": "Comment faire",
+      "steps": [
+        "Capture du statut publié, avec la date visible.",
+        "Au moins 24 h après, capture du nombre de vues.",
+        "Avant d'envoyer, recadrez avec votre téléphone pour cacher les noms et numéros des personnes qui ont vu votre statut."
+      ],
+      "private": "Vos captures restent privées : seuls la marque et Bayele les voient."
+    },
+    "slot": {
+      "posted": "Statut publié",
+      "views": "Nombre de vues (24 h après)",
+      "extra": "Capture supplémentaire (facultatif)"
+    },
+    "add": "Ajouter une capture",
+    "other": "Choisir une autre image",
+    "state": {
+      "uploading": "Envoi…",
+      "ready": "Prête"
+    },
+    "replace": "Remplacer",
+    "retry": "Réessayer",
+    "submit": "Envoyer la preuve",
+    "resubmit": "Renvoyer la preuve",
+    "sent": "Preuve envoyée — la marque la vérifie.",
+    "recaptureBanner": "La marque demande une nouvelle capture. Motif : {reason}",
+    "previous": "Captures précédentes ({n})",
+    "identicalClient": "Les deux captures sont identiques. Ajoutez la capture des vues prise au moins 24 h après.",
+    "errors": {
+      "tooLarge": "Image trop lourde (5 Mo au plus après compression). Choisissez une autre capture.",
+      "type": "Format non pris en charge. Utilisez une capture JPG, PNG ou WebP.",
+      "network": "L'envoi a échoué. Vérifiez votre connexion puis réessayez.",
+      "screenshots_required": "Ajoutez les deux captures obligatoires.",
+      "screenshot_not_uploaded": "Une capture n'a pas fini de s'envoyer. Réessayez.",
+      "proof_duplicate_image": "Cette capture a déjà servi pour une autre mission. Ajoutez une capture de ce statut.",
+      "screenshot_already_used": "Cette capture a déjà été envoyée. Ajoutez une nouvelle capture.",
+      "screenshots_identical": "Les deux captures sont identiques.",
+      "invalid_screenshot": "Capture illisible. Choisissez-la à nouveau.",
+      "already_submitted": "La preuve a déjà été envoyée.",
+      "generic": "L'envoi a échoué. Réessayez.",
+      "not_approved": "Cette mission n'est pas encore acceptée.",
+      "invalid_screenshot_path": "Capture invalide. Choisissez-la à nouveau."
+    },
+    "review": {
+      "labels": [
+        "Statut publié",
+        "Vues",
+        "Supplémentaire"
+      ],
+      "recapture": "Demander une nouvelle capture",
+      "reason": "Motif",
+      "quick": [
+        "La date n'est pas visible",
+        "Le nombre de vues manque",
+        "La capture des vues a été prise trop tôt",
+        "L'image est illisible"
+      ],
+      "left": "Le créateur pourra renvoyer ses captures. {left} demande(s) restante(s) sur 3.",
+      "send": "Envoyer la demande",
+      "pending": "Nouvelle capture demandée",
+      "expired": "Image expirée — rechargez la page.",
+      "errors": {
+        "too_many_recaptures": "Vous avez déjà demandé 3 nouvelles captures. Validez ou rejetez la preuve.",
+        "reason_required": "Indiquez ce qu'il faut corriger.",
+        "reason_too_long": "Motif trop long (300 caractères au plus).",
+        "recapture_pending": "Une nouvelle capture est attendue : vous pourrez valider après son envoi.",
+        "generic": "La demande a échoué. Réessayez.",
+        "proof_already_reviewed": "Cette preuve a déjà été examinée.",
+        "not_a_screenshot_proof": "Cette preuve n'est pas une capture."
+      },
+      "sent": "Demande envoyée au créateur.",
+      "cancel": "Annuler",
+      "open": "Ouvrir {label}"
+    }
+  },
+  "cityPicker": {
+    "tip": "Choisissez votre ville dans la liste du pays. Si elle n'y est pas, choisissez « Autre ville » et écrivez seulement son nom.",
+    "label": "Ville",
+    "placeholder": "Rechercher votre ville",
+    "other": "Autre ville…",
+    "otherLabel": "Nom de votre ville",
+    "noMatch": "Aucune ville trouvée : choisissez « Autre ville ».",
+    "countryChanged": "Choisissez une ville du nouveau pays.",
+    "admin": {
+      "add": "Ajouter « {city} » à la liste ({country})",
+      "added": "Ville ajoutée à la liste.",
+      "errors": {
+        "city_exists": "Cette ville est déjà dans la liste.",
+        "invalid_city": "Nom de ville invalide."
+      }
+    },
+    "errors": {
+      "required": "Choisissez votre ville."
+    },
+    "countryLabel": "Pays"
+  },
+  "consent": {
+    "readClause": "Lire la clause",
+    "request": {
+      "label": "J'accepte de travailler avec ce partenaire uniquement via Bayele pendant 12 mois après la mise en relation."
+    },
+    "onboarding": {
+      "label": "J'accepte de passer par Bayele pour toute collaboration née d'une mise en relation Bayele, pendant 12 mois.",
+      "error": "Cochez la case pour continuer."
+    },
+    "modal": {
+      "title": "Une règle simple pour vous protéger",
+      "body": "Quand Bayele vous met en relation avec une marque ou un partenaire, vous travaillez ensemble via Bayele pendant 12 mois après la mise en relation ou la dernière mission payée.",
+      "points": [
+        "Votre paiement est garanti par le séquestre.",
+        "Vos échanges sont conservés en cas de désaccord."
+      ],
+      "tick": "J'ai lu et j'accepte cette règle.",
+      "continue": "Continuer",
+      "signOut": "Se déconnecter",
+      "tickError": "Cochez la case pour continuer.",
+      "saveError": "L'enregistrement a échoué. Réessayez."
+    },
+    "partnerRequired": "Ce partenaire doit d'abord accepter la règle de non-contournement mise à jour. Réessayez plus tard ou contactez Bayele.",
+    "requiredError": "Acceptez d'abord la règle de non-contournement : rechargez la page pour l'afficher."
+  },
+  "legal": {
+    "updated": "Dernière mise à jour : 14 octobre 2026",
+    "toc": [
+      "1. CGU",
+      "Non-contournement",
+      "2. Séquestre",
+      "3. Données",
+      "4. Facturation"
+    ],
+    "nonCircumvention": {
+      "title": "1.1 Mise en relation et non-contournement",
+      "body": [
+        "Quand Bayele met en relation une marque et un partenaire, ils s'engagent à conclure et payer via Bayele toute collaboration entre eux pendant 12 mois à compter de la mise en relation ou de la dernière mission payée sur Bayele.",
+        "En cas de contournement, Bayele peut, selon la gravité : adresser un avertissement, suspendre le compte, retirer le partenaire de l'annuaire, facturer un montant égal aux frais Bayele perdus et retenir les commissions non encore versées.",
+        "Cet engagement est accepté par une case à cocher, enregistrée avec sa version et sa date."
+      ]
+    },
+    "escrow": {
+      "body": "Les fonds restent bloqués sous séquestre jusqu'à la validation de la preuve de diffusion, puis sont libérés et versés par Mobile Money.",
+      "title": "2. Protocole de séquestre"
+    },
+    "privacy": {
+      "review": {
+        "title": "3.1 Examen des profils",
+        "body": "Nos administrateurs peuvent consulter votre profil, avant et après son approbation, pour vérifier votre identité et protéger la communauté. Les numéros de paiement Mobile Money et les identifiants fiscaux sont masqués par défaut et ne sont affichés que pour un paiement, un litige ou une obligation légale."
+      },
+      "logs": {
+        "title": "3.2 Journalisation",
+        "body": "Nous enregistrons les consultations de profils, les affichages de données masquées et les décisions (approbation, rejet, demande de correction, suspension), avec la date, l'administrateur et le motif. Le journal ne contient pas les données affichées. Les consultations sont conservées 12 mois ; les décisions et les affichages de données masquées, 5 ans."
+      },
+      "proofs": {
+        "title": "3.3 Captures d'écran",
+        "body": "Les captures d'écran envoyées comme preuve d'un statut WhatsApp sont privées : seuls le créateur, la marque de la campagne et nos administrateurs peuvent les voir. Elles sont conservées 30 jours après le paiement, ou après la clôture d'un litige si elle est plus tardive, puis supprimées. Cachez les noms et numéros des personnes visibles sur vos captures."
+      },
+      "messages": {
+        "title": "3.4 Modération des messages",
+        "body": "Avant la signature d'un contrat, les coordonnées (téléphone, e-mail, lien WhatsApp, identifiant de réseau social) sont masquées automatiquement dans les messages. Quand un message est masqué, l'original est conservé 90 jours, accessible uniquement à l'équipe de sécurité ; chaque consultation est journalisée. Après la signature d'un contrat, les messages ne sont ni masqués ni analysés."
+      },
+      "rights": {
+        "title": "3.5 Vos droits",
+        "body": "Vous pouvez demander l'accès à vos données, les corriger, et présenter à nouveau votre profil après un rejet. Écrivez-nous à support@bayele.com."
+      },
+      "title": "3. Données personnelles",
+      "intro": "Les identifiants fiscaux et adresses de facturation des entreprises ne sont jamais publics. Seuls le pseudonyme, la ville, les catégories et l'audience publique des créateurs apparaissent dans l'annuaire."
+    },
+    "copyLink": "Copier le lien de la section",
+    "title": "Accords juridiques et cadre de séquestre",
+    "home": "Accueil",
+    "center": "Centre juridique et conformité",
+    "compliance": "Conforme au droit OHADA et aux réglementations CEMAC / UEMOA.",
+    "cgu": {
+      "title": "1. Conditions générales d'utilisation",
+      "body": "Bayele met en relation et sécurise les paiements entre annonceurs, partenaires et créateurs."
+    },
+    "ohada": {
+      "title": "4. Facturation OHADA (SokoClick)",
+      "body": "Les factures sont conformes à l'Acte uniforme OHADA, avec un identifiant vérifiable pour la déductibilité fiscale."
+    },
+    "copied": "Lien copié"
   }
 }

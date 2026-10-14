@@ -4,6 +4,7 @@ import { Coins, Handshake, Users, KeyRound, ArrowRight, CheckCircle2, Megaphone 
 import { SmartAvatar } from '@/components/smart-avatar';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
+import { getDictionary } from '@/i18n/dictionaries';
 import { fmtFcfa, RETAINER_STATUS_FR } from '@/lib/data/campaigns';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ export default async function ConsultantDashboard() {
       .from('agency_retainers')
       .select('id, status, contract_value_fcfa, consultant_fee_fcfa, kpi_bonus_fcfa, created_at, business:profiles!agency_retainers_business_id_fkey(display_name)')
       .order('created_at', { ascending: false }),
-    supabase.from('consultant_profiles').select('agency_access').eq('user_id', session.userId).maybeSingle(),
+    supabase.from('consultant_profiles').select('agency_access, directory_listed').eq('user_id', session.userId).maybeSingle(),
     supabase.rpc('my_partner_links'),
     supabase.rpc('partner_deals'),
   ]);
@@ -32,8 +33,11 @@ export default async function ConsultantDashboard() {
   const firstName = (session.profile?.display_name ?? '').split(' ')[0] || 'partenaire';
   const recent = list.slice(0, 3);
 
+  const { t } = await getDictionary();
   return (
     <section className="space-y-6">
+      {/* G2/P7: delisted partners keep their current work; say so plainly. */}
+      {profile?.directory_listed === false && <p className="rounded-xl border border-line bg-surface p-3 text-[13px] text-ink">{t.partnerAssignments.delisted}</p>}
       {/* Hero */}
       <div className="rounded-2xl border border-line bg-gradient-to-br from-brand-50 via-white to-accent-soft p-4 shadow-card">
         <div className="flex items-center gap-2">
