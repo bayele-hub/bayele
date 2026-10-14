@@ -48,7 +48,8 @@ export default async function AdminOverview() {
     rows.reduce((t, r) => t + (r[field] ?? 0), 0);
   const heldEscrow = sum(E.filter((r) => r.direction === 'inbound' && r.status === 'held'), 'net_amount_fcfa');
   const releasedToCreators = sum(E.filter((r) => r.direction === 'outbound' && r.status === 'paid_out'), 'net_amount_fcfa');
-  const feesEarned = sum(E.filter((r) => r.direction === 'inbound'), 'fee_fcfa');
+  // D9: a leftover refund returns the fee on the unused part → fees = Σ inbound fee − Σ refunded refund fee.
+  const feesEarned = sum(E.filter((r) => r.direction === 'inbound'), 'fee_fcfa') - sum(E.filter((r) => r.direction === 'refund' && r.status === 'refunded'), 'fee_fcfa');
   const toPay = E.filter((r) => r.direction === 'outbound' && r.status === 'releasable').length;
 
   const R = retainers ?? [];
@@ -242,7 +243,7 @@ function ActionCard({
       href={href}
       className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100"
     >
-      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${count > 0 ? 'bg-accent-soft text-accent' : 'bg-surface text-muted'}`}>
+      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${count > 0 ? 'bg-accent-soft text-ink' : 'bg-surface text-muted'}`}>
         <Icon className="h-5 w-5" />
       </span>
       <div className="min-w-0 flex-1">

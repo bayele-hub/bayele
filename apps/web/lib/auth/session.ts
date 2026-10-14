@@ -3,7 +3,12 @@ import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@bayele/database';
 
-export type Profile = Database['public']['Tables']['profiles']['Row'];
+import { PROFILE_COLUMNS } from './session-columns';
+export { PROFILE_COLUMNS };
+export type Profile = Pick<
+  Database['public']['Tables']['profiles']['Row'],
+  'id' | 'handle' | 'display_name' | 'avatar_url' | 'bio' | 'city' | 'country' | 'status' | 'created_at' | 'updated_at' | 'resubmitted_at'
+>;
 export type Role = Database['public']['Enums']['user_role'];
 
 export interface SessionContext {
@@ -35,7 +40,7 @@ export const getSession = cache(async (): Promise<SessionContext> => {
   }
 
   const [{ data: profile }, { data: roleRows }] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', user.id).maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id),
   ]);
 

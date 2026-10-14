@@ -3,6 +3,8 @@ import { ShieldAlert } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { RefundQueue, type RefundRow } from '../refund-queue';
+import { LeftoverQueue, type LeftoverRow } from '../leftover-queue';
+import { getDictionary } from '@/i18n/dictionaries';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,8 +44,17 @@ export default async function AdminDisputes() {
     .limit(1000);
   const paidSet = new Set((paid ?? []).map((p) => p.campaign_id));
 
+  // D9: pending leftover refunds of completed campaigns (confirmed through the same refund action).
+  const { t } = await getDictionary();
+  const { data: leftovers } = await supabase.rpc('admin_pending_leftover_refunds');
+  const leftoverRows: LeftoverRow[] = (leftovers ?? []).map((l) => ({
+    campaignId: l.campaign_id, title: l.campaign_title, owner: l.owner_name, managed: l.is_managed,
+    used: l.used_net_fcfa, unused: l.unused_net_fcfa, feeBack: l.fee_returned_fcfa, refund: l.refund_fcfa,
+  }));
+  const leftoverIds = new Set(leftoverRows.map((l) => l.campaignId));
+
   const rows: RefundRow[] = (inbound ?? [])
-    .filter((t) => !paidSet.has(t.campaign_id))
+    .filter((t) => !paidSet.has(t.campaign_id) && !leftoverIds.has(t.campaign_id))
     .map((t) => {
       const c = one(t.campaign as CampRel);
       const owner = one(c?.owner ?? null);
@@ -59,6 +70,8 @@ export default async function AdminDisputes() {
 
   return (
     <section className="space-y-4">
+      <LeftoverQueue rows={leftoverRows} Q={t.admin.queues.leftover} />
+
       <div>
         <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
           <ShieldAlert className="h-4 w-4 text-brand" /> Litiges & remboursements

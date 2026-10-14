@@ -29,6 +29,7 @@ describe('funding confirmation (F2/F3)', () => {
     expect(mapFundingError({ message: 'not_authorized' }, E).error).toBe(E.notAuthorized);
     expect(mapFundingError({ message: 'campaign_not_fundable' }, E).error).toBe(E.alreadyFunded);
     expect(mapFundingError({ message: 'boom' }, E).error).toBe(E.generic);
+    expect(mapFundingError({ message: 'owner_not_active' }, E).error).toBe(E.ownerNotActive);
     expect(mapFundingError({ message: 'invoice_already_used' }, en.admin.briefs.funding.errors).error).toBe(en.admin.briefs.funding.errors.invoiceAlreadyUsed);
   });
   it('F3: RPC ok but status still pending_funding (the FINEX case) → notPublished, never ok', async () => {
