@@ -396,6 +396,9 @@ export type Database = {
           counterparty_last_read_at: string | null
           counterparty_muted: boolean
           created_at: string
+          expires_at: string | null
+          frozen_at: string | null
+          frozen_reason: "member_suspended" | "assignment_ended" | "admin" | null
           id: string
           last_message_at: string | null
         }
@@ -409,6 +412,9 @@ export type Database = {
           counterparty_last_read_at?: string | null
           counterparty_muted?: boolean
           created_at?: string
+          expires_at?: string | null
+          frozen_at?: string | null
+          frozen_reason?: "member_suspended" | "assignment_ended" | "admin" | null
           id?: string
           last_message_at?: string | null
         }
@@ -422,6 +428,9 @@ export type Database = {
           counterparty_last_read_at?: string | null
           counterparty_muted?: boolean
           created_at?: string
+          expires_at?: string | null
+          frozen_at?: string | null
+          frozen_reason?: "member_suspended" | "assignment_ended" | "admin" | null
           id?: string
           last_message_at?: string | null
         }
@@ -448,6 +457,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           id: string
+          masked_kinds: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
           sender_id: string
         }
         Insert: {
@@ -455,6 +465,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           id?: string
+          masked_kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
           sender_id: string
         }
         Update: {
@@ -462,6 +473,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           id?: string
+          masked_kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
           sender_id?: string
         }
         Relationships: [
@@ -484,27 +496,42 @@ export type Database = {
       consultant_profiles: {
         Row: {
           agency_access: boolean
+          directory_listed: boolean
+          listing_changed_at: string | null
+          listing_changed_by: string | null
+          listing_reason: string | null
           momo_payout_phone_e164: string | null
           momo_provider: Database["public"]["Enums"]["payment_provider"] | null
           specialties: string[]
+          specialties_legacy: string[] | null
           tax_id: string | null
           user_id: string
           years_experience: number
         }
         Insert: {
           agency_access?: boolean
+          directory_listed?: boolean
+          listing_changed_at?: string | null
+          listing_changed_by?: string | null
+          listing_reason?: string | null
           momo_payout_phone_e164?: string | null
           momo_provider?: Database["public"]["Enums"]["payment_provider"] | null
           specialties?: string[]
+          specialties_legacy?: string[] | null
           tax_id?: string | null
           user_id: string
           years_experience?: number
         }
         Update: {
           agency_access?: boolean
+          directory_listed?: boolean
+          listing_changed_at?: string | null
+          listing_changed_by?: string | null
+          listing_reason?: string | null
           momo_payout_phone_e164?: string | null
           momo_provider?: Database["public"]["Enums"]["payment_provider"] | null
           specialties?: string[]
+          specialties_legacy?: string[] | null
           tax_id?: string | null
           user_id?: string
           years_experience?: number
@@ -1210,6 +1237,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           city: string
+          city_in_list: boolean | null
           country: Database["public"]["Enums"]["country_code"]
           created_at: string
           display_name: string
@@ -1225,6 +1253,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           city: string
+          city_in_list?: boolean | null
           country: Database["public"]["Enums"]["country_code"]
           created_at?: string
           display_name: string
@@ -1240,6 +1269,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           city?: string
+          city_in_list?: boolean | null
           country?: Database["public"]["Enums"]["country_code"]
           created_at?: string
           display_name?: string
@@ -1263,7 +1293,11 @@ export type Database = {
           media_sha256: string
           media_storage_path: string
           media_type: string
+          recapture_count: number
+          recapture_reason: string | null
+          recapture_requested_at: string | null
           rejection_reason: string | null
+          resubmitted_at: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           verification_score: number | null
@@ -1277,7 +1311,11 @@ export type Database = {
           media_sha256: string
           media_storage_path: string
           media_type: string
+          recapture_count?: number
+          recapture_reason?: string | null
+          recapture_requested_at?: string | null
           rejection_reason?: string | null
+          resubmitted_at?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           verification_score?: number | null
@@ -1291,7 +1329,11 @@ export type Database = {
           media_sha256?: string
           media_storage_path?: string
           media_type?: string
+          recapture_count?: number
+          recapture_reason?: string | null
+          recapture_requested_at?: string | null
           rejection_reason?: string | null
+          resubmitted_at?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           verification_score?: number | null
@@ -1449,6 +1491,619 @@ export type Database = {
           {
             foreignKeyName: "user_roles_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignment_end_requests: {
+        Row: {
+          assignment_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          reason: string
+          requested_by: string
+          status: "open" | "accepted" | "dismissed"
+        }
+        Insert: {
+          assignment_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          reason: string
+          requested_by: string
+          status?: "open" | "accepted" | "dismissed"
+        }
+        Update: {
+          assignment_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          reason?: string
+          requested_by?: string
+          status?: "open" | "accepted" | "dismissed"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_end_requests_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "partner_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_end_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_end_requests_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cities: {
+        Row: {
+          active: boolean
+          country: Database["public"]["Enums"]["country_code"]
+          name: string
+          sort: number
+        }
+        Insert: {
+          active?: boolean
+          country: Database["public"]["Enums"]["country_code"]
+          name: string
+          sort?: number
+        }
+        Update: {
+          active?: boolean
+          country?: Database["public"]["Enums"]["country_code"]
+          name?: string
+          sort?: number
+        }
+        Relationships: []
+      }
+      member_consents: {
+        Row: {
+          context_id: string | null
+          created_at: string
+          id: number
+          kind: "cgu_non_circumvention" | "contact_request"
+          user_id: string
+          version: string
+        }
+        Insert: {
+          context_id?: string | null
+          created_at?: string
+          id?: number
+          kind: "cgu_non_circumvention" | "contact_request"
+          user_id: string
+          version: string
+        }
+        Update: {
+          context_id?: string | null
+          created_at?: string
+          id?: number
+          kind?: "cgu_non_circumvention" | "contact_request"
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_consents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_flags: {
+        Row: {
+          brand_id: string | null
+          contact_request_id: string | null
+          conversation_id: string | null
+          created_at: string
+          id: string
+          kinds: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          mask_count: number
+          message_id: string | null
+          partner_id: string | null
+          report_reason: string | null
+          reported_by: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          sender_id: string | null
+          source: "auto_mask" | "report"
+          status: "open" | "resolved"
+        }
+        Insert: {
+          brand_id?: string | null
+          contact_request_id?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          mask_count?: number
+          message_id?: string | null
+          partner_id?: string | null
+          report_reason?: string | null
+          reported_by?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sender_id?: string | null
+          source: "auto_mask" | "report"
+          status?: "open" | "resolved"
+        }
+        Update: {
+          brand_id?: string | null
+          contact_request_id?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          mask_count?: number
+          message_id?: string | null
+          partner_id?: string | null
+          report_reason?: string | null
+          reported_by?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sender_id?: string | null
+          source?: "auto_mask" | "report"
+          status?: "open" | "resolved"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_flags_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_contact_request_id_fkey"
+            columns: ["contact_request_id"]
+            isOneToOne: false
+            referencedRelation: "partner_contact_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_flags_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_originals: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          kinds: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          message_id: string
+          original_body: string | null
+          purged_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          kinds: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          message_id: string
+          original_body?: string | null
+          purged_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          message_id?: string
+          original_body?: string | null
+          purged_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_originals_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_originals_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_assignments: {
+        Row: {
+          brand_id: string
+          campaign_id: string | null
+          contact_request_id: string | null
+          conversation_id: string | null
+          created_at: string
+          created_by: string | null
+          end_reason: string | null
+          ended_at: string | null
+          ended_by: string | null
+          id: string
+          note: string | null
+          origin: "admin" | "contact_request" | "legacy_retainer"
+          partner_id: string
+          status: "active" | "ended"
+        }
+        Insert: {
+          brand_id: string
+          campaign_id?: string | null
+          contact_request_id?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_reason?: string | null
+          ended_at?: string | null
+          ended_by?: string | null
+          id?: string
+          note?: string | null
+          origin: "admin" | "contact_request" | "legacy_retainer"
+          partner_id: string
+          status?: "active" | "ended"
+        }
+        Update: {
+          brand_id?: string
+          campaign_id?: string | null
+          contact_request_id?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_reason?: string | null
+          ended_at?: string | null
+          ended_by?: string | null
+          id?: string
+          note?: string | null
+          origin?: "admin" | "contact_request" | "legacy_retainer"
+          partner_id?: string
+          status?: "active" | "ended"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_assignments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_assignments_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_assignments_contact_request_id_fkey"
+            columns: ["contact_request_id"]
+            isOneToOne: false
+            referencedRelation: "partner_contact_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_assignments_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_assignments_ended_by_fkey"
+            columns: ["ended_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_assignments_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_contact_requests: {
+        Row: {
+          assignment_id: string | null
+          brand_id: string
+          budget_range: string | null
+          created_at: string
+          deadline: string | null
+          decided_at: string | null
+          decided_by: string | null
+          decision_message: string | null
+          decision_reason_code: "incomplete" | "brand_unverified" | "poor_fit" | "suspected_offplatform" | "other" | null
+          goal: string
+          id: string
+          masked_kinds: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
+          partner_id: string
+          status: "pending" | "approved" | "declined" | "withdrawn" | "closed" | "expired"
+        }
+        Insert: {
+          assignment_id?: string | null
+          brand_id: string
+          budget_range?: string | null
+          created_at?: string
+          deadline?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_message?: string | null
+          decision_reason_code?: "incomplete" | "brand_unverified" | "poor_fit" | "suspected_offplatform" | "other" | null
+          goal: string
+          id?: string
+          masked_kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
+          partner_id: string
+          status?: "pending" | "approved" | "declined" | "withdrawn" | "closed" | "expired"
+        }
+        Update: {
+          assignment_id?: string | null
+          brand_id?: string
+          budget_range?: string | null
+          created_at?: string
+          deadline?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_message?: string | null
+          decision_reason_code?: "incomplete" | "brand_unverified" | "poor_fit" | "suspected_offplatform" | "other" | null
+          goal?: string
+          id?: string
+          masked_kinds?: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
+          partner_id?: string
+          status?: "pending" | "approved" | "declined" | "withdrawn" | "closed" | "expired"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_contact_requests_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_contact_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_contact_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pcr_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "partner_assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_specialties: {
+        Row: {
+          active: boolean
+          code: string
+          label_en: string
+          label_fr: string
+          sort: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          label_en: string
+          label_fr: string
+          sort?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          label_en?: string
+          label_fr?: string
+          sort?: number
+        }
+        Relationships: []
+      }
+      partner_specialty_aliases: {
+        Row: {
+          alias_key: string
+          code: string
+        }
+        Insert: {
+          alias_key: string
+          code: string
+        }
+        Update: {
+          alias_key?: string
+          code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_specialty_aliases_code_fkey"
+            columns: ["code"]
+            isOneToOne: false
+            referencedRelation: "partner_specialties"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      proof_media: {
+        Row: {
+          campaign_creator_id: string
+          created_at: string
+          id: string
+          kind: "posted" | "views" | "extra"
+          proof_id: string
+          round: number
+          sha256: string
+          storage_path: string
+        }
+        Insert: {
+          campaign_creator_id: string
+          created_at?: string
+          id?: string
+          kind: "posted" | "views" | "extra"
+          proof_id: string
+          round?: number
+          sha256: string
+          storage_path: string
+        }
+        Update: {
+          campaign_creator_id?: string
+          created_at?: string
+          id?: string
+          kind?: "posted" | "views" | "extra"
+          proof_id?: string
+          round?: number
+          sha256?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proof_media_campaign_creator_id_fkey"
+            columns: ["campaign_creator_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proof_media_proof_id_fkey"
+            columns: ["proof_id"]
+            isOneToOne: false
+            referencedRelation: "proof_of_post"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      self_dealing_flags: {
+        Row: {
+          brand_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          kinds: ("phone" | "payout_number" | "email")[]
+          note: string | null
+          partner_id: string
+          source: "assignment" | "contact_request" | "campaign_application" | "retainer"
+          status: "open" | "cleared" | "confirmed"
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          kinds: ("phone" | "payout_number" | "email")[]
+          note?: string | null
+          partner_id: string
+          source: "assignment" | "contact_request" | "campaign_application" | "retainer"
+          status?: "open" | "cleared" | "confirmed"
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          kinds?: ("phone" | "payout_number" | "email")[]
+          note?: string | null
+          partner_id?: string
+          source?: "assignment" | "contact_request" | "campaign_application" | "retainer"
+          status?: "open" | "cleared" | "confirmed"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "self_dealing_flags_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "self_dealing_flags_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "self_dealing_flags_partner_id_fkey"
+            columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -2131,6 +2786,312 @@ export type Database = {
           rounding_remainder_fcfa: number
         }[]
       }
+      record_consent: {
+        Args: {
+          p_kind: "cgu_non_circumvention"
+          p_version: string
+          p_context_id?: string
+        }
+        Returns: number
+      }
+      my_consents: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          kind: "cgu_non_circumvention" | "contact_request"
+          version: string
+          context_id: string | null
+          created_at: string
+        }[]
+      }
+      admin_self_dealing_flags: {
+        Args: {
+          p_status?: "open" | "cleared" | "confirmed"
+        }
+        Returns: {
+          id: string
+          partner_id: string
+          partner_handle: string
+          brand_id: string
+          brand_handle: string
+          brand_company: string | null
+          kinds: ("phone" | "payout_number" | "email")[]
+          source: "assignment" | "contact_request" | "campaign_application" | "retainer"
+          status: "open" | "cleared" | "confirmed"
+          note: string | null
+          created_at: string
+          decided_at: string | null
+        }[]
+      }
+      admin_decide_self_dealing_flag: {
+        Args: {
+          p_flag_id: string
+          p_decision: "cleared" | "confirmed"
+          p_note?: string
+        }
+        Returns: undefined
+      }
+      admin_set_commission_rate: {
+        Args: {
+          p_link_id: string
+          p_rate: number
+          p_reason: string
+        }
+        Returns: undefined
+      }
+      admin_set_partner_listing: {
+        Args: {
+          p_partner_id: string
+          p_listed: boolean
+          p_reason?: string
+        }
+        Returns: undefined
+      }
+      admin_end_representation: {
+        Args: {
+          p_link_id: string
+          p_reason: string
+        }
+        Returns: undefined
+      }
+      admin_assign_partner: {
+        Args: {
+          p_partner_id: string
+          p_brand_id: string
+          p_campaign_id?: string
+          p_note?: string
+        }
+        Returns: string
+      }
+      request_assignment_end: {
+        Args: {
+          p_assignment_id: string
+          p_reason: string
+        }
+        Returns: string
+      }
+      admin_assignment_end_requests: {
+        Args: {
+          p_status?: "open" | "accepted" | "dismissed"
+        }
+        Returns: {
+          id: string
+          assignment_id: string
+          partner_id: string
+          partner_handle: string
+          brand_id: string
+          brand_handle: string
+          brand_company: string | null
+          campaign_id: string | null
+          assignment_status: "active" | "ended"
+          reason: string
+          status: "open" | "accepted" | "dismissed"
+          decision_note: string | null
+          created_at: string
+          decided_at: string | null
+        }[]
+      }
+      admin_dismiss_assignment_end_request: {
+        Args: {
+          p_request_id: string
+          p_note: string
+        }
+        Returns: undefined
+      }
+      admin_end_assignment: {
+        Args: {
+          p_assignment_id: string
+          p_reason: string
+        }
+        Returns: undefined
+      }
+      admin_read_masked_original: {
+        Args: {
+          p_message_id: string
+          p_reason: string
+        }
+        Returns: string
+      }
+      admin_search_brands: {
+        Args: {
+          p_query: string
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          handle: string
+          display_name: string
+          company_name: string | null
+          industry: string | null
+          city: string
+          country: Database["public"]["Enums"]["country_code"]
+          avatar_url: string | null
+          active_assignments: number
+        }[]
+      }
+      admin_partner_list: {
+        Args: {
+          p_search?: string
+          p_status?: Database["public"]["Enums"]["account_status"]
+          p_listed?: boolean
+          p_specialty?: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: {
+          id: string
+          handle: string
+          display_name: string
+          avatar_url: string | null
+          city: string
+          country: Database["public"]["Enums"]["country_code"]
+          status: Database["public"]["Enums"]["account_status"]
+          directory_listed: boolean
+          specialties: string[]
+          creators_active: number
+          assignments_active: number
+          open_end_requests: number
+          open_flags: number
+          open_self_dealing: number
+          payouts_on_hold: boolean
+          created_at: string
+          total_count: number
+        }[]
+      }
+      admin_propose_retainer: {
+        Args: {
+          p_brand_id: string
+          p_partner_id: string
+          p_contract_value: number
+          p_consultant_fee: number
+          p_media_budget: number
+          p_kpi_bonus?: number
+        }
+        Returns: string
+      }
+      request_partner_contact: {
+        Args: {
+          p_partner_id: string
+          p_goal: string
+          p_budget_range?: string
+          p_deadline?: string
+          p_consent_version?: string
+        }
+        Returns: string
+      }
+      withdraw_contact_request: {
+        Args: {
+          p_request_id: string
+        }
+        Returns: undefined
+      }
+      admin_decide_contact_request: {
+        Args: {
+          p_request_id: string
+          p_approve: boolean
+          p_reason_code?: "incomplete" | "brand_unverified" | "poor_fit" | "suspected_offplatform" | "other"
+          p_message?: string
+        }
+        Returns: string
+      }
+      admin_contact_requests: {
+        Args: {
+          p_status?: "pending" | "approved" | "declined" | "withdrawn" | "closed" | "expired"
+        }
+        Returns: {
+          id: string
+          brand_id: string
+          brand_handle: string
+          brand_company: string | null
+          brand_status: Database["public"]["Enums"]["account_status"]
+          partner_id: string
+          partner_handle: string
+          partner_name: string
+          goal: string
+          budget_range: string | null
+          deadline: string | null
+          masked_kinds: ("phone" | "email" | "messaging_link" | "social_handle")[] | null
+          status: "pending" | "approved" | "declined" | "withdrawn" | "closed" | "expired"
+          decision_reason_code: "incomplete" | "brand_unverified" | "poor_fit" | "suspected_offplatform" | "other" | null
+          assignment_id: string | null
+          assignment_status: "active" | "ended" | null
+          self_dealing: boolean
+          created_at: string
+        }[]
+      }
+      report_offplatform_contact: {
+        Args: {
+          p_conversation_id: string
+          p_reason?: string
+        }
+        Returns: string
+      }
+      admin_message_flags: {
+        Args: {
+          p_status?: "open" | "resolved"
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          source: "auto_mask" | "report"
+          conversation_id: string | null
+          contact_request_id: string | null
+          sender_id: string | null
+          sender_handle: string | null
+          partner_id: string
+          partner_handle: string
+          brand_id: string | null
+          brand_handle: string | null
+          kinds: ("phone" | "email" | "messaging_link" | "social_handle")[]
+          mask_count: number
+          report_reason: string | null
+          reported_by_handle: string | null
+          partner_flags_30d: number
+          status: "open" | "resolved"
+          created_at: string
+          message_id: string | null
+          original_available: boolean
+        }[]
+      }
+      admin_resolve_flag: {
+        Args: {
+          p_flag_id: string
+          p_note?: string
+        }
+        Returns: undefined
+      }
+      admin_partner_overview: {
+        Args: {
+          p_partner_id: string
+        }
+        Returns: Json
+      }
+      creator_submit_whatsapp_proof: {
+        Args: {
+          p_campaign_creator_id: string
+          p_posted_path: string
+          p_posted_sha256: string
+          p_views_path: string
+          p_views_sha256: string
+          p_extra_path?: string
+          p_extra_sha256?: string
+        }
+        Returns: string
+      }
+      request_proof_recapture: {
+        Args: {
+          p_proof_id: string
+          p_reason: string
+        }
+        Returns: undefined
+      }
+      admin_add_city: {
+        Args: {
+          p_country: Database["public"]["Enums"]["country_code"]
+          p_name: string
+          p_sort?: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       account_status: "pending_review" | "active" | "suspended" | "rejected"
@@ -2143,7 +3104,7 @@ export type Database = {
         | "completed"
         | "disputed"
         | "cancelled"
-      conversation_context: "campaign_creator" | "retainer"
+      conversation_context: "campaign_creator" | "retainer" | "partner_assignment"
       country_code: "CM" | "GA" | "CI" | "NG" | "KE" | "ZA"
       creator_campaign_status:
         | "invited"
@@ -2324,7 +3285,7 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["pending_review", "active", "suspended", "rejected"],
-      conversation_context: ["campaign_creator", "retainer"],
+      conversation_context: ["campaign_creator", "retainer", "partner_assignment"],
       campaign_status: [
         "draft",
         "pending_funding",
