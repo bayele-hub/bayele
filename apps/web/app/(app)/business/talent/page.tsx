@@ -6,6 +6,7 @@ import { getDictionary } from '@/i18n/dictionaries';
 import { getCreatorDirectoryGate } from '@/lib/data/launch-gate';
 import { listCreators } from '@/lib/data/talent';
 import { TalentGrid, type TalentItem } from '@/components/talent-grid';
+import { TalentTabs, PartnersTab } from './partners-tab';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,10 +18,20 @@ export const dynamic = 'force-dynamic';
  * Until the launch milestone (lib/launch-gate.ts) brands don't browse: they submit a brief and Bayele
  * proposes creators. Admins keep the full directory for curation.
  */
-export default async function BusinessTalent() {
+export default async function BusinessTalent({ searchParams }: { searchParams: Promise<{ tab?: string; spec?: string; country?: string }> }) {
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
   if (!session.roles.includes('business') && session.primary !== 'super_admin') redirect('/dashboard');
+  const sp = await searchParams;
+  // §2.1: two tabs — « Créateurs » (unchanged) · « Partenaires » (listed, active partners; request via Bayele).
+  if (sp.tab === 'partners') {
+    return (
+      <section className="space-y-4">
+        <TalentTabs active="partners" />
+        <PartnersTab userId={session.userId} spec={sp.spec ?? ''} country={sp.country ?? ''} />
+      </section>
+    );
+  }
 
   const gate = await getCreatorDirectoryGate();
   if (!gate.open && session.primary !== 'super_admin') {
@@ -28,6 +39,7 @@ export default async function BusinessTalent() {
     const c = t.curated;
     return (
       <section className="space-y-4">
+        <TalentTabs active="creators" />
         <div className="rounded-2xl border border-line bg-gradient-to-br from-brand-50 via-white to-accent-soft p-5 shadow-card">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-brand-700">
             <Sparkles className="h-3.5 w-3.5" aria-hidden /> {c.badge}
@@ -61,6 +73,7 @@ export default async function BusinessTalent() {
 
   return (
     <section className="space-y-4">
+      <TalentTabs active="creators" />
       <div>
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5 text-brand" />

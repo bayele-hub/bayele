@@ -8,8 +8,10 @@ import { getSession } from '@/lib/auth/session';
 import { getDictionary } from '@/i18n/dictionaries';
 import { fmtFcfa } from '@/lib/data/campaigns';
 import { retainerSplit, splitIsBalanced } from '@/lib/retainers';
+import { currentConsentRecorded } from '@/lib/gov/consent-check';
+import { consentErrorMessage } from '@/lib/gov/rules';
 
-export type RetainerState = { error: string | null; ok?: boolean };
+export type RetainerState = { error: string | null; ok?: boolean; notAssigned?: boolean };
 
 export type ConsultantLookup = { name: string | null; found: boolean };
 
@@ -62,6 +64,9 @@ export async function createRetainerAction(_prev: RetainerState, formData: FormD
   if (!split) return { error: 'La valeur du contrat doit être positive.' };
   if (!splitIsBalanced(contract, fee, media)) return { error: E.invalid_split!.replace('{expected}', fmtFcfa(split.net)) };
 
+  // PG-6: brands must have recorded the current non-circumvention version (my_consents); admins exempt.
+  if (session.primary !== 'super_admin' && !(await currentConsentRecorded())) return { error: (await getDictionary()).t.consent.requiredError };
+
   const supabase = await createClient();
   const { data: consultant } = await supabase.from('profiles').select('id').eq('handle', handle).maybeSingle();
   if (!consultant) return { error: 'Partenaire introuvable. Vérifiez son identifiant.' };
@@ -82,6 +87,13 @@ export async function createRetainerAction(_prev: RetainerState, formData: FormD
     if (msg === 'consultant_not_found') return { error: "Ce partenaire n'est pas disponible." };
     if (msg === 'invalid_split') return { error: E.invalid_split!.replace('{expected}', proposeErr.details ? fmtFcfa(Number(proposeErr.details) || split.net) : fmtFcfa(split.net)) };
     if (msg === 'cannot_retain_self') return { error: 'Vous ne pouvez pas vous engager vous-même.' };
+    // G3 (0040): retainers only to partners Bayele has introduced to this brand.
+    if (msg === 'partner_not_assigned') return { error: (await getDictionary()).t.businessPartners.retainerNone, notAssigned: true };
+    // PG-12 (0040): whose non-circumvention acknowledgement is missing ('brand' | 'partner').
+    if (msg === 'consent_required') {
+      const C = (await getDictionary()).t.consent;
+      return { error: consentErrorMessage(msg, proposeErr.details, C) ?? C.requiredError };
+    }
     return { error: E.generic! };
   }
 

@@ -2,13 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Megaphone, Users, Handshake, Receipt, UserCircle } from 'lucide-react';
+import { Home, Megaphone, Users, Handshake, Receipt, UserCircle, FileSignature } from 'lucide-react';
 
 const TABS = [
   { href: '/business/dashboard', label: 'Accueil', Icon: Home },
   { href: '/business/campaigns', label: 'Campagnes', Icon: Megaphone },
   { href: '/business/talent', label: 'Créateurs', Icon: Users },
-  { href: '/business/retainers', label: 'Rétainers', Icon: Handshake },
+  // G3/G4: partners come through Bayele (requests + introductions).
+  { href: '/business/partners', label: 'Partenaires', Icon: Handshake },
+  { href: '/business/retainers', label: 'Rétainers', Icon: FileSignature },
   { href: '/business/invoices', label: 'Factures', Icon: Receipt },
   { href: '/profile', label: 'Profil', Icon: UserCircle },
 ] as const;
