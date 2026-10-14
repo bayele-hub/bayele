@@ -313,7 +313,7 @@ Contract: `briefs/BACKEND-CONTRACT-PARTNER-GOV.md`; QA: `qa/QA-REPORT-PARTNER-GO
 A. 0038 → 0039 applied to production            DONE 2026-10-14 (history 20261014073339, 20261014074234)
 B. Owner: git am admin-review.patch → push → PR → merge → Vercel Ready
 C. Owner: git am partner-governance.patch → push → PR → merge → Vercel Ready
-D. 0037 (phone lockdown, §10.3), then 0040   ONLY after B AND C are Ready
+D. 0037 (phone lockdown, §10.3), then 0040   DONE 2026-10-14: 0037 09:34 UTC (Co-CTO, 20261014093445), 0040 09:56 UTC (DevOps, 20261014095621), see §11.7
 ```
 Git (Windows Git Bash), with both patches in the repo root:
 ```bash
@@ -433,6 +433,65 @@ Also confirm the function fingerprint for `propose_retainer`, `open_conversation
 5. **0038** (SQL editor): it only un-records the migration, because Postgres can't drop an enum value. It refuses while `partner_assignment` conversations exist.
 6. **History rows:** each rollback deletes its *file* version. Production recorded apply-time versions, so also run
    `DELETE FROM supabase_migrations.schema_migrations WHERE name IN ('0040_partner_governance_enforce', '0039_partner_governance', '0038_partner_assignment_context');` (only for the ones rolled back).
+
+### 11.7 Production evidence for 0040 (2026-10-14, applied 09:56:21 UTC)
+
+**Gate:**
+- the owner confirmed the partner-governance production deploy `dd96cc4` (PR #11) is current;
+- new-web calls (`partner_specialties`, `admin_partner_overview`) appeared in the edge logs from 09:47 UTC;
+- 0037 was applied by the Co-CTO at 09:34 UTC and post-verified.
+
+**Pre-checks (read-only):**
+- The last migration was `20261014093445 0037_profiles_phone_lockdown`; authenticated can no longer read `phone_e164`.
+- `rows_to_map` = 6 of 6 partners (all active); 5 with unmapped values; `legacy_pairs` = 0.
+- `private.current_consent_version` and `trg_validate_specialties` were absent.
+- There were 0 open correction requests and 0 consents.
+
+**Drift check:** all 147 functions in public/private matched the local 0001–0039 (+0037) state (hash `350cb12…`, the same as right after 0039).
+
+**Dry-run:** 0040 applied in one transaction to that local DB.
+
+**Apply:** `apply_migration('0040_partner_governance_enforce')` with the exact file returned `success` on the first try.
+
+**Post-checks:**
+- **Functions:**
+  - all 150 match the local 0001–0040 dry run (hash `c1f8c7d8…`);
+  - the 137 bodies outside the 13 pre-release functions (§11.2) are byte-identical;
+  - `trg_validate_specialties` is present;
+  - `private.current_consent_version()` = `2026-10-14`.
+- **Specialties:**
+  - 0 free-text values left, and nobody has more than 3;
+  - per partner (codes / legacy values): 0/1, 0/1, 0/2, 0/1, 1/0, 1/2;
+  - 5 partners keep their originals in `specialties_legacy`;
+  - 4 partners now have no listed specialty until they pick from the list.
+- **Corrections:** 5 correction requests (field `other`), 5 `request_changes` moderation events and 5 « Correction demandée » notifications were created, exactly as previewed.
+- **Legacy assignments:** 0, as previewed.
+- **Enforcement, simulated as a real active brand with no consent on record** (one transaction, ROLLBACK; afterwards 0 contact requests, 0 consents, 1 retainer, 19 conversations):
+  - `request_partner_contact` without a consent version → `consent_required`;
+  - with the version but no CGU acknowledgement → `consent_required`;
+  - `propose_retainer` to an unassigned partner → `partner_not_assigned`;
+  - `open_conversation('retainer')` on the existing, not-yet-accepted retainer (that brand is a party) → `not_assigned`.
+- **Edge logs, 5-minute buckets from 09:20 UTC:** 0 × 4xx and 0 × 5xx in every bucket before and after the apply (see §11.8).
+
+**Consequences to communicate:**
+- The 5 partners see the correction banner and must choose specialties from the list.
+- Every brand and partner must accept the one-time CGU non-circumvention modal before contact requests and retainer proposals work.
+- The existing invoiced retainer can be opened or funded only after its partner clicks « Accepter » (O7, unchanged).
+
+### 11.8 Edge logs around 0037 + 0040 (Supabase unified logs, `edge_logs`)
+
+| 5-min bucket (UTC) | requests | 2xx/3xx | 4xx | 5xx | note |
+|---|---|---|---|---|---|
+| 09:20 | 3 | 3 | 0 | 0 | |
+| 09:25 | 23 | 22 | 0 | 0 | 1 × 101 (realtime websocket) |
+| 09:30 | 121 | 120 | 0 | 0 | 0037 applied 09:34 |
+| 09:35 | 7 | 7 | 0 | 0 | |
+| 09:40 | 147 | 141 | 0 | 0 | 101s (realtime) |
+| 09:45 | 97 | 93 | 0 | 0 | new-web calls from 09:47 |
+| 09:50 | 53 | 49 | 0 | 0 | |
+| 09:56:21 → 10:01:00 | 61 | 59 | 0 | 0 | 0040 applied 09:56:21; 2 × 101 (realtime) |
+
+After 0040, every response was 200 (e.g. `rpc/admin_member_counts`, `profiles`, `campaign_creators`, `rpc/my_unread_conversation_count`) or a 101 websocket upgrade. `postgres_logs` show only the migration statement and a routine checkpoint: no errors.
 
 ### 11.6 Pending outside engineering
 - Local counsel review of the CGU clause, the privacy texts and the cross-border transfer basis (see the tracker).
