@@ -5,19 +5,22 @@ import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { creatorAllowed } from '@/lib/auth/creator-gate';
 import { fmtFcfa, ESCROW_STATUS_FR, providerLabel } from '@/lib/data/campaigns';
+import { getDictionary } from '@/i18n/dictionaries';
+import { SectionTip } from '@/components/admin/section-tip';
 
 export const dynamic = 'force-dynamic';
 
 const STATUS_CLASS: Record<string, string> = {
   paid_out: 'bg-emerald-50 text-emerald-700',
   releasable: 'bg-brand-50 text-brand-700',
-  proof_pending: 'bg-accent-soft text-accent',
+  proof_pending: 'bg-accent-soft text-ink',
   held: 'bg-surface text-muted',
   pending: 'bg-surface text-muted',
   disputed: 'bg-rose-50 text-rose-600',
 };
 
 export default async function CreatorWallet() {
+  const { t } = await getDictionary();
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
   // Active creators only (pending_review creators get /creator/campaigns alone — see the layout).
@@ -54,8 +57,10 @@ export default async function CreatorWallet() {
         <p className="text-xs font-semibold text-muted">Total encaissé</p>
         <p className="mt-1 font-display text-3xl font-extrabold text-ink">{fmtFcfa(paidOut)}</p>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <Mini icon={CheckCircle2} label="Prêt à décaisser" value={fmtFcfa(releasable)} />
-          <Mini icon={Clock} label="En cours" value={fmtFcfa(inFlight)} />
+          <Mini icon={CheckCircle2} label={t.creatorUx.walletApproved} value={fmtFcfa(releasable)}
+            tip={<SectionTip id="creator-walletApproved" label={t.creatorUx.walletApproved} text={t.creatorTips.walletApproved} ariaTemplate={t.creatorTips.aria} />} />
+          <Mini icon={Clock} label={t.creatorUx.walletInProgress} value={fmtFcfa(inFlight)}
+            tip={<SectionTip id="creator-walletInProgress" label={t.creatorUx.walletInProgress} text={t.creatorTips.walletInProgress} ariaTemplate={t.creatorTips.aria} />} />
         </div>
       </div>
 
@@ -71,16 +76,16 @@ export default async function CreatorWallet() {
               {momo ? (
                 <p className="font-bold text-ink">{momo} · {providerLabel(profile?.momo_provider ?? 'mtn_momo') || 'MoMo'}</p>
               ) : (
-                <p className="text-sm font-semibold text-accent">Non configuré</p>
+                <p className="text-sm font-semibold text-ink">{t.creatorUx.walletNotSet}</p>
               )}
             </div>
           </div>
-          <Link href="/profile" className="inline-flex min-h-tap items-center rounded-xl border border-line px-3 text-xs font-bold text-ink transition hover:border-brand hover:text-brand">
+          <Link href="/profile#paiement" className="inline-flex min-h-tap items-center rounded-xl border border-line px-3 text-xs font-bold text-ink transition hover:border-brand hover:text-brand">
             {momo ? 'Modifier' : 'Ajouter'}
           </Link>
         </div>
         {!momo && (
-          <p className="mt-2 rounded-lg bg-accent-soft/60 px-3 py-2 text-[11px] text-accent">
+          <p className="mt-2 rounded-lg bg-accent-soft px-3 py-2 text-[11px] text-ink">
             Ajoutez votre numéro Mobile Money pour recevoir vos paiements.
           </p>
         )}
@@ -126,12 +131,12 @@ export default async function CreatorWallet() {
   );
 }
 
-function Mini({ icon: Icon, label, value }: { icon: typeof Clock; label: string; value: string }) {
+function Mini({ icon: Icon, label, value, tip }: { icon: typeof Clock; label: string; value: string; tip?: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-line bg-white/70 p-3">
-      <Icon className="h-4 w-4 text-brand" />
+      <Icon className="h-4 w-4 text-brand" aria-hidden />
       <div className="mt-1 font-display text-sm font-extrabold text-ink">{value}</div>
-      <div className="text-[10px] text-muted">{label}</div>
+      <div className="flex items-center text-[10px] text-muted">{label}{tip}</div>
     </div>
   );
 }

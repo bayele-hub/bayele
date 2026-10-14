@@ -67,7 +67,7 @@ export default async function ConsultantDashboard() {
           <div className="min-w-0"><p className="font-bold text-ink">Mon portefeuille</p><p className="truncate text-[11px] text-muted">Créateurs & commissions</p></div>
         </Link>
         <Link href="/partner/campaigns" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent"><Megaphone className="h-5 w-5" /></span>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-ink"><Megaphone className="h-5 w-5" /></span>
           <div className="min-w-0"><p className="font-bold text-ink">Postuler pour eux</p><p className="truncate text-[11px] text-muted">Campagnes ouvertes</p></div>
         </Link>
         <Link href="/partner/retainers" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
@@ -75,7 +75,7 @@ export default async function ConsultantDashboard() {
           <div className="min-w-0"><p className="font-bold text-ink">Mes rétainers</p><p className="truncate text-[11px] text-muted">Contrats & honoraires</p></div>
         </Link>
         <Link href="/partner/talent-search" className="group flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-100">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent"><Users className="h-5 w-5" /></span>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-ink"><Users className="h-5 w-5" /></span>
           <div className="min-w-0"><p className="font-bold text-ink">Trouver des créateurs</p><p className="truncate text-[11px] text-muted">Annuaire talents</p></div>
         </Link>
       </div>

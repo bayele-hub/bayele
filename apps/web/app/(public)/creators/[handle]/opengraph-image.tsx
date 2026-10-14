@@ -18,7 +18,8 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
   const city = creator?.city ?? '';
   const country = creator?.country ?? '';
   const tags = (creator?.tags ?? []).slice(0, 3);
-  const rating = (creator?.ratingAvg ?? 5).toFixed(1);
+  // D6: never an invented rating.
+  const rating = creator?.rating.kind === 'rating' ? creator.rating.value.toFixed(1) : 'Nouveau';
   const initials = name.replace(/[^\p{L} ]/gu, '').trim().split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || 'B';
 
   return new ImageResponse(

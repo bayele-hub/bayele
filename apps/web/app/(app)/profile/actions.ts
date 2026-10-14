@@ -7,12 +7,14 @@ import { getSession } from '@/lib/auth/session';
 import type { Database } from '@bayele/database';
 import { parseCountry } from '@/lib/countries';
 import { parseProvider } from '@/lib/data/campaigns';
+import { getDictionary } from '@/i18n/dictionaries';
+import { checkProfileText, cleanText, limitErrorField, parseAudience, type LimitedField } from '@/lib/profile-limits';
 
 type Provider = Database['public']['Enums']['payment_provider'];
 type Country = Database['public']['Enums']['country_code'];
 type CreatorPlatforms = Database['public']['Tables']['creator_profiles']['Update']['platforms'];
 
-export type ProfileState = { error: string | null; ok?: boolean };
+export type ProfileState = { error: string | null; ok?: boolean; field?: LimitedField | null };
 
 
 // Normalize a Mobile-Money number to E.164 (strip spaces/dashes/parens). Returns the normalized
@@ -44,11 +46,17 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
 
-  const displayName = String(formData.get('display_name') ?? '').trim();
+  const { t } = await getDictionary();
+  const FE = t.creatorForm.errors;
+  const displayName = cleanText(formData.get('display_name'));
   const bio = String(formData.get('bio') ?? '').trim();
-  const city = String(formData.get('city') ?? '').trim();
-  if (!displayName) return { error: 'Le nom est requis.' };
-  if (!city) return { error: 'La ville est requise.' };
+  const city = cleanText(formData.get('city'));
+  // D5 limits (same as the 0036 CHECKs) → a clear field error instead of a generic failure.
+  const msgFor = (field: LimitedField, kind: 'required' | 'tooLong'): string =>
+    field === 'city' ? (kind === 'required' ? FE.cityRequired : FE.city) : field === 'displayName' ? (kind === 'required' ? FE.displayNameRequired : FE.displayName) : FE.bio;
+  const problems = checkProfileText({ displayName, city, bio });
+  const firstBad = (['displayName', 'city', 'bio'] as const).find((k) => problems[k]);
+  if (firstBad) return { error: msgFor(firstBad, problems[firstBad]!), field: firstBad };
   const country: Country = parseCountry(formData.get('country'));
 
   const supabase = await createClient();
@@ -57,7 +65,12 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
     .from('profiles')
     .update({ display_name: displayName, bio: bio || null, city, country, updated_at: new Date().toISOString() })
     .eq('id', session.userId);
-  if (pErr) return { error: 'La mise à jour a échoué. Réessayez.' };
+  if (pErr) {
+    // 23514 on a grandfathered row (old value over the limit): the constraint name says which field.
+    const field = limitErrorField(pErr.message);
+    if (field) return { error: msgFor(field, 'tooLong'), field };
+    return { error: 'La mise à jour a échoué. Réessayez.' };
+  }
 
   if (session.roles.includes('creator')) {
     const momoProvider: Provider = parseProvider(formData.get('momo_provider'));
@@ -76,12 +89,14 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
       if (!url) continue;
       platforms[p] = { url, followers: Math.max(0, Math.round(Number(formData.get(`soc_${p}_followers`) ?? 0))) };
     }
+    // AR-1: the typed audience; blank/missing keeps the stored value (never replaced by the followers sum).
+    const audience = parseAudience(formData.get('audience_size'));
 
     const { error } = await supabase
       .from('creator_profiles')
       .update({
         categories: parseList(formData.get('categories')),
-        audience_size: Math.max(0, Math.round(Number(formData.get('audience_size') ?? 0))),
+        ...(audience === null ? {} : { audience_size: audience }),
         momo_payout_phone_e164: momoPhone,
         momo_provider: momoProvider,
         platforms: platforms as unknown as CreatorPlatforms,

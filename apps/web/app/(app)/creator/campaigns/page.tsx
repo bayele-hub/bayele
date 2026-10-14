@@ -7,6 +7,8 @@ import { CampaignBriefDetails } from '@/components/campaign-brief-details';
 import { ApplyButton } from './apply-button';
 import { countryLabel } from '@/lib/countries';
 import { AlertsSection } from './alerts-section';
+import { getDictionary } from '@/i18n/dictionaries';
+import { SectionTip } from '@/components/admin/section-tip';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,10 +30,20 @@ export default async function CreatorCampaigns({ searchParams }: { searchParams:
       .select('id, title, brief, category, target_country, payout_per_creator_fcfa, creator_count_target, status, created_at, platforms, content_type, deliverable_quantity, mandatory_tags, deadline')
       .in('status', ['published', 'in_progress'])
       .order('created_at', { ascending: false }),
-    supabase.from('campaign_creators').select('campaign_id').eq('creator_id', session.userId),
+    supabase
+      .from('campaign_creators')
+      .select('campaign_id, status, created_at, campaign:campaigns!campaign_creators_campaign_id_fkey(title, payout_per_creator_fcfa)')
+      .eq('creator_id', session.userId)
+      .order('created_at', { ascending: false }),
   ]);
+  const { t } = await getDictionary();
+  const U = t.creatorUx;
+  const T = t.creatorTips;
+  const pendingProfile = session.profile?.status === 'pending_review';
+  type Mine = { campaign_id: string; status: string; created_at: string; campaign: { title: string; payout_per_creator_fcfa: number } | { title: string; payout_per_creator_fcfa: number }[] | null };
+  const applications = ((mine ?? []) as Mine[]).map((m) => ({ ...m, campaign: Array.isArray(m.campaign) ? m.campaign[0] : m.campaign }));
 
-  const appliedTo = new Set((mine ?? []).map((m) => m.campaign_id));
+  const appliedTo = new Set(applications.map((m) => m.campaign_id));
   const open = (campaigns ?? []).filter((c) => !appliedTo.has(c.id));
 
   return (
@@ -43,20 +55,45 @@ export default async function CreatorCampaigns({ searchParams }: { searchParams:
 
       {/* pending_review creators can already browse, apply and set alerts (migration 0021). Copy reused
           from the campaign apply CTA. */}
-      {session.profile?.status === 'pending_review' && (
-        <p role="status" className="flex items-start gap-2 rounded-2xl border border-accent-soft bg-accent-soft/60 px-3 py-2.5 text-[13px] text-ink">
+      {pendingProfile && (
+        <p role="status" className="flex items-start gap-2 rounded-2xl border border-accent/30 bg-accent-soft px-3 py-2.5 text-[13px] text-ink">
           <Clock className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
-          <span>
-            Votre profil est en cours de validation par Bayele — vous pouvez déjà postuler. Les marques ne retiennent que des profils vérifiés.
-          </span>
+          <span>{U.pendingBanner}</span>
         </p>
+      )}
+
+      {/* « Mes candidatures » (D8): a pending creator keeps sight of what they applied to. */}
+      {applications.length > 0 && (
+        <section aria-labelledby="my-applications" className="rounded-2xl border border-line bg-white p-4 shadow-card">
+          <h2 id="my-applications" className="flex items-center text-sm font-bold text-ink">
+            {U.applicationsTitle}
+            <SectionTip id="creator-applications" label={U.applicationsTitle} text={T.applications} ariaTemplate={T.aria} />
+          </h2>
+          <ul className="mt-2 divide-y divide-line">
+            {applications.map((a) => (
+              <li key={a.campaign_id} className="flex min-w-0 flex-wrap items-center justify-between gap-2 py-2">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-ink">{a.campaign?.title ?? '—'}</p>
+                  <p className="text-[11px] text-muted">
+                    {a.campaign ? `${fmtFcfa(a.campaign.payout_per_creator_fcfa)} · ` : ''}
+                    {new Date(a.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                  </p>
+                  {pendingProfile && a.status === 'applied' && <p className="mt-0.5 text-[11px] font-semibold text-ink">{U.applicationsPending}</p>}
+                </div>
+                <span className="shrink-0 rounded-full bg-surface px-2.5 py-0.5 text-[11px] font-bold text-ink">
+                  {t.applyCta.status[a.status as keyof typeof t.applyCta.status] ?? a.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       <AlertsSection alertCountry={sp.alert_country} alertCat={sp.alert_cat} msg={sp.alerts_msg} defaultCountry={session.profile?.country ?? null} />
 
       {open.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted">
-          Aucune nouvelle campagne pour le moment. Revenez bientôt — les marques publient régulièrement.
+          {U.campaignsEmpty}
         </div>
       ) : (
         <ul className="grid gap-3">

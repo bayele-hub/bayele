@@ -3,8 +3,9 @@
 import { useActionState } from 'react';
 import { Loader2, Upload, Check } from 'lucide-react';
 import { submitProofAction, type ProofState } from '../actions';
+import { SectionTip } from '@/components/admin/section-tip';
 
-export function ProofForm({ cc }: { cc: string }) {
+export function ProofForm({ cc, help, tip, tipAria }: { cc: string; help?: string; tip?: string; tipAria?: string }) {
   const [state, action, pending] = useActionState<ProofState, FormData>(submitProofAction, { error: null });
 
   if (state.ok) {
@@ -19,14 +20,19 @@ export function ProofForm({ cc }: { cc: string }) {
     <form action={action} className="mt-3 flex flex-wrap items-end gap-2">
       <input type="hidden" name="cc" value={cc} />
       <div className="min-w-0 flex-1">
-        <label className="text-[11px] font-semibold text-muted">Lien de votre publication</label>
+        <label htmlFor={`proof-${cc}`} className="flex items-center text-[11px] font-semibold text-muted">
+          Lien de votre publication
+          {tip && tipAria && <SectionTip id={`creator-proof-${cc}`} label="Lien de votre publication" text={tip} ariaTemplate={tipAria} />}
+        </label>
         <input
+          id={`proof-${cc}`}
           name="url"
           type="url"
           required
           placeholder="https://instagram.com/p/…"
-          className="mt-0.5 w-full rounded-lg border border-line bg-white px-2.5 py-2 text-xs text-ink focus:border-brand focus:outline-none"
+          className="mt-0.5 min-h-tap w-full rounded-lg border border-line bg-white px-2.5 py-2 text-[16px] text-ink focus:border-brand focus:outline-none sm:text-xs"
         />
+        {help && <p className="mt-0.5 text-[11px] text-muted">{help}</p>}
       </div>
       <button
         type="submit"

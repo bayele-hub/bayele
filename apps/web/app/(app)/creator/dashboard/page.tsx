@@ -10,11 +10,14 @@ import { creatorAllowed } from '@/lib/auth/creator-gate';
 import { fmtFcfa, CREATOR_STATUS_FR } from '@/lib/data/campaigns';
 import { ProofForm } from './proof-form';
 import { countryName } from '@/lib/countries';
+import { getDictionary } from '@/i18n/dictionaries';
+import { SectionTip } from '@/components/admin/section-tip';
 
 export const dynamic = 'force-dynamic';
 
 
 export default async function CreatorDashboard() {
+  const { t } = await getDictionary();
   const session = await getSession();
   if (!session.userId) redirect('/auth?mode=signin');
   // Active creators only (pending_review creators get /creator/campaigns alone — see the layout).
@@ -24,7 +27,7 @@ export default async function CreatorDashboard() {
   const [{ data: assignments }, { data: creatorProfile }, { data: founder }, { data: links }] = await Promise.all([
     supabase
       .from('campaign_creators')
-      .select('id, status, agreed_payout_fcfa, partner_id, partner_commission_rate, applied_by, created_at, campaign:campaigns(id, title, category, target_country, status)')
+      .select('id, status, agreed_payout_fcfa, partner_id, partner_commission_rate, applied_by, created_at, campaign:campaigns(id, title, category, target_country, status, is_managed)')
       .eq('creator_id', session.userId)
       .order('created_at', { ascending: false }),
     // payout settings via the definer RPC (is_pro + own momo — momo columns are not directly selectable, 0018).
@@ -112,19 +115,19 @@ export default async function CreatorDashboard() {
       {/* Payout nudge — a creator who hasn't set a Mobile Money number can't be paid. */}
       {!payoutConfigured && (
         <Link
-          href="/profile"
+          href="/profile#paiement"
           className="flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent-soft p-4 transition hover:border-accent/50"
         >
           <div className="flex items-center gap-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-accent">
-              <Wallet className="h-4 w-4" />
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-ink">
+              <Wallet className="h-4 w-4" aria-hidden />
             </span>
             <div>
               <p className="text-sm font-bold text-ink">Ajoutez votre numéro Mobile Money</p>
               <p className="text-[11px] text-muted">Sans numéro de paiement, vos gains ne peuvent pas être versés.</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-accent" />
+          <ArrowRight className="h-4 w-4 shrink-0 text-ink" aria-hidden />
         </Link>
       )}
 
@@ -175,7 +178,7 @@ export default async function CreatorDashboard() {
                               ? 'bg-brand-50 text-brand-700'
                               : a.status === 'rejected'
                                 ? 'bg-surface text-muted'
-                                : 'bg-accent-soft text-accent'
+                                : 'bg-accent-soft text-ink'
                         }`}
                       >
                         {paid && <CheckCircle2 className="h-3 w-3" />}
@@ -191,6 +194,7 @@ export default async function CreatorDashboard() {
                       {rateOf(a) ? (
                         <span>
                           Mission {fmtFcfa(a.agreed_payout_fcfa)} · commission partenaire {formatPct(rateOf(a)!, 'fr')} ({fmtFcfa(splitPayout(a.agreed_payout_fcfa, rateOf(a)).partner)}) · vous recevez {fmtFcfa(net(a))}
+                          <SectionTip id={`creator-partnerCommission-${a.id}`} label={t.creatorUx.partnerCommission} text={t.creatorTips.partnerCommission} ariaTemplate={t.creatorTips.aria} />
                         </span>
                       ) : null}
                     </p>
@@ -200,12 +204,12 @@ export default async function CreatorDashboard() {
                     href={`/messages/open?ctx=campaign_creator&id=${a.id}`}
                     className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
                   >
-                    <MessageCircle className="h-3.5 w-3.5" /> Contacter la marque
+                    <MessageCircle className="h-3.5 w-3.5" aria-hidden /> {(camp as { is_managed?: boolean } | undefined)?.is_managed ? t.creatorUx.contactBayele : 'Contacter la marque'}
                   </Link>
 
-                  {a.status === 'approved' && <ProofForm cc={a.id} />}
+                  {a.status === 'approved' && <ProofForm cc={a.id} help={t.creatorUx.proofHelp} tip={t.creatorTips.proof} tipAria={t.creatorTips.aria} />}
                   {a.status === 'content_submitted' && (
-                    <p className="mt-3 rounded-lg bg-accent-soft/60 px-3 py-2 text-[11px] text-accent">
+                    <p className="mt-3 rounded-lg bg-accent-soft px-3 py-2 text-[11px] text-ink">
                       Votre preuve est en cours de vérification par la marque.
                     </p>
                   )}

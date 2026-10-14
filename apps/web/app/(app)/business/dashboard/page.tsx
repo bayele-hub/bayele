@@ -126,7 +126,7 @@ export default async function BusinessDashboard() {
                     </div>
                     <div className="text-right">
                       <span className="font-display font-extrabold text-ink">{fmtFcfa(c.total_budget_fcfa)}</span>
-                      <div className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${held ? 'bg-emerald-50 text-emerald-700' : 'bg-accent-soft text-accent'}`}>
+                      <div className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${held ? 'bg-emerald-50 text-emerald-700' : 'bg-accent-soft text-ink'}`}>
                         {held ? <Lock className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
                         {CAMPAIGN_STATUS_FR[c.status] ?? c.status}
                       </div>
