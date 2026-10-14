@@ -2,7 +2,7 @@
 
 Decisions: `briefs/CONTEXT-PARTNER-GOV.md` G1–G12 with the owner overrides P1–P7. Contract: `briefs/BACKEND-CONTRACT-PARTNER-GOV.md` (0038–0040). Design: `docs/PARTNER-GOVERNANCE-DESIGN.md`. QA: `qa/QA-REPORT-PARTNER-GOV.md`, final verdict GO (PG-13 and PG-14 fixed by Backend, all suites green). Release steps: `docs/MANAGED-CAMPAIGNS-RELEASE-RUNBOOK.md` §11.
 
-**Status:** built; 0038 and 0039 are applied to production (2026-10-14). 0037 and 0040 are waiting for both web deploys (admin-review, then partner-governance).
+**Status:** RELEASED 2026-10-14. Both web deploys are live (admin-review PR #10, partner-governance PR #11 `dd96cc4`). All migrations are applied to production: 0038 + 0039 (07:33 / 07:42 UTC), 0037 (09:34 UTC), 0040 (09:56 UTC). Remaining: QA smoke list, counsel review, G12.
 
 ## Tracker
 
@@ -21,8 +21,8 @@ Decisions: `briefs/CONTEXT-PARTNER-GOV.md` G1–G12 with the owner overrides P1�
 ### Release
 - [x] DevOps: 0038 + 0039 applied to production. All 147 function fingerprints match the local dry run; 134 bodies are byte-identical (the other 13 predate this release and differ only in comments). Seed data matches. Cron job, bucket, policies, deny-all store, old-web session check and a rolled-back masking simulation all verified (runbook §11.2).
 - [x] DevOps: commits + `partner-governance.patch` (stacked on `admin-review.patch`), verified on a fresh clone of origin/main.
-- [ ] Owner: apply `admin-review.patch`, deploy it → apply `partner-governance.patch`, deploy it (both Vercel deploys Ready).
-- [ ] 0037 (phone lockdown), then 0040 (enforcement), after both deploys are Ready (runbook §11.3).
+- [x] Owner: `admin-review.patch` (PR #10) and `partner-governance.patch` (PR #11, `dd96cc4`) merged and deployed.
+- [x] 0037 (phone lockdown; Co-CTO, 09:34 UTC, post-verified), then 0040 (enforcement; DevOps, 09:56 UTC): 150 function fingerprints match the dry run; specialties hold codes only; 5 correction requests and 5 notifications; consent, assignment and retainer-thread gating verified by a rolled-back simulation; no 4xx/5xx in the edge logs (runbook §11.7).
 - [ ] QA smoke list on production (runbook §11.4).
 
 ## Pending outside engineering
